@@ -20,32 +20,35 @@
         .today-cell { background-color: #f0fdf4; }
         .today-cell > span.day-number { background-color: #22c55e; color: white; border-radius: 9999px; width: 1.5rem; height: 1.5rem; display: inline-flex; align-items: center; justify-content: center; }
 
-        /* Week View Styles */
-        .week-view-container { display: flex; flex-direction: column; height: 100%; border: 1px solid #e2e8f0; border-radius: 0.75rem; overflow: hidden; background-color: white; }
-        .week-header-row { display: flex; border-b: 1px solid #e2e8f0; background-color: #f8fafc; flex-shrink: 0; padding-right: 3rem; /* 3rem = width of time labels */ }
+        /* Week View Styles - Google Calendar Precision */
+        .week-view-container { display: flex; flex-direction: column; height: 100%; border: 1px solid #e2e8f0; border-radius: 0.75rem; overflow-y: auto; overflow-x: hidden; background-color: white; position: relative; }
+        
+        .week-header-row { display: flex; border-b: 1px solid #e2e8f0; background-color: white; flex-shrink: 0; padding-right: 3.5rem; position: sticky; top: 0; z-index: 30; }
         .week-header-cell { flex: 1; text-align: center; padding: 0.5rem; border-left: 1px solid #e2e8f0; }
         .week-header-cell:last-child { border-left: none; }
-        .week-header-day { font-size: 0.75rem; font-weight: 800; color: #64748b; text-transform: uppercase; }
-        .week-header-date { font-size: 1.25rem; font-weight: 900; color: #334155; margin-top: 0.1rem; }
-        .week-header-cell.today .week-header-date { color: #22c55e; }
+        .week-header-day { font-size: 0.7rem; font-weight: 600; color: #70757a; text-transform: uppercase; margin-bottom: 0.2rem; }
+        .week-header-date { font-size: 1.5rem; font-weight: 400; color: #3c4043; line-height: 1; width: 40px; height: 40px; margin: 0 auto; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+        .week-header-cell.today .week-header-day { color: #1a73e8; }
+        .week-header-cell.today .week-header-date { background-color: #1a73e8; color: white; }
         
-        .week-allday-row { display: flex; border-b: 1px solid #e2e8f0; background-color: white; flex-shrink: 0; padding-right: 3rem; min-height: 1.5rem; }
-        .week-allday-cell { flex: 1; border-left: 1px solid #e2e8f0; padding: 0.1rem; display: flex; flex-direction: column; gap: 0.1rem; }
+        .week-allday-row { display: flex; border-b: 1px solid #e2e8f0; background-color: white; flex-shrink: 0; padding-right: 3.5rem; min-height: 24px; position: sticky; top: 73px; z-index: 20; }
+        .week-allday-cell { flex: 1; border-left: 1px solid #e2e8f0; padding: 0.15rem; display: flex; flex-direction: column; gap: 0.1rem; }
         .week-allday-cell:last-child { border-left: none; }
 
-        .week-grid-scroll { flex: 1; overflow-y: auto; position: relative; background-color: white; }
-        .week-time-labels { position: absolute; right: 0; top: 0; width: 3rem; display: flex; flex-direction: column; border-left: 1px solid #e2e8f0; background-color: white; z-index: 10; }
-        .time-label { height: 60px; font-size: 0.65rem; color: #94a3b8; font-weight: 600; text-align: center; padding-top: 0.25rem; box-sizing: border-box; }
+        .week-grid-body { position: relative; height: 1440px; background-color: white; }
+        .week-time-labels { position: absolute; right: 0; top: 0; width: 3.5rem; display: flex; flex-direction: column; border-left: 1px solid #e2e8f0; background-color: white; z-index: 10; height: 100%; }
+        .time-label { height: 60px; position: relative; }
+        .time-label span { position: absolute; top: -0.6em; left: 0.5rem; font-size: 0.65rem; color: #70757a; font-weight: 500; }
         
-        .week-columns-container { position: absolute; right: 3rem; left: 0; top: 0; display: flex; height: 1440px; /* 24 * 60px */ }
+        .week-columns-container { position: absolute; right: 3.5rem; left: 0; top: 0; display: flex; height: 100%; z-index: 5; }
         .week-day-column { flex: 1; border-left: 1px solid #e2e8f0; position: relative; }
         .week-day-column:last-child { border-left: none; }
         
-        .week-grid-lines { position: absolute; right: 3rem; left: 0; top: 0; height: 1440px; pointer-events: none; z-index: 0; }
-        .grid-line { height: 60px; border-bottom: 1px solid #f1f5f9; box-sizing: border-box; }
+        .week-grid-lines { position: absolute; right: 3.5rem; left: 0; top: 0; height: 100%; pointer-events: none; z-index: 1; }
+        .grid-line { height: 60px; border-top: 1px solid #e2e8f0; box-sizing: border-box; }
 
-        .week-event { position: absolute; left: 2px; right: 2px; border-radius: 0.35rem; padding: 0.25rem; font-size: 0.7rem; font-weight: 700; overflow: hidden; cursor: pointer; transition: transform 0.1s; z-index: 5; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border-width: 1px; border-left-width: 4px; display: flex; flex-direction: column; }
-        .week-event:hover { transform: scale(1.02); z-index: 10; }
+        .week-event { position: absolute; left: 2px; right: 2px; border-radius: 4px; padding: 2px 4px; font-size: 0.7rem; font-weight: 600; overflow: hidden; cursor: pointer; transition: filter 0.1s; z-index: 5; border-width: 1px; display: flex; flex-direction: column; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        .week-event:hover { filter: brightness(0.95); z-index: 10; }
         .week-event-time { font-size: 0.6rem; opacity: 0.8; margin-bottom: 0.1rem; }
 
         /* Modal Overlay */
@@ -102,7 +105,7 @@
                 <div class="week-allday-row" id="week-allday-row">
                     <!-- All day events injected here -->
                 </div>
-                <div class="week-grid-scroll" id="week-scroll-area">
+                <div class="week-grid-body" id="week-scroll-area">
                     <div class="week-time-labels" id="week-time-labels">
                         <!-- 00:00 to 23:00 injected here -->
                     </div>
@@ -305,7 +308,7 @@
             
             // scroll week view to 08:00
             setTimeout(() => {
-                document.getElementById('week-scroll-area').scrollTop = 8 * 60;
+                document.getElementById('week-grid-container').scrollTop = 8 * 60;
             }, 10);
         }
         renderCalendar();
@@ -467,7 +470,7 @@
             const isToday = dateStr === todayStr;
             weekHeaders.innerHTML += `
                 <div class="week-header-cell ${isToday ? 'today' : ''}">
-                    <div class="week-header-day ${i===5?'text-indigo-400':(i===6?'text-red-400':'')}">${DAY_NAMES[i]}</div>
+                    <div class="week-header-day ${i===5?'text-indigo-500':(i===6?'text-red-500':'')}">${DAY_NAMES[i]}</div>
                     <div class="week-header-date">${d.getDate()}</div>
                 </div>
             `;
@@ -478,7 +481,8 @@
         const gridLines = document.getElementById('week-grid-lines');
         if (timeLabels.children.length === 0) {
             for (let i = 0; i < 24; i++) {
-                timeLabels.innerHTML += `<div class="time-label">${String(i).padStart(2, '0')}:00</div>`;
+                const labelText = i === 0 ? '' : `${String(i).padStart(2, '0')}:00`;
+                timeLabels.innerHTML += `<div class="time-label"><span>${labelText}</span></div>`;
                 gridLines.innerHTML += `<div class="grid-line"></div>`;
             }
         }
