@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ComManager - מערכת ניהול לוועדים מובילים</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Heebo', sans-serif; 
+            overflow: hidden; 
+            margin: 0; 
+            padding: 0; 
+            display: flex; 
+            height: 100vh; 
+            background: #f8fafc;
+        }
+        
+        /* Master layout reset */
+        .master-grid {
+            display: flex;
+            width: 100vw;
+            height: 100vh;
+            background-color: #0f172a; /* Main Dark Backdrop */
+        }
+        
+        /* Sidebar styling */
+        .sidebar {
+            width: 300px;
+            background-color: #1e293b; /* Medium Slate (Lighter than Deep Slate) */
+            color: white;
+            display: flex;
+            flex-direction: column;
+            border-left: 1px solid rgba(255,255,255,0.05);
+            box-shadow: -5px 0 25px rgba(0,0,0,0.2);
+        }
+
+        /* Iframe container - creating the "App Canvas" feel */
+        .content-area-wrapper {
+            flex: 1;
+            padding: 1rem;
+            padding-right: 0; /* Attach to sidebar */
+        }
+        .content-area {
+            width: 100%;
+            height: 100%;
+            background-color: #f8fafc;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
+            position: relative;
+            transform: translateZ(0); /* Hardware accel */
+        }
+        
+        iframe { 
+            width: 100%; 
+            height: 100%; 
+            border: none;
+            transition: opacity 0.4s ease-in-out; 
+            background-color: #f8fafc;
+        }
+
+        .tree-link { 
+            transition: all 0.2s ease-in-out; 
+            color: #94a3b8; /* Slate 400 */
+        }
+        .tree-link:hover {
+            color: #f8fafc;
+            background: rgba(255,255,255,0.05);
+        }
+        .tree-link.active { 
+            background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); 
+            color: #ffffff; 
+            font-weight: 800;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+        }
+        
+        .iframe-loading { opacity: 0; }
+
+        /* Loader */
+        #loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        #loader.show { opacity: 1; pointer-events: auto;}
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(79, 70, 229, 0.2);
+            border-top-color: #4f46e5;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        
+        .nav-group-title {
+            font-size: 1.05rem;
+            color: #f8fafc;
+            font-weight: 900;
+            margin-top: 1rem;
+            margin-bottom: 0.25rem;
+            padding-right: 0.5rem;
+            padding-bottom: 0.25rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .submenu-line::before {
+            content: '';
+            position: absolute;
+            right: 32px;
+            top: 10px;
+            bottom: 20px;
+            width: 1px;
+            background: #334155;
+        }
+        .submenu-item::before {
+            content: '';
+            position: absolute;
+            right: -10px;
+            top: 50%;
+            width: 10px;
+            height: 1px;
+            background: #334155;
+        }
+    </style>
+</head>
+<body class="text-slate-800">
+
+<div class="master-grid">
+
+    <!-- MASTER SIDEBAR (PRODUCT TREE) - DARK THEME -->
+    <aside class="sidebar z-20 shrink-0 relative">
+        <!-- Logo Area -->
+        <div class="h-16 flex items-center justify-start px-6 border-b border-white/5">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-[0_0_15px_rgba(79,70,229,0.5)] text-white font-bold text-xl">
+                    C
+                </div>
+                <div>
+                    <h1 class="text-xl font-black text-white tracking-tight leading-none">ComManger<span class="text-indigo-400">.</span></h1>
+                    <p class="text-[9px] text-slate-400 font-bold tracking-widest mt-1 uppercase">מטה הנהלה ראשי</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Menu -->
+        <nav class="flex-1 overflow-y-auto px-4 py-3 scrollbar-hide">
+            
+            <div class="nav-group-title" style="margin-top: 0.5rem;">סקירה וניהול זמן</div>
+            <a href="#" onclick="loadPage('dashboard-demo.html', this)" class="tree-link active flex items-center gap-3 px-3 py-2 rounded-xl font-semibold mb-1 text-sm">
+                <span class="text-lg">📊</span>
+                דשבורד מטלות (היום)
+            </a>
+            <a href="#" onclick="loadPage('calendar-tasks.html', this)" class="tree-link flex items-center gap-3 px-3 py-2 rounded-xl font-semibold text-sm">
+                <span class="text-lg">📅</span>
+                יומן פגישות ומטלות
+            </a>
+
+            <div class="nav-group-title">ניהול הון אנושי</div>
+            <a href="#" onclick="loadPage('workers-index.html', this)" class="tree-link flex items-center justify-between px-3 py-2 rounded-xl font-semibold mb-1 text-sm">
+                <div class="flex items-center gap-3">
+                    <span class="text-lg">👥</span>
+                    כרטסות עובדים
+                </div>
+            </a>
+            
+            <!-- Sub-tree items -->
+            <div class="pl-4 pr-6 space-y-0.5 relative submenu-line">
+                <a href="#" onclick="event.preventDefault(); alert('הדמיה: מסך קליטת עובד חדש')" class="tree-link submenu-item relative flex items-center gap-3 px-3 py-1.5 rounded-lg font-medium text-xs">
+                    קליטת עובד חדש
+                </a>
+                <a href="#" onclick="event.preventDefault(); alert('הדמיה: מודול יבוא אקסל')" class="tree-link submenu-item relative flex items-center gap-3 px-3 py-1.5 rounded-lg font-medium text-xs">
+                    קליטת קובץ אקסל
+                </a>
+            </div>
+
+            <div class="nav-group-title">רווחה ואירועים</div>
+            
+            <!-- Sub-tree items -->
+            <div class="pl-4 pr-6 space-y-0.5 relative submenu-line">
+                <a href="#" onclick="loadPage('events-manager-demo.html#new-campaign', this)" class="tree-link submenu-item relative flex items-center gap-3 px-3 py-1.5 rounded-lg font-medium text-xs">
+                    קמפיין אירוע חדש (יצירה)
+                </a>
+                <a href="#" onclick="loadPage('events-manager-demo.html#events-list', this)" class="tree-link submenu-item relative flex items-center gap-3 px-3 py-1.5 rounded-lg font-medium text-xs">
+                    רישום האירועים במערכת
+                </a>
+            </div>
+
+            <div class="nav-group-title">אדמיניסטרציה ובירוקרטיה</div>
+            <a href="#" onclick="loadPage('documents-hub.html', this)" class="tree-link flex items-center justify-between px-3 py-2 rounded-xl font-semibold mb-1 text-sm">
+                <div class="flex items-center gap-3">
+                    <span class="text-lg">📁</span>
+                    מרכז טפסים ומסמכים
+                </div>
+            </a>
+            
+            <!-- Sub-tree items -->
+            <div class="pl-4 pr-6 space-y-0.5 relative submenu-line">
+                <a href="#" onclick="loadPage('documents-outbound-demo.html', this)" class="tree-link submenu-item relative flex items-center gap-3 px-3 py-1.5 rounded-lg font-medium text-xs">
+                    מסמכים להפצה או חתימה
+                </a>
+                <a href="#" onclick="loadPage('documents-inbound-demo.html', this)" class="tree-link submenu-item relative flex items-center justify-between gap-3 px-3 py-1.5 rounded-lg font-medium text-xs">
+                    <span>דרישת העלאת מסמכים</span>
+                    <span class="bg-red-500 text-white text-[9px] px-1.5 py-0.5 rounded shadow-sm font-black animate-pulse">14</span>
+                </a>
+            </div>
+
+            <div class="nav-group-title">חיבורים נוספים</div>
+            <a href="#" class="tree-link opacity-40 cursor-not-allowed flex items-center gap-3 px-3 py-2 rounded-xl font-semibold mb-1 text-sm">
+                <span class="text-lg">💬</span>
+                מערכת דיוור וסמסים
+            </a>
+            
+        </nav>
+
+        <!-- User Profile Bottom -->
+        <div class="p-3 border-t border-white/5 bg-slate-900/30">
+            <div class="flex items-center gap-3 bg-slate-700/50 p-2.5 rounded-xl border border-white/10 shadow-inner">
+                <div class="w-9 h-9 rounded-full bg-slate-700 border border-slate-600 text-white flex justify-center items-center font-bold text-sm">י"ל</div>
+                <div>
+                    <h4 class="font-bold text-slate-200 text-[13px]">יוסי לוי</h4>
+                    <p class="text-[11px] text-slate-400 leading-tight">יו"ר הועד - מנהל מטה</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- CENTER CONTENT APPCANVAS -->
+    <main class="content-area-wrapper">
+        <div class="content-area">
+            <!-- Loader Background -->
+            <div id="loader" class="show">
+                <div class="spinner"></div>
+            </div>
+            
+            <!-- Iframe Container -->
+            <iframe id="viewer" src="dashboard-demo.html" onload="iframeLoaded()" class="iframe-loading z-10"></iframe>
+        </div>
+    </main>
+
+</div>
+
+<script>
+    const iframe = document.getElementById('viewer');
+    const loader = document.getElementById('loader');
+
+    window.loadPage = function(url, btn) {
+        if (typeof event !== 'undefined' && event && event.preventDefault) {
+            event.preventDefault();
+        }
+
+        // Update active styling in tree
+        document.querySelectorAll('.tree-link').forEach(el => {
+            el.classList.remove('active');
+        });
+        
+        if (btn) btn.classList.add('active');
+        
+        // Show loader & hide iframe
+        iframe.classList.add('iframe-loading');
+        loader.classList.add('show');
+        
+        // Allow smooth UI transition before fetching
+        setTimeout(() => {
+            iframe.src = url;
+        }, 300);
+    }
+
+    function iframeLoaded() {
+        // Hide loader & show iframe
+        loader.classList.remove('show');
+        iframe.classList.remove('iframe-loading');
+    }
+</script>
+</body>
+</html>

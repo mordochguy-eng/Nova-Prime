@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מערכת ועד - מסמכים להפצה או לחתימת עובד</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    <style>
+        html { font-size: 14px; } body { font-family: 'Heebo', sans-serif; background-color: #f8fafc; }
+        .doc-card { transition: all 0.2s ease; cursor: pointer; }
+        .doc-card:hover { transform: translateY(-3px); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); border-color: #818cf8; }
+        #toast-container { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 0.5rem; align-items: center; pointer-events: none; }
+        .toast { background: #1e293b; color: white; padding: 0.75rem 1.5rem; border-radius: 9999px; font-size: 0.9rem; opacity: 0; transform: translateY(10px); transition: all 0.3s ease; box-shadow: 0 4px 20px rgba(0,0,0,0.2); font-family: 'Heebo', sans-serif; }
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast.success { border-left: 4px solid #6366f1; }
+    </style>
+</head>
+<body class="text-slate-800">
+
+<div class="min-h-screen flex flex-col p-6 md:p-8 max-w-5xl mx-auto w-full">
+    
+    <header class="mb-8">
+        <h1 class="text-3xl font-black text-slate-900 flex items-center gap-3">
+            <span class="text-indigo-600">✍️</span> מסמכים להפצה או לחתימת עובד
+        </h1>
+        <p class="text-slate-500 font-medium mt-2 text-lg">טפסים שהוועד משגר לעובד ספציפי או לקבוצה לקריאה ולחתימה דיגיטלית ישירות מהנייד.</p>
+    </header>
+
+    <div class="bg-white rounded-3xl border border-slate-200 shadow-sm flex flex-col overflow-hidden relative">
+        <div class="absolute top-0 right-0 w-1.5 h-full bg-indigo-500"></div>
+        <div class="p-6 border-b border-slate-100 bg-indigo-50/30">
+            <div class="flex items-center gap-3 mb-1">
+                <span class="bg-indigo-100 text-indigo-700 p-2 rounded-xl text-xl">📄</span>
+                <h2 class="text-2xl font-black text-indigo-950">מאגר תבניות להפצה</h2>
+            </div>
+            <p class="text-sm text-slate-500 font-medium">בחר מסמך לשליחה. העובד יקבל קישור מאובטח ל-SMS לאישור.</p>
+        </div>
+        
+        <div class="p-6 overflow-y-auto flex-1 space-y-4">
+            
+            <h3 class="font-bold text-slate-400 text-sm tracking-widest uppercase mt-2 mb-3">מסמכים פרטניים</h3>
+            
+            <div class="doc-card border-2 border-slate-100 bg-white rounded-2xl p-4 flex items-center justify-between group">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center text-xl border border-slate-100 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition">📝</div>
+                    <div>
+                        <h4 class="font-bold text-slate-800 text-lg">טופס בקשת הלוואה מהוועד</h4>
+                        <p class="text-xs text-slate-500">נשלח לעובד באופן אישי עם פרטי ההסכם</p>
+                    </div>
+                </div>
+                <button onclick="sendDoc('טופס בקשת הלוואה', false)" class="bg-white border border-indigo-200 text-indigo-600 hover:bg-indigo-600 hover:text-white px-6 py-2.5 rounded-xl font-bold transition shadow-sm">שגר לעובד ספציפי</button>
+            </div>
+
+            <div class="doc-card border-2 border-slate-100 bg-white rounded-2xl p-4 flex items-center justify-between group">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center text-xl border border-slate-100 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition">🌴</div>
+                    <div>
+                        <h4 class="font-bold text-slate-800 text-lg">חתימה על אישורי חופשה מרוכזים</h4>
+                        <p class="text-xs text-slate-500">החתמת עובדים לאישור הפחתת ימים (פסח/סוכות)</p>
+                    </div>
+                </div>
+                <button onclick="sendDoc('חתימה על אישורי חופשה מרוכזים', false)" class="bg-white border border-indigo-200 text-indigo-600 hover:bg-indigo-600 hover:text-white px-6 py-2.5 rounded-xl font-bold transition shadow-sm">שגר לעובדים</button>
+            </div>
+
+            <h3 class="font-bold text-slate-400 text-sm tracking-widest uppercase mt-8 mb-3 pt-6 border-t border-slate-100">מסמכי הועד להפצה המונית</h3>
+            
+            <div class="doc-card border-2 border-slate-100 bg-white rounded-2xl p-4 flex items-center justify-between group">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center text-xl border border-slate-100 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition">🤝</div>
+                    <div>
+                        <h4 class="font-bold text-slate-800 text-lg">הסכמי עבודה קיבוציים לסקטור</h4>
+                        <p class="text-xs text-slate-500">קריאה ואישור צפייה להסכמי שכר סקטוריאליים</p>
+                    </div>
+                </div>
+                <button onclick="sendDoc('הסכמי עבודה קיבוציים לסקטור', true)" class="bg-slate-800 hover:bg-slate-900 text-white px-6 py-2.5 rounded-xl font-bold transition shadow-md">הפצה רוחבית</button>
+            </div>
+
+            <div class="doc-card border-2 border-slate-100 bg-white rounded-2xl p-4 flex items-center justify-between group">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center text-xl border border-slate-100 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition">📢</div>
+                    <div>
+                        <h4 class="font-bold text-slate-800 text-lg">עדכוני מטלות והודעות הנהלה</h4>
+                        <p class="text-xs text-slate-500">אישור קריאת הודעות מחייבות, עדכוני דרגות כלליים</p>
+                    </div>
+                </div>
+                <button onclick="sendDoc('עדכוני מטלות והודעות הנהלה', true)" class="bg-slate-800 hover:bg-slate-900 text-white px-6 py-2.5 rounded-xl font-bold transition shadow-md">הפצה רוחבית</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="toast-container"></div>
+<script>
+    function sendDoc(docName, isBroadcast) {
+        const msg = isBroadcast
+            ? '✅ "' + docName + '" הופץ בהצלחה לכל העובדים!'
+            : '✅ המסמך "' + docName + '" נשלח לעובד בSMS!';
+        showToast(msg, 'success');
+    }
+    function showToast(msg, type = '') {
+        const container = document.getElementById('toast-container');
+        const t = document.createElement('div');
+        t.className = 'toast ' + type;
+        t.textContent = msg;
+        container.appendChild(t);
+        setTimeout(() => t.classList.add('show'), 10);
+        setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 350); }, 3500);
+    }
+</script>
+</body>
+</html>

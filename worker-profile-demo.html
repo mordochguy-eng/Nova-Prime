@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מערכת ועד - כרטיס עובד (גרסה מעודכנת)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        html { font-size: 14px; } body { font-family: 'Heebo', sans-serif; background-color: #f3f4f6; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+    </style>
+</head>
+<body class="text-gray-800">
+
+<div class="min-h-screen flex">
+
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- Header -->
+        <header class="glass shadow-sm z-10 p-4 border-b border-gray-200 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-gray-800">כרטסת הלקוח (העובד)</h1>
+            <div class="flex space-x-3 space-x-reverse">
+                <button class="bg-indigo-600 hover:bg-indigo-700 text-white flex items-center gap-2 px-5 py-2 rounded-lg font-medium shadow-md transition transform hover:-translate-y-0.5">
+                    עדכן שינויים ידנית שנעשו
+                </button>
+            </div>
+        </header>
+
+        <!-- Content Profile -->
+        <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50/50 p-4 md:p-8">
+            <div class="max-w-5xl mx-auto">
+                
+                <!-- Profile Header With TAGS -->
+                <div class="bg-white rounded-3xl shadow-sm border border-gray-200 p-6 mb-8 flex flex-col md:flex-row items-center md:items-start gap-6 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-2 h-full bg-gradient-to-b from-indigo-400 to-indigo-600"></div>
+                    
+                    <div class="w-28 h-28 rounded-full bg-gray-200 border-4 border-white shadow-lg overflow-hidden shrink-0">
+                        <img src="https://i.pravatar.cc/150?img=11" alt="Profile" class="w-full h-full object-cover">
+                    </div>
+                    
+                    <div class="flex-1 text-center md:text-right mt-1 w-full">
+                        <div class="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-2">
+                            <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight">דוד כהן</h2>
+                            <span class="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full border border-green-200">סטטוס: פעיל</span>
+                        </div>
+                        <p class="text-gray-600 font-medium text-lg">סקטור: מנהלה | עובד שטח בעירייה / תברואה</p>
+                        
+                        <!-- NEW TAGS COMPONENT -->
+                        <div class="mt-4 flex flex-wrap items-center justify-center md:justify-start gap-2 bg-gray-50 p-3 rounded-xl border border-gray-100">
+                            <span class="text-sm font-bold text-gray-600 ml-2">תגיות עובד (ניתן לסינון):</span>
+                            
+                            <span class="bg-yellow-100 text-yellow-800 border border-yellow-300 text-[13px] px-3 py-1 font-bold rounded-lg flex items-center shadow-sm">
+                                ⏳ לקראת פנסיה (מעל גיל 60)
+                            </span>
+                            <span class="bg-blue-100 text-blue-800 border border-blue-300 text-[13px] px-3 py-1 font-bold rounded-lg flex items-center shadow-sm">
+                                🎒 ילדים בחינוך יסודי
+                            </span>
+                            <span class="bg-purple-100 text-purple-800 border border-purple-300 text-[13px] px-3 py-1 font-bold rounded-lg flex items-center shadow-sm">
+                                ✈️ נוסע קבוע - פרויקט וינה
+                            </span>
+                            
+                            <button class="bg-white hover:bg-gray-200 text-gray-500 border border-dashed border-gray-300 px-3 py-1 rounded-lg text-sm font-bold transition flex items-center gap-1">
+                                + הוסף תגית
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SEPARATED TABS Navigation -->
+                <div class="flex flex-wrap px-2 space-x-2 space-x-reverse border-b border-gray-200 mb-6 text-gray-500 overflow-x-auto">
+                    <button onclick="switchTab('details')" id="btn-details" class="tab-btn px-6 py-3 font-bold text-indigo-700 border-b-2 border-indigo-600 text-sm md:text-base flex items-center gap-2">
+                        <span>👤 הפרטים והמשפחה</span>
+                    </button>
+                    <!-- SEPARATED: Tourism and Welfare -->
+                    <button onclick="switchTab('welfare')" id="btn-welfare" class="tab-btn px-6 py-3 font-medium hover:text-indigo-600 transition text-sm md:text-base flex items-center gap-2">
+                        <span>🎁 רווחה ומתנות חג</span>
+                    </button>
+                    <button onclick="switchTab('tourism')" id="btn-tourism" class="tab-btn px-6 py-3 font-medium hover:text-indigo-600 transition text-sm md:text-base flex items-center gap-2">
+                        <span>✈️ תיירות ונופש (חברי)</span>
+                    </button>
+                    
+                    <button onclick="switchTab('documents')" id="btn-documents" class="tab-btn px-6 py-3 font-medium hover:text-indigo-600 transition text-sm md:text-base flex items-center gap-2">
+                        <span>📁 התיקייה האישית</span>
+                    </button>
+                    <button onclick="switchTab('log')" id="btn-log" class="tab-btn px-6 py-3 font-medium hover:text-indigo-600 transition text-sm md:text-base flex flex-col md:flex-row items-center justify-center gap-2">
+                        <span>לוג היסטוריה (Audit)</span>
+                    </button>
+                </div>
+
+                <!-- ======================== TAB: DETAILS & FAMILY ======================== -->
+                <div id="tab-details" class="tab-content active space-y-6">
+                    <!-- General Details (Shortened for demo) -->
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+                        <h3 class="text-xl font-bold mb-4 text-gray-800 border-b pb-3">פרטים אישיים בסיסיים</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                            <div><label class="block text-xs font-bold text-gray-500 mb-1">שם מלא</label><div class="font-medium text-lg">דוד כהן</div></div>
+                            <div><label class="block text-xs font-bold text-gray-500 mb-1">מין</label><div class="font-medium text-lg">זכר</div></div>
+                            <div><label class="block text-xs font-bold text-gray-500 mb-1">ת. לידה מידע עובד</label><div class="font-medium text-lg">15/08/1982 <span class="text-sm">(44)</span></div></div>
+                            <div><label class="block text-xs font-bold text-gray-500 mb-1">טלפון (מזוהה בוואטסאפ)</label><div class="font-medium text-lg text-indigo-600">050-1234567</div></div>
+                        </div>
+                    </div>
+
+                    <!-- NEW: FAMILY & CHILDREN MODULE -->
+                    <div class="bg-white overflow-hidden rounded-2xl shadow-sm border border-gray-200">
+                        <div class="p-6 border-b border-gray-100 bg-blue-50/30 flex justify-between items-center">
+                            <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                                <span class="bg-blue-100 p-2 rounded-lg">👨‍👩‍👧‍👦</span> מערך המשפחה וילדים מדווחים (לטובת רווחה)
+                            </h3>
+                            <button class="bg-white border border-blue-200 text-blue-700 font-bold px-4 py-1.5 rounded-lg text-sm hover:bg-blue-50 transition">+ חיתון / עדכן לידה</button>
+                        </div>
+                        <div class="overflow-x-auto p-4">
+                            <table class="w-full text-right border-collapse">
+                                <thead class="bg-gray-100 text-gray-600 text-xs tracking-wider uppercase font-bold">
+                                    <tr>
+                                        <th class="py-3 px-4 rounded-r-lg">שם הילד/ה ומשפחה</th>
+                                        <th class="py-3 px-4">מין</th>
+                                        <th class="py-3 px-4">תאריך לידה</th>
+                                        <th class="py-3 px-4">חישוב גיל נוכחי למערכת</th>
+                                        <th class="py-3 px-4 text-center rounded-l-lg">התראות המערכת לעובד זה</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100 text-gray-800">
+                                    <tr class="hover:bg-blue-50/50 transition">
+                                        <td class="py-4 px-4 font-extrabold text-base">אורי כהן</td>
+                                        <td class="py-4 px-4 font-medium text-gray-600">זכר</td>
+                                        <td class="py-4 px-4 font-mono font-bold text-gray-700">12/08/2020</td>
+                                        <td class="py-4 px-4 font-bold text-gray-700 text-lg">5.5 שנים</td>
+                                        <td class="py-4 px-4 text-center">
+                                            <span class="bg-orange-100 border border-orange-300 text-orange-800 text-xs px-3 py-1.5 font-black rounded-lg">
+                                                🚨 זכאי מענק - עולה לא' (אוגוסט הקרוב)
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-blue-50/50 transition">
+                                        <td class="py-4 px-4 font-extrabold text-base">נועה כהן</td>
+                                        <td class="py-4 px-4 font-medium text-gray-600">נקבה</td>
+                                        <td class="py-4 px-4 font-mono font-bold text-gray-700">01/01/2012</td>
+                                        <td class="py-4 px-4 font-bold text-gray-700 text-lg">14 שנים</td>
+                                        <td class="py-4 px-4 text-center text-gray-400 text-sm font-medium">ללא התראות אירוע קרובות</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ======================== TAB: WELFARE ======================== -->
+                <!-- Focusing entirely on gifts, grants and life events -->
+                <div id="tab-welfare" class="tab-content space-y-6">
+                    
+                    <div class="bg-gradient-to-bl from-green-50 to-white p-6 rounded-2xl shadow-sm border border-green-200">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-xl font-bold text-gray-900 border-b-2 border-green-300 pb-2 inline-block">🎁 ניהול מתנות חג וסקרים</h3>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-white p-6 rounded-2xl shadow border border-gray-100 flex flex-col">
+                                <span class="self-start px-3 py-1 bg-gray-100 text-gray-600 text-xs font-bold rounded-lg mb-2">פסח תשפ"ו (2026)</span>
+                                <p class="text-2xl font-black text-gray-900 mb-1">תווי שי לחג 500₪ (רמי לוי)</p>
+                                <p class="text-sm text-gray-500 font-medium pb-4 border-b">נבחר על ידי העובד דרך הטלפון הסלולרי</p>
+                                
+                                <div class="mt-4 bg-emerald-50 text-emerald-700 p-3 rounded-xl font-bold flex items-center justify-between border border-emerald-100">
+                                    <span class="flex items-center gap-2"><span class="text-xl">✓</span> העובד משך את המתנה</span>
+                                    <span class="text-xs text-emerald-600">ב: 24/03 14:10</span>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-gray-50 p-6 rounded-2xl border border-dashed border-gray-300 flex flex-col justify-center items-center text-center">
+                                <span class="text-3xl mb-2">🎈</span>
+                                <p class="font-bold text-gray-800">הטבת יום הולדת לחבר ועד</p>
+                                <p class="text-sm text-gray-500 mt-1">יוענק תלוש בסך 150₪ בחודש אוגוסט באופן אוטומטי בהוספה למשכורת.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Grants based on family -->
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-blue-200 border-r-4 border-r-blue-500">
+                        <h3 class="font-bold text-gray-800 text-lg mb-4">מענקים רשמיים (נקבע מפורמט המשפחה):</h3>
+                        <div class="flex items-center justify-between p-4 bg-blue-50/50 rounded-xl border border-blue-100">
+                            <div>
+                                <p class="font-bold text-lg text-blue-900">מענק בני/בנות מגיעים למצוות</p>
+                                <p class="text-sm text-gray-600">שולם היסטורית עבור הילדה: נועה כהן (בת מצווה ב-2024)</p>
+                            </div>
+                            <span class="bg-gray-200 text-gray-700 font-bold px-4 py-2 rounded-lg">טופל ושולם בעבר</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ======================== TAB: TOURISM & FLIGHTS ======================== -->
+                <div id="tab-tourism" class="tab-content space-y-6">
+                    <div class="bg-gradient-to-r from-purple-50 to-white p-6 rounded-2xl shadow-sm border border-purple-200">
+                        
+                        <div class="flex items-center gap-3 mb-6 border-b border-purple-200 pb-4">
+                            <span class="bg-purple-200 text-purple-700 p-2 rounded-xl text-xl">✈️</span>
+                            <h3 class="text-2xl font-bold text-purple-900">תיירות, נופש מאוגד וסריקת דרכונים</h3>
+                        </div>
+
+                        <!-- Passport Status Card -->
+                        <div class="bg-white p-6 rounded-2xl shadow-sm mb-6 flex flex-col md:flex-row justify-between items-center border border-gray-100 gap-6">
+                            
+                            <div class="flex items-center gap-6 w-full md:w-auto">
+                                <div class="bg-purple-100/50 p-4 rounded-2xl border border-purple-100 w-full md:w-auto">
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">תוקף הדרכון במערכת</label>
+                                    <div class="flex items-center gap-3">
+                                        <div class="font-black text-3xl text-gray-800">14/05/2026</div>
+                                        <div class="bg-red-100 text-red-600 px-3 py-1 rounded-lg text-xs font-bold animate-pulse">פג תוקף בקרוב!</div>
+                                    </div>
+                                    <p class="text-sm font-medium text-gray-500 mt-2">מספר דרכון מזוהה (OCR): 31828833</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex flex-col gap-3 w-full md:w-64">
+                                <button class="bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-xl font-bold shadow-md transition w-full">
+                                    שלח SMS לבקשת חידוש ותמונה
+                                </button>
+                                <button class="bg-white border-2 border-gray-200 hover:bg-gray-50 text-gray-700 py-3 rounded-xl font-bold w-full transition">
+                                    ראה העתק דרכון מצולם
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Upcoming Trips Section -->
+                        <div class="bg-white p-5 rounded-xl border border-gray-200">
+                            <h4 class="font-bold text-gray-800 mb-4 text-lg">הרשמות לנופשים קרובים</h4>
+                            <div class="flex flex-col md:flex-row justify-between items-center p-4 bg-gray-50 rounded-lg border border-gray-200">
+                                <div>
+                                    <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded font-bold mb-2 inline-block">ספטמבר 2026</span>
+                                    <h5 class="font-bold text-xl text-gray-900">השתלמות ועד בוינה, אוסטריה (4 לילות)</h5>
+                                    <p class="text-sm text-gray-600 mt-1">סטטוס חדר: אושר הרשמה (זוגי) - בן זוג רשום.</p>
+                                </div>
+                                <div class="mt-4 md:mt-0">
+                                    <span class="bg-yellow-100 border border-yellow-300 text-yellow-800 font-bold px-4 py-2 rounded-lg block text-center">
+                                        ממתין לעדכון דרכון מהעובד
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- TAB: DOCUMENTS -->
+                <div id="tab-documents" class="tab-content">
+                    <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100 text-center">
+                        <br><br><br>
+                        <h2 class="text-xl font-bold text-gray-400">המסמכים הופרדו לפה (טפסי הלוואות, תביעות) בהתאם לתכנון...</h2>
+                        <br><br><br>
+                    </div>
+                </div>
+
+                <!-- TAB: LOG (AUDIT TRAIL) -->
+                <div id="tab-log" class="tab-content">
+                    <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100">
+                         <div class="mb-4 border-b pb-4">
+                             <h3 class="text-xl font-bold text-gray-800">לוג פעולות מערכת והיסטוריית עדכונים (Audit Trail)</h3>
+                         </div>
+                         
+                         <div class="relative border-r-4 border-gray-100 pr-8 mt-6 pb-4">
+                            <div class="relative mt-8">
+                                <span class="absolute -right-[43px] top-1 w-6 h-6 bg-indigo-100 border-2 border-indigo-500 rounded-full"></span>
+                                <div class="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100">
+                                    <p class="text-xs font-bold text-indigo-500 mb-1">היום, 14/04/2026 | 10:15</p>
+                                    <p class="font-bold text-gray-800 text-lg">תיקון שנת לידה של הבן "אורי" (Self Updated)</p>
+                                    <p class="text-sm text-gray-600 mt-1">עודכן על ידי הלקוח דרך SMS משנת 2021 לשנת 2020. המערכת עדכנה לסטטוס "עולה לכיתה א'".</p>
+                                </div>
+                            </div>
+                         </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+function switchTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(el => {
+        el.classList.remove('text-indigo-700', 'border-b-2', 'border-indigo-600', 'font-bold');
+        el.classList.add('font-medium');
+    });
+    
+    document.getElementById('tab-' + tabId).classList.add('active');
+    
+    let btn = document.getElementById('btn-' + tabId);
+    btn.classList.remove('font-medium', 'hover:text-indigo-600');
+    btn.classList.add('text-indigo-700', 'border-b-2', 'border-indigo-600', 'font-bold');
+}
+</script>
+</body>
+</html>

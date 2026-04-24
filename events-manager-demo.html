@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מערכת ועד - תכנון קמפיינים ואירועים (Premium Version)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    <style>
+        html { font-size: 14px; } body { font-family: 'Heebo', sans-serif; background-color: #f1f5f9; }
+        .glass-panel { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); }
+        .gradient-bg { background: linear-gradient(135deg, #1e3a8a 0%, #312e81 100%); }
+    </style>
+</head>
+<body class="text-gray-800">
+
+<div class="min-h-screen flex">
+    
+
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden h-screen bg-slate-50">
+        
+        <header class="glass-panel shadow-sm z-10 p-5 px-8 flex justify-between items-center border-b border-slate-200">
+            <div>
+                <h1 class="text-2xl font-black text-slate-800">מרכז אירועים ותכנון קמפיינים לעובד</h1>
+                <p class="text-sm text-slate-500 mt-1 font-medium">בנייה שיווקית של פעילות, שליטת מכסות ושליחת סמסים (Marketing Automation)</p>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto w-full p-4 lg:p-8 flex flex-col space-y-12">
+            
+            <!-- ================= TOP SECTION: FULL WIDTH CREATION WIZARD ================= -->
+            <section id="new-campaign" class="max-w-7xl mx-auto w-full">
+                <!-- Outer Gradient Wrapper for WOW effect -->
+                <div class="rounded-[2.5rem] p-1.5 shadow-2xl gradient-bg relative overflow-hidden transform transition hover:scale-[1.002]">
+                    <!-- Inner Container -->
+                    <div class="bg-white rounded-[2.1rem] overflow-hidden">
+                        
+                        <!-- Header Banner -->
+                        <div class="bg-indigo-50/50 border-b border-indigo-100 p-6 px-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                            <div class="flex items-center gap-4">
+                                <div class="bg-white p-3 rounded-2xl shadow-sm text-2xl text-indigo-600">🚀</div>
+                                <div>
+                                    <h2 class="text-2xl font-black text-indigo-950">קמפיין אירוע חדש (Creator)</h2>
+                                    <p class="text-indigo-600 text-sm font-bold">הגדרת הפעילות ושיגור לינקים בזק</p>
+                                </div>
+                            </div>
+                            <!-- Switcher optional -->
+                            <div class="bg-white border-2 border-indigo-100 rounded-xl flex p-1 shadow-sm">
+                                <button class="px-5 py-2 rounded-lg bg-indigo-600 text-white font-bold text-sm shadow-sm">פעילות רגילה</button>
+                                <button class="px-5 py-2 rounded-lg text-slate-500 font-bold text-sm hover:text-indigo-700 hover:bg-slate-50">מתנה גורפת</button>
+                            </div>
+                        </div>
+
+                        <form class="p-8">
+                            <!-- 3 Column Layout for the form to utilize full width effectively -->
+                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                                
+                                <!-- COLUMN 1: Basic Info -->
+                                <div class="space-y-6">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <span class="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold">1</span>
+                                        <h3 class="text-lg font-black text-slate-900 border-b-2 border-indigo-100 pb-1 flex-1">פרטי פעילות ותוכן</h3>
+                                    </div>
+                                    <div class="space-y-4">
+                                        <div>
+                                            <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-1">שם האירוע נציג ללקוח</label>
+                                            <input type="text" placeholder="סרט VIP בסינמה סיטי" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition text-slate-800 font-bold">
+                                        </div>
+                                        <div class="flex gap-4">
+                                            <div class="w-1/2">
+                                                <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-1">קטגוריה</label>
+                                                <select class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 outline-none focus:border-indigo-500 font-bold text-slate-700">
+                                                    <option>ימי כיף בארץ</option>
+                                                    <option>תיירות ונופש בחו"ל</option>
+                                                    <option>השתלמויות ומוסדות</option>
+                                                </select>
+                                            </div>
+                                            <div class="w-1/2">
+                                                <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-1">תאריך יעד</label>
+                                                <input type="date" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 outline-none focus:border-indigo-500 font-bold text-slate-700">
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-1">מלל חופשי מארגן לוואטסאפ</label>
+                                            <textarea rows="3" placeholder="חברים יקרים! התארגנו על דיל מטורף לסופשבוע באילת. לפרטים ולהרשמה מטה:" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 outline-none focus:border-indigo-500 transition text-slate-700 font-medium"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- COLUMN 2: Logistics & Files -->
+                                <div class="space-y-6">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <span class="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold">2</span>
+                                        <h3 class="text-lg font-black text-slate-900 border-b-2 border-indigo-100 pb-1 flex-1">בירוקרטיה, תנאים ומסמכים</h3>
+                                    </div>
+                                    <div class="space-y-4">
+                                        
+                                        <!-- Unified Files Upload UI -->
+                                        <div class="bg-indigo-50 rounded-2xl p-4 border border-indigo-100 border-dashed space-y-3">
+                                            <button type="button" class="w-full bg-white shadow-sm border border-slate-200 text-slate-700 font-bold py-2.5 rounded-lg hover:border-indigo-400 hover:text-indigo-600 transition flex items-center justify-center gap-2">
+                                                <span class="text-lg">📎</span> העלה חוזה/הצעת מחיר (מוסתר כארכיון משרד)
+                                            </button>
+                                            <button type="button" class="w-full bg-white shadow-sm border border-slate-200 text-slate-700 font-bold py-2.5 rounded-lg hover:border-orange-400 hover:text-orange-600 transition flex items-center justify-center gap-2">
+                                                <span class="text-lg">🏞️</span> העלה תוכנייה גרפית לעובד (יופץ בלינק)
+                                            </button>
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-1">תנאי סף ביורוקרטיים (למשל: סיום ותק נדרש)</label>
+                                            <textarea rows="2" placeholder="תנאי סף הגבלה ביורוקרטיים... המיועדים לסנן הגשות סרק." class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 outline-none focus:border-indigo-500 text-sm text-slate-600 font-medium"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- COLUMN 3: Registartion routing & action -->
+                                <div class="space-y-6">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <span class="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold">3</span>
+                                        <h3 class="text-lg font-black text-slate-900 border-b-2 border-emerald-100 pb-1 flex-1">סלולר, הפצה לניתוב</h3>
+                                    </div>
+                                    
+                                    <div class="space-y-4">
+                                        <!-- Routing radio -->
+                                        <div class="bg-slate-50 rounded-2xl p-1 shadow-inner border border-slate-200">
+                                            <label class="flex flex-col p-3 rounded-xl cursor-pointer hover:bg-slate-100 transition relative">
+                                                <div class="flex items-center gap-3">
+                                                    <input type="radio" name="routing" class="w-5 h-5 text-indigo-600" checked>
+                                                    <span class="font-black text-slate-900 border-b border-indigo-600">רישום פנימי ב-CRM וקופה שלנו</span>
+                                                </div>
+                                                <div class="mt-2 pl-8 flex gap-2 w-full">
+                                                    <input type="number" placeholder="הזן מכסה (לדוג: 100 מקומות)" class="w-full text-sm font-bold bg-white border border-slate-300 rounded-lg p-2" dir="rtl">
+                                                </div>
+                                            </label>
+
+                                            <div class="h-px bg-slate-200 my-1 mx-3"></div>
+
+                                            <label class="flex flex-col p-3 rounded-xl cursor-pointer hover:bg-slate-100 transition relative">
+                                                <div class="flex items-center gap-3">
+                                                    <input type="radio" name="routing" class="w-5 h-5 text-slate-400">
+                                                    <span class="font-bold text-slate-700">לינק ספק חיצוני (Marketing Only)</span>
+                                                </div>
+                                                <div class="mt-2 pl-8">
+                                                    <input type="text" placeholder="הדבק URL של חברת התיירות..." class="w-full text-sm bg-white border border-slate-300 rounded-lg p-2 text-left" dir="ltr">
+                                                </div>
+                                            </label>
+                                        </div>
+
+                                        <!-- Target Audience Tagging Drop -->
+                                        <div class="pt-2">
+                                            <label class="block text-xs font-black text-indigo-700 uppercase tracking-widest mb-1.5 flex justify-between">
+                                                <span>בחר תגיות חיתוך הפצה</span>
+                                                <span class="bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded text-[10px]">נמצאו: 210 עובדים במאגר</span>
+                                            </label>
+                                            <div class="border-2 border-indigo-100 rounded-xl p-2.5 bg-indigo-50/50 flex flex-wrap gap-2">
+                                                <span class="bg-indigo-600 text-white px-3 py-1 rounded-lg text-xs font-bold leading-none flex items-center justify-center gap-1 shadow-sm h-7 cursor-pointer hover:bg-indigo-700 transition">
+                                                    מנהלה <span class="bg-white/20 rounded-full w-4 h-4 flex items-center justify-center font-normal ml-1">x</span>
+                                                </span>
+                                                <span class="bg-white border border-indigo-200 text-indigo-700 px-3 py-1 rounded-lg text-xs font-bold leading-none flex items-center justify-center gap-1 shadow-sm h-7 cursor-pointer hover:bg-indigo-100 transition">
+                                                    + תגית מעמד/וותק
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> <!-- END GRID -->
+
+                            <!-- BIG ACTION BUTTON FULL WIDTH -->
+                            <div class="mt-8 pt-6 border-t border-slate-100">
+                                <button type="button" onclick="launchCampaign()" class="w-full group bg-gradient-to-l from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-white font-black text-xl lg:text-2xl py-5 rounded-[1.5rem] shadow-[0_15px_40px_-5px_rgba(16,185,129,0.4)] transition transform hover:-translate-y-1 flex items-center justify-center gap-4 border-2 border-emerald-400">
+                                    <span class="text-3xl">📱</span>
+                                    <span>פתח אירוע ושגר Link נחיתה אישי ל-210 מוזמנים</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= BOTTOM SECTION: CHRONOLOGICAL EVENTS LIST ================= -->
+            <section id="events-list" class="max-w-7xl mx-auto w-full pt-8">
+                <div class="flex justify-between items-end border-b-2 border-slate-200 pb-4 mb-8">
+                    <div>
+                        <h2 class="text-3xl font-black text-slate-800">📋 רישום האירועים במערכת (Chronological View)</h2>
+                        <p class="text-slate-500 font-bold mt-1">ניהול קמפיינים שרצים באוויר, מעקב מכסות למטה ההנהלה</p>
+                    </div>
+                    
+                    <!-- Sorting & Search -->
+                    <div class="flex gap-4">
+                        <input type="text" placeholder="חיפוש אירוע..." class="px-4 py-2 rounded-xl border-2 border-slate-200 focus:border-indigo-400 outline-none font-bold text-slate-700">
+                        <select class="px-4 py-2 rounded-xl border-2 border-slate-200 text-slate-700 font-bold bg-white outline-none">
+                            <option>הכי חדשים (כרונולוגי)</option>
+                            <option>לפי תפוסה מלאה</option>
+                            <option>ארכיון (אירועים ישנים)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Events List Container -->
+                <div class="flex flex-col gap-6">
+
+                    <!-- Event Horizontal Card 1 -->
+                    <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 hover:shadow-lg transition group flex flex-col md:flex-row gap-8 relative overflow-hidden">
+                        <!-- Left colored strip -->
+                        <div class="absolute right-0 top-0 w-2 h-full bg-blue-500"></div>
+                        
+                        <!-- Visual/Date Element -->
+                        <div class="flex flex-col items-center justify-center bg-blue-50 rounded-2xl w-28 h-28 border border-blue-100 shrink-0">
+                            <span class="font-black text-3xl text-blue-800">12</span>
+                            <span class="font-bold text-blue-600 uppercase">JUN</span>
+                            <span class="bg-blue-600 text-white text-[10px] px-2 py-0.5 rounded-full mt-2 font-black">2026</span>
+                        </div>
+
+                        <!-- Info -->
+                        <div class="flex-1 flex flex-col justify-center">
+                            <div class="flex items-center gap-3">
+                                <span class="bg-slate-100 text-slate-600 text-[10px] px-2 py-0.5 font-black uppercase tracking-wider rounded">נופש קבוצתי</span>
+                                <span class="bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 font-bold uppercase tracking-wider rounded border border-emerald-200 flex items-center gap-1">
+                                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> הרשמה באוויר
+                                </span>
+                            </div>
+                            <h3 class="text-2xl font-black text-slate-900 mt-2 border-b border-transparent group-hover:border-indigo-500 transition inline-block">סוף שבוע באילת למחלקת מנהלה (מלון דן)</h3>
+                            <p class="text-slate-500 mt-1 font-medium text-sm">נשלח בוואטסאפ לחתך מנהלה ב-10/06/2026. הגבלת זמן לרישום אקטיבית עד לסוף השבוע.</p>
+                        </div>
+
+                        <!-- Stats and action -->
+                        <div class="flex flex-col justify-center items-end w-48 shrink-0">
+                            <div class="w-full text-left mb-2">
+                                <p class="text-[12px] font-black text-slate-500 uppercase tracking-widest text-right">מכסה פנימית קופה</p>
+                                <p class="text-xl font-black text-blue-700 text-right">45 <span class="text-sm text-slate-400">/ 50 מושבים</span></p>
+                            </div>
+                            <!-- Bar -->
+                            <div class="w-full bg-slate-100 rounded-full h-2.5 mb-4 hidden md:block border border-slate-200">
+                                <div class="bg-blue-600 h-2.5 rounded-full" style="width: 90%;"></div>
+                            </div>
+                            
+                            <button class="bg-white border-2 border-slate-200 hover:border-indigo-400 hover:text-indigo-700 text-slate-700 w-full py-2.5 rounded-xl font-bold transition shadow-sm text-sm">
+                                שלח הודעה לפנויים
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Event Horizontal Card 2 -->
+                    <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 opacity-90 transition group flex flex-col md:flex-row gap-8 relative overflow-hidden">
+                        <div class="absolute right-0 top-0 w-2 h-full bg-orange-400"></div>
+                        
+                        <div class="flex flex-col items-center justify-center bg-orange-50 rounded-2xl w-28 h-28 border border-orange-100 shrink-0">
+                            <span class="font-black text-3xl text-orange-800">22</span>
+                            <span class="font-bold text-orange-600 uppercase">MAY</span>
+                            <span class="bg-orange-600 text-white text-[10px] px-2 py-0.5 rounded-full mt-2 font-black">2026</span>
+                        </div>
+
+                        <div class="flex-1 flex flex-col justify-center">
+                            <div class="flex items-center gap-3">
+                                <span class="bg-slate-100 text-slate-600 text-[10px] px-2 py-0.5 font-black uppercase tracking-wider rounded">רישום סמוי ספק חיצוני</span>
+                                <span class="bg-orange-100 text-orange-800 text-[10px] px-2 py-0.5 font-bold uppercase tracking-wider rounded border border-orange-200 flex items-center gap-1">
+                                    שיווק הוקפא (הסתיים מלא)
+                                </span>
+                            </div>
+                            <h3 class="text-2xl font-black text-slate-900 mt-2 inline-block">סמינר מנהלים בוינה, אוסטריה - השתלמות חוץ</h3>
+                            <p class="text-slate-500 mt-1 font-medium text-sm">שיווק דרך לינק חיצוני של "אשת טורס תיירות". קמפיין השיווק נשלח בהצלחה.</p>
+                        </div>
+
+                        <div class="flex flex-col justify-center items-end w-48 shrink-0">
+                            <div class="w-full bg-indigo-50 border border-indigo-100 p-3 rounded-xl">
+                                <p class="text-[10px] font-black text-indigo-500 uppercase tracking-widest text-center mb-1">CTR מטריקה חיצונית</p>
+                                <p class="text-xl font-black text-indigo-900 text-center">320 <span class="text-xs">כניסות ללינק</span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Event Horizontal Card 3 (Archive) -->
+                    <div class="bg-slate-50 rounded-2xl p-6 md:p-8 border border-slate-200 opacity-60 flex flex-col md:flex-row gap-8 relative overflow-hidden grayscale-[30%]">
+                        <div class="absolute right-0 top-0 w-2 h-full bg-slate-400"></div>
+                        
+                        <div class="flex flex-col items-center justify-center bg-slate-200 rounded-2xl w-28 h-28 border border-slate-300 shrink-0">
+                            <span class="font-black text-3xl text-slate-600">01</span>
+                            <span class="font-bold text-slate-500 uppercase">APR</span>
+                            <span class="bg-slate-500 text-white text-[10px] px-2 py-0.5 rounded-full mt-2 font-black">2026</span>
+                        </div>
+
+                        <div class="flex-1 flex flex-col justify-center">
+                            <div class="flex items-center gap-3">
+                                <span class="bg-slate-200 text-slate-600 text-[10px] px-2 py-0.5 font-black uppercase tracking-wider rounded">רווחה פנים ועד</span>
+                                <span class="bg-slate-200 text-slate-600 text-[10px] px-2 py-0.5 font-bold uppercase tracking-wider rounded border border-slate-300">
+                                    הסתיים וארכיון
+                                </span>
+                            </div>
+                            <h3 class="text-2xl font-black text-slate-700 mt-2 line-through decoration-slate-300">חלוקת תווי קנייה לפסח (שופרסל) במשרד</h3>
+                            <p class="text-slate-500 mt-1 font-medium text-sm">האירוע הסתיים וננעל במערכת באופן אוטומטי.</p>
+                        </div>
+                        
+                         <div class="flex flex-col justify-center items-end w-48 shrink-0 relative">
+                             <div class="absolute inset-0 flex items-center justify-center">
+                                 <span class="rotate-[-10deg] border-4 border-red-500 text-red-500 text-xl font-black px-4 py-1 rounded inline-block opacity-80">ARCHIVED</span>
+                             </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </section>
+        </main>
+    </div>
+</div>
+
+<div id="toast-container" style="position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:0.5rem;align-items:center;pointer-events:none;"></div>
+<script>
+function launchCampaign() {
+    const nameInput = document.querySelector('input[placeholder="סרט VIP בסינמה סיטי"]');
+    const eventName = nameInput && nameInput.value.trim() ? nameInput.value.trim() : 'האירוע';
+    showToast('🚀 "' + eventName + '" נפתח ו-210 הזמנות SMS יצאו בהצלחה!', 'success');
+}
+function showToast(msg, type='') {
+    const container = document.getElementById('toast-container');
+    const t = document.createElement('div');
+    t.style.cssText = 'background:#1e293b;color:white;padding:0.75rem 1.5rem;border-radius:9999px;font-size:0.9rem;opacity:0;transform:translateY(10px);transition:all 0.3s ease;box-shadow:0 4px 20px rgba(0,0,0,0.2);font-family:Heebo,sans-serif;pointer-events:auto;';
+    if (type === 'success') t.style.borderLeft = '4px solid #10b981';
+    t.textContent = msg;
+    container.appendChild(t);
+    setTimeout(() => { t.style.opacity='1'; t.style.transform='translateY(0)'; }, 10);
+    setTimeout(() => { t.style.opacity='0'; setTimeout(() => t.remove(), 350); }, 4000);
+}
+</script>
+</body>
+</html>

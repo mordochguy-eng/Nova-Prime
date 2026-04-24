@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מערכת ועד - דרישת העלאת מסמכים</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    <style>
+        html { font-size: 14px; } body { font-family: 'Heebo', sans-serif; background-color: #f8fafc; }
+        .doc-card { transition: all 0.2s ease; cursor: pointer; }
+        .doc-card:hover { transform: translateY(-3px); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); border-color: #10b981; }
+        /* Toast */
+        #toast-container { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 0.5rem; align-items: center; pointer-events: none; }
+        .toast { background: #1e293b; color: white; padding: 0.75rem 1.5rem; border-radius: 9999px; font-size: 0.9rem; opacity: 0; transform: translateY(10px); transition: all 0.3s ease; pointer-events: auto; box-shadow: 0 4px 20px rgba(0,0,0,0.2); font-family: 'Heebo', sans-serif; }
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast.success { border-left: 4px solid #10b981; }
+        /* Modal */
+        #confirm-overlay { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.5); z-index: 1000; backdrop-filter: blur(2px); align-items: center; justify-content: center; }
+        #confirm-overlay.open { display: flex; }
+        #confirm-box { background: white; border-radius: 1.5rem; padding: 2rem; width: 90%; max-width: 440px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); animation: slideUp 0.3s ease; font-family: 'Heebo', sans-serif; }
+        @keyframes slideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    </style>
+</head>
+<body class="text-slate-800">
+
+<div class="min-h-screen flex flex-col p-6 md:p-8 max-w-5xl mx-auto w-full">
+    
+    <header class="mb-8">
+        <h1 class="text-3xl font-black text-slate-900 flex items-center gap-3">
+            <span class="text-emerald-600">📸</span> דרישת העלאת מסמכים
+        </h1>
+        <p class="text-slate-500 font-medium mt-2 text-lg">בקשות שמופצות לעובד לאיסוף ושאיבה מלאטומטית לתיק האישי.</p>
+    </header>
+
+    <div class="bg-white rounded-3xl border border-slate-200 shadow-sm flex flex-col overflow-hidden relative">
+        <div class="absolute top-0 right-0 w-1.5 h-full bg-emerald-500"></div>
+        <div class="p-6 border-b border-slate-100 bg-emerald-50/30">
+            <div class="flex items-center gap-3 mb-1">
+                <span class="bg-emerald-100 text-emerald-700 p-2 rounded-xl text-xl">📥</span>
+                <h2 class="text-2xl font-black text-emerald-950">מודול דרישת מסמכים</h2>
+            </div>
+            <p class="text-sm text-slate-500 font-medium">המערכת מאפשרת לעובדים להעלות ישירות מהנייד צילומים או PDF של האישורים הבאים.</p>
+        </div>
+        
+        <div class="p-6 overflow-y-auto flex-1 space-y-4">
+            
+            <h3 class="font-bold text-slate-400 text-sm tracking-widest uppercase mt-2 mb-3">תבניות סיכום ורפואה</h3>
+            
+            <div class="doc-card border-2 border-slate-100 bg-white rounded-2xl p-4 flex items-center justify-between group">
+                <div class="flex flex-col">
+                    <div class="flex items-center gap-3">
+                        <h4 class="font-bold text-slate-800 text-lg">דרישת אישורי מחלה / סיכום מחלה</h4>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-1">שליחת קישור המאפשר העלאה מהירה של סיכום רפואי</p>
+                </div>
+                <button onclick="askForDoc('אישור מחלה / סיכום רפואי')" class="bg-white border border-emerald-200 text-emerald-600 hover:bg-emerald-600 hover:text-white px-6 py-2.5 rounded-xl font-bold transition shadow-sm">דרוש מועבד</button>
+            </div>
+
+            <h3 class="font-bold text-slate-400 text-sm tracking-widest uppercase mt-8 mb-3 pt-6 border-t border-slate-100">לימודים והכשרות מקצועיות</h3>
+
+            <div class="doc-card border-2 border-slate-100 bg-white rounded-2xl p-4 flex items-center justify-between group">
+                <div class="flex flex-col">
+                    <div class="flex items-center gap-3">
+                        <h4 class="font-bold text-slate-800 text-lg">בקשה להעלאת תעודות והסמכות</h4>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-1">לאימות גמול השתלמות, תארים או קידומי שכר של עובד</p>
+                </div>
+                <button onclick="askForDoc('תעודות והסמכות מקצועיות')" class="bg-white border border-emerald-200 text-emerald-600 hover:bg-emerald-600 hover:text-white px-6 py-2.5 rounded-xl font-bold transition shadow-sm">דרוש מהעובד</button>
+            </div>
+
+            <div class="doc-card border-2 border-slate-100 bg-white rounded-2xl p-4 flex items-center justify-between group">
+                <div class="flex flex-col">
+                    <div class="flex items-center gap-3">
+                        <h4 class="font-bold text-slate-800 text-lg">צילום דרכון ותעודת זהות בתוקף</h4>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-1">שיוך אוטומטי לתיק העובד לקראת נסיעות או טיולים</p>
+                </div>
+                <button onclick="askForDoc('צילום דרכון ותעודת זהות')" class="bg-white border border-emerald-200 text-emerald-600 hover:bg-emerald-600 hover:text-white px-6 py-2.5 rounded-xl font-bold transition shadow-sm">דרוש מועבד</button>
+            </div>
+            
+            <!-- Status Box / Queue -->
+            <div class="mt-8 bg-slate-800 rounded-3xl p-6 text-white flex justify-between items-center shadow-xl transform transition hover:scale-[1.01] border-2 border-slate-700">
+                <div class="flex items-center gap-4">
+                    <div class="bg-red-500 w-12 h-12 rounded-xl flex items-center justify-center font-black text-2xl shadow-lg ring-4 ring-red-500/30">14</div>
+                    <div>
+                        <h4 class="font-bold text-xl mb-1 mt-1">מסמכים ממתינים לאישור הוועד</h4>
+                        <p class="text-sm text-slate-300">תעודות שהעלו עובדים ומחכות לבקרת איכות לפני כניסה לתיק האישי.</p>
+                    </div>
+                </div>
+                <button class="bg-emerald-500 hover:bg-emerald-400 text-white font-black px-6 py-3 rounded-xl transition shadow-lg text-lg">עבור לבקרת אישורים</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toast-container"></div>
+
+<!-- Confirm Modal -->
+<div id="confirm-overlay" onclick="closeConfirm(event)">
+    <div id="confirm-box">
+        <div class="text-4xl mb-3">📤</div>
+        <h2 class="text-xl font-black text-slate-800 mb-2">שליחת דרישת מסמך</h2>
+        <p class="text-slate-600 mb-1">תשלח בקשה לעובד <strong>דוד כהן</strong> להעלות:</p>
+        <p id="confirm-doc-type" class="font-black text-emerald-700 text-lg mb-6"></p>
+        <p class="text-xs text-slate-400 mb-4">העובד יקבל SMS עם קישור ייעודי להעלאה ישירה מהנייד.</p>
+        <div class="flex gap-3">
+            <button onclick="confirmSend()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-black py-2.5 rounded-xl transition">אשר ושלח SMS 📱</button>
+            <button onclick="closeConfirm()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2.5 rounded-xl transition">ביטול</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let pendingDoc = '';
+    function askForDoc(docType) {
+        pendingDoc = docType;
+        document.getElementById('confirm-doc-type').textContent = docType;
+        document.getElementById('confirm-overlay').classList.add('open');
+    }
+    function closeConfirm(e) {
+        if (!e || e.target === document.getElementById('confirm-overlay')) {
+            document.getElementById('confirm-overlay').classList.remove('open');
+        }
+    }
+    function confirmSend() {
+        document.getElementById('confirm-overlay').classList.remove('open');
+        showToast('✅ הבקשה נשלחה בהצלחה בSMS לעובד!', 'success');
+    }
+    function showToast(msg, type = '') {
+        const container = document.getElementById('toast-container');
+        const t = document.createElement('div');
+        t.className = 'toast ' + type;
+        t.textContent = msg;
+        container.appendChild(t);
+        setTimeout(() => t.classList.add('show'), 10);
+        setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 350); }, 3500);
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeConfirm(); });
+</script>
+</body>
+</html>
