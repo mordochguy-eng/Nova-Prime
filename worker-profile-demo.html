@@ -18,63 +18,104 @@
 
 <div class="min-h-screen flex">
 
-
     <!-- Main Content -->
     <div class="flex-1 flex flex-col overflow-hidden">
         <!-- Header -->
-        <header class="glass shadow-sm z-10 p-4 border-b border-gray-200 flex justify-between items-center">
-            <h1 class="text-2xl font-bold text-gray-800">כרטסת הלקוח (העובד)</h1>
+        <header class="glass shadow-sm z-10 p-4 border-b border-gray-200 flex flex-col md:flex-row justify-between items-center gap-4">
+            <h1 class="text-2xl font-bold text-gray-800 flex items-center gap-3">
+                <button onclick="goBack()" class="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition border border-gray-200 text-gray-500 bg-white">❮</button>
+                כרטסת הלקוח (העובד)
+            </h1>
             <div class="flex space-x-3 space-x-reverse">
-                <button class="bg-indigo-600 hover:bg-indigo-700 text-white flex items-center gap-2 px-5 py-2 rounded-lg font-medium shadow-md transition transform hover:-translate-y-0.5">
-                    עדכן שינויים ידנית שנעשו
+                <button onclick="saveProfile()" class="bg-indigo-600 hover:bg-indigo-700 text-white flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold shadow-md transition transform hover:-translate-y-0.5">
+                    שמור שינויים בכרטסת
                 </button>
             </div>
         </header>
 
         <!-- Content Profile -->
         <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50/50 p-4 md:p-8">
-            <div class="max-w-5xl mx-auto">
+            <div class="max-w-6xl mx-auto" id="profile-container">
                 
-                <!-- Profile Header With TAGS -->
+                <!-- Profile Header - Organization ID -->
                 <div class="bg-white rounded-3xl shadow-sm border border-gray-200 p-6 mb-8 flex flex-col md:flex-row items-center md:items-start gap-6 relative overflow-hidden">
                     <div class="absolute top-0 right-0 w-2 h-full bg-gradient-to-b from-indigo-400 to-indigo-600"></div>
                     
-                    <div class="w-28 h-28 rounded-full bg-gray-200 border-4 border-white shadow-lg overflow-hidden shrink-0">
-                        <img src="https://i.pravatar.cc/150?img=11" alt="Profile" class="w-full h-full object-cover">
+                    <div id="profile-avatar" class="w-28 h-28 rounded-full bg-gray-200 border-4 border-white shadow-lg overflow-hidden shrink-0 flex items-center justify-center font-black text-4xl text-gray-400">
+                        <!-- image or initials injected here -->
                     </div>
                     
-                    <div class="flex-1 text-center md:text-right mt-1 w-full">
-                        <div class="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-2">
-                            <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight">דוד כהן</h2>
-                            <span class="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full border border-green-200">סטטוס: פעיל</span>
+                    <div class="flex-1 mt-1 w-full">
+                        <div class="flex flex-col md:flex-row items-center md:justify-between gap-4 mb-4 border-b border-gray-100 pb-4">
+                            <div class="flex flex-wrap items-center justify-center md:justify-start gap-3">
+                                <h2 id="profile-name" class="text-3xl font-extrabold text-gray-900 tracking-tight text-center md:text-right">...</h2>
+                                <select id="profile-status" class="px-4 py-1.5 bg-green-100 text-green-800 text-sm font-bold rounded-full border border-green-200 outline-none focus:ring-2 focus:ring-green-400 cursor-pointer transition shadow-sm text-center">
+                                    <option value="עובדים">סטטוס: עובדים</option>
+                                    <option value="בכירים">סטטוס: בכירים</option>
+                                    <option value="פנסיונרים">סטטוס: פנסיונרים</option>
+                                    <option value="שארים">סטטוס: שארים</option>
+                                    <option value="עזב">סטטוס: עזב</option>
+                                    <option value="אחר">סטטוס: אחר</option>
+                                </select>
+                            </div>
+                            <div class="text-gray-400 text-sm font-mono tracking-widest" id="profile-id-display">ID: 000000000</div>
                         </div>
-                        <p class="text-gray-600 font-medium text-lg">סקטור: מנהלה | עובד שטח בעירייה / תברואה</p>
                         
-                        <!-- NEW TAGS COMPONENT -->
-                        <div class="mt-4 flex flex-wrap items-center justify-center md:justify-start gap-2 bg-gray-50 p-3 rounded-xl border border-gray-100">
-                            <span class="text-sm font-bold text-gray-600 ml-2">תגיות עובד (ניתן לסינון):</span>
+                        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-5 bg-slate-50/50 p-4 rounded-2xl border border-slate-100">
+                            <div class="col-span-1 md:col-span-1 lg:col-span-1">
+                                <label class="block text-base font-black text-gray-800 mb-1">תפקיד / מחלקה</label>
+                                <input type="text" id="profile-dept" class="w-full bg-transparent outline-none border-b-2 border-transparent hover:border-dashed hover:border-gray-300 focus:border-indigo-500 focus:border-solid pb-1 transition placeholder-gray-300 text-sm font-medium text-gray-600" placeholder="למשל: תברואה">
+                            </div>
+                            <div>
+                                <label class="block text-base font-black text-gray-800 mb-1">תאריך תחילת עבודה</label>
+                                <input type="date" id="profile-start-date" class="w-full bg-transparent outline-none border-b-2 border-transparent hover:border-dashed hover:border-gray-300 focus:border-indigo-500 focus:border-solid pb-1 transition text-sm font-medium text-gray-600">
+                            </div>
+                            <div>
+                                <label class="block text-base font-black text-gray-800 mb-1">אחוז משרה</label>
+                                <div class="flex items-center gap-1 group">
+                                    <input type="number" id="profile-fte" class="w-16 bg-transparent outline-none border-b-2 border-transparent hover:border-dashed hover:border-gray-300 focus:border-indigo-500 focus:border-solid pb-1 transition text-left text-sm font-medium text-gray-600" value="100" min="0" max="100"> 
+                                    <span class="font-bold text-gray-500 group-hover:text-gray-800 transition">%</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-base font-black text-gray-800 mb-1">שיוך לעמותה</label>
+                                <select id="profile-association" class="w-full bg-transparent outline-none border-b-2 border-transparent hover:border-dashed hover:border-gray-300 focus:border-indigo-500 focus:border-solid pb-1 cursor-pointer transition text-sm font-medium text-gray-600">
+                                    <option value="">-- בחר עמותה --</option>
+                                    <option value="שחר און">שחר און</option>
+                                    <option value="מחר">מח"ר</option>
+                                    <option value="אחר">אחר</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-base font-black text-gray-800 mb-1">סקטור (קבוצה)</label>
+                                <select id="profile-sector" class="w-full bg-transparent outline-none border-b-2 border-transparent hover:border-dashed hover:border-gray-300 focus:border-indigo-500 focus:border-solid pb-1 cursor-pointer transition text-sm font-medium text-gray-600">
+                                    <option value="מנהלה">מנהלה</option>
+                                    <option value="חינוך">חינוך</option>
+                                    <option value="">ריק (ללא סקטור)</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Tags Section -->
+                        <div class="mt-4 flex flex-wrap items-center justify-center md:justify-start gap-2 bg-gray-50/80 p-3 rounded-xl border border-gray-100 shadow-sm">
+                            <span class="text-base font-black text-gray-800 ml-2">תגיות עובד (לסינון):</span>
                             
-                            <span class="bg-yellow-100 text-yellow-800 border border-yellow-300 text-[13px] px-3 py-1 font-bold rounded-lg flex items-center shadow-sm">
-                                ⏳ לקראת פנסיה (מעל גיל 60)
-                            </span>
-                            <span class="bg-blue-100 text-blue-800 border border-blue-300 text-[13px] px-3 py-1 font-bold rounded-lg flex items-center shadow-sm">
-                                🎒 ילדים בחינוך יסודי
-                            </span>
-                            <span class="bg-purple-100 text-purple-800 border border-purple-300 text-[13px] px-3 py-1 font-bold rounded-lg flex items-center shadow-sm">
-                                ✈️ נוסע קבוע - פרויקט וינה
-                            </span>
+                            <div id="profile-tags-container" class="flex flex-wrap gap-2 items-center">
+                                <!-- Tags will be injected here via JS -->
+                            </div>
                             
-                            <button class="bg-white hover:bg-gray-200 text-gray-500 border border-dashed border-gray-300 px-3 py-1 rounded-lg text-sm font-bold transition flex items-center gap-1">
+                            <button onclick="promptNewTag()" class="bg-white hover:bg-gray-100 text-indigo-600 border border-dashed border-indigo-300 hover:border-indigo-500 px-3 py-1 rounded-lg text-sm font-bold transition flex items-center gap-1 shadow-sm mr-auto">
                                 + הוסף תגית
                             </button>
                         </div>
+
                     </div>
                 </div>
 
                 <!-- SEPARATED TABS Navigation -->
-                <div class="flex flex-wrap px-2 space-x-2 space-x-reverse border-b border-gray-200 mb-6 text-gray-500 overflow-x-auto">
+                <div class="flex flex-wrap px-2 space-x-2 space-x-reverse border-b border-gray-200 mb-6 text-gray-500 overflow-x-auto bg-white/50 rounded-t-xl pt-2">
                     <button onclick="switchTab('details')" id="btn-details" class="tab-btn px-6 py-3 font-bold text-indigo-700 border-b-2 border-indigo-600 text-sm md:text-base flex items-center gap-2">
-                        <span>👤 הפרטים והמשפחה</span>
+                        <span>👤 פרטים אישיים ומשפחה</span>
                     </button>
                     <!-- SEPARATED: Tourism and Welfare -->
                     <button onclick="switchTab('welfare')" id="btn-welfare" class="tab-btn px-6 py-3 font-medium hover:text-indigo-600 transition text-sm md:text-base flex items-center gap-2">
@@ -88,188 +129,169 @@
                         <span>📁 התיקייה האישית</span>
                     </button>
                     <button onclick="switchTab('log')" id="btn-log" class="tab-btn px-6 py-3 font-medium hover:text-indigo-600 transition text-sm md:text-base flex flex-col md:flex-row items-center justify-center gap-2">
-                        <span>לוג היסטוריה (Audit)</span>
+                        <span>לוג פעולות (Audit)</span>
                     </button>
                 </div>
 
                 <!-- ======================== TAB: DETAILS & FAMILY ======================== -->
                 <div id="tab-details" class="tab-content active space-y-6">
-                    <!-- General Details (Shortened for demo) -->
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
-                        <h3 class="text-xl font-bold mb-4 text-gray-800 border-b pb-3">פרטים אישיים בסיסיים</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                            <div><label class="block text-xs font-bold text-gray-500 mb-1">שם מלא</label><div class="font-medium text-lg">דוד כהן</div></div>
-                            <div><label class="block text-xs font-bold text-gray-500 mb-1">מין</label><div class="font-medium text-lg">זכר</div></div>
-                            <div><label class="block text-xs font-bold text-gray-500 mb-1">ת. לידה מידע עובד</label><div class="font-medium text-lg">15/08/1982 <span class="text-sm">(44)</span></div></div>
-                            <div><label class="block text-xs font-bold text-gray-500 mb-1">טלפון (מזוהה בוואטסאפ)</label><div class="font-medium text-lg text-indigo-600">050-1234567</div></div>
+                    
+                    <!-- 1. Personal & Contact -->
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-200">
+                        <div class="flex justify-between items-center border-b border-gray-100 pb-4 mb-5">
+                            <h3 class="text-xl font-bold text-gray-800 flex items-center gap-3">
+                                <span class="bg-indigo-50 text-indigo-600 w-10 h-10 rounded-xl flex justify-center items-center text-xl">👤</span> 
+                                פרטים אישיים ויצירת קשר
+                            </h3>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-6">
+                            <div>
+                                <label class="block text-base font-black text-gray-800 mb-1">תעודת זהות</label>
+                                <input type="text" id="pd-id" class="w-full outline-none border-b-2 border-gray-100 pb-2 bg-gray-50 px-2 rounded-t cursor-not-allowed tracking-widest font-mono text-sm font-medium text-gray-600" readonly disabled>
+                            </div>
+                            <div>
+                                <label class="block text-base font-black text-gray-800 mb-1">שם פרטי</label>
+                                <input type="text" id="pd-first" class="w-full outline-none border-b-2 border-gray-200 focus:border-indigo-500 pb-2 transition placeholder-gray-300 text-sm font-medium text-gray-600">
+                            </div>
+                            <div>
+                                <label class="block text-base font-black text-gray-800 mb-1">שם משפחה</label>
+                                <input type="text" id="pd-last" class="w-full outline-none border-b-2 border-gray-200 focus:border-indigo-500 pb-2 transition placeholder-gray-300 text-sm font-medium text-gray-600">
+                            </div>
+                            <div>
+                                <label class="block text-base font-black text-gray-800 mb-1">מין</label>
+                                <select id="pd-gender" class="w-full outline-none border-b-2 border-gray-200 focus:border-indigo-500 pb-2 bg-white cursor-pointer transition text-sm font-medium text-gray-600">
+                                    <option value="">-- בחר --</option>
+                                    <option value="זכר">זכר</option>
+                                    <option value="נקבה">נקבה</option>
+                                    <option value="אחר">אחר</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-base font-black text-gray-800 mb-1">תאריך לידה</label>
+                                <div class="flex gap-2">
+                                    <input type="date" id="pd-dob" class="flex-1 outline-none border-b-2 border-gray-200 focus:border-indigo-500 pb-2 transition text-sm font-medium text-gray-600">
+                                    <span id="pd-age" class="text-sm font-bold text-gray-400 self-end mb-2 hidden">(גיל: --)</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-base font-black text-gray-800 mb-1">טלפון סלולרי</label>
+                                <input type="tel" id="pd-cell" class="w-full outline-none border-b-2 border-gray-200 focus:border-indigo-500 pb-2 transition font-mono tracking-wider text-sm font-medium text-gray-600" dir="ltr" placeholder="05X-XXXXXXX">
+                            </div>
+                            <div>
+                                <label class="block text-base font-black text-gray-800 mb-1">טלפון בבית</label>
+                                <input type="tel" id="pd-home" class="w-full outline-none border-b-2 border-gray-200 focus:border-indigo-500 pb-2 transition font-mono tracking-wider text-sm font-medium text-gray-600" dir="ltr" placeholder="0X-XXXXXXX">
+                            </div>
+                            <div>
+                                <label class="block text-base font-black text-gray-800 mb-1">דואר אלקטרוני</label>
+                                <input type="email" id="pd-email" class="w-full outline-none border-b-2 border-gray-200 focus:border-indigo-500 pb-2 transition text-sm font-medium text-gray-600" dir="ltr" placeholder="email@example.com">
+                            </div>
                         </div>
                     </div>
 
-                    <!-- NEW: FAMILY & CHILDREN MODULE -->
-                    <div class="bg-white overflow-hidden rounded-2xl shadow-sm border border-gray-200">
-                        <div class="p-6 border-b border-gray-100 bg-blue-50/30 flex justify-between items-center">
-                            <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2">
-                                <span class="bg-blue-100 p-2 rounded-lg">👨‍👩‍👧‍👦</span> מערך המשפחה וילדים מדווחים (לטובת רווחה)
+                    <!-- 2. Address -->
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-200">
+                        <div class="flex justify-between items-center border-b border-gray-100 pb-4 mb-5">
+                            <h3 class="text-xl font-bold text-gray-800 flex items-center gap-3">
+                                <span class="bg-blue-50 text-blue-600 w-10 h-10 rounded-xl flex justify-center items-center text-xl">🏠</span> 
+                                כתובת מגורים
                             </h3>
-                            <button class="bg-white border border-blue-200 text-blue-700 font-bold px-4 py-1.5 rounded-lg text-sm hover:bg-blue-50 transition">+ חיתון / עדכן לידה</button>
                         </div>
-                        <div class="overflow-x-auto p-4">
-                            <table class="w-full text-right border-collapse">
-                                <thead class="bg-gray-100 text-gray-600 text-xs tracking-wider uppercase font-bold">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-x-8 gap-y-6">
+                            <div class="lg:col-span-2">
+                                <label class="block text-base font-black text-gray-800 mb-1">עיר / יישוב</label>
+                                <input type="text" id="addr-city" class="w-full outline-none border-b-2 border-gray-200 focus:border-blue-500 pb-2 transition placeholder-gray-300 text-sm font-medium text-gray-600">
+                            </div>
+                            <div class="lg:col-span-2">
+                                <label class="block text-base font-black text-gray-800 mb-1">רחוב</label>
+                                <input type="text" id="addr-street" class="w-full outline-none border-b-2 border-gray-200 focus:border-blue-500 pb-2 transition placeholder-gray-300 text-sm font-medium text-gray-600">
+                            </div>
+                            <div>
+                                <label class="block text-base font-black text-gray-800 mb-1">מיקוד</label>
+                                <input type="text" id="addr-zip" class="w-full outline-none border-b-2 border-gray-200 focus:border-blue-500 pb-2 transition font-mono tracking-wider text-sm font-medium text-gray-600" placeholder="-----">
+                                <button class="text-[10px] text-blue-600 font-bold mt-1 hover:underline">משוך ממוקד דואר ישראל</button>
+                            </div>
+                            <div>
+                                <label class="block text-base font-black text-gray-800 mb-1">מספר בניין</label>
+                                <input type="text" id="addr-bldg" class="w-full outline-none border-b-2 border-gray-200 focus:border-blue-500 pb-2 transition text-sm font-medium text-gray-600">
+                            </div>
+                            <div>
+                                <label class="block text-base font-black text-gray-800 mb-1">מספר דירה</label>
+                                <input type="text" id="addr-apt" class="w-full outline-none border-b-2 border-gray-200 focus:border-blue-500 pb-2 transition text-sm font-medium text-gray-600">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. Family Structure -->
+                    <div class="bg-gradient-to-bl from-indigo-50 to-white overflow-hidden rounded-3xl shadow-sm border border-indigo-200 border-t-4 border-t-indigo-500">
+                        <div class="p-6 md:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-indigo-100">
+                            <div>
+                                <h3 class="text-2xl font-black text-indigo-900 flex items-center gap-3 mb-2">
+                                    <span class="bg-white shadow-sm w-12 h-12 rounded-xl flex justify-center items-center text-2xl border border-indigo-100">👨‍👩‍👧‍👦</span> 
+                                    מערך משפחתי (ילדים עד גיל 18)
+                                </h3>
+                                <p class="text-base font-medium text-indigo-700 bg-white/60 inline-block px-3 py-1 rounded-lg border border-indigo-100/50">
+                                    נתונים אלו מיועדים לעדכון שוטף ע"י העובד באופן עצמאי לקראת חלוקת מתנות ומענקים.
+                                </p>
+                            </div>
+                            <button class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-6 py-3.5 rounded-xl shadow-lg shadow-indigo-200 transition flex items-center gap-3 animate-pulse hover:animate-none shrink-0 border-2 border-white">
+                                <span class="text-xl">📱</span> 
+                                <span>שלח לעובד סמס לעדכון משפחה</span>
+                            </button>
+                        </div>
+                        <div class="p-6 md:p-8 bg-white/50">
+                            <table class="w-full text-right border-collapse bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-200">
+                                <thead class="bg-gray-50 text-gray-500 text-xs tracking-wider uppercase font-extrabold border-b border-gray-200">
                                     <tr>
-                                        <th class="py-3 px-4 rounded-r-lg">שם הילד/ה ומשפחה</th>
-                                        <th class="py-3 px-4">מין</th>
-                                        <th class="py-3 px-4">תאריך לידה</th>
-                                        <th class="py-3 px-4">חישוב גיל נוכחי למערכת</th>
-                                        <th class="py-3 px-4 text-center rounded-l-lg">התראות המערכת לעובד זה</th>
+                                        <th class="py-4 px-6">שם הילד/ה</th>
+                                        <th class="py-4 px-6">מין</th>
+                                        <th class="py-4 px-6">תאריך לידה</th>
+                                        <th class="py-4 px-6">גיל מחושב</th>
+                                        <th class="py-4 px-6">פעולות מוועד</th>
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y divide-gray-100 text-gray-800">
-                                    <tr class="hover:bg-blue-50/50 transition">
-                                        <td class="py-4 px-4 font-extrabold text-base">אורי כהן</td>
-                                        <td class="py-4 px-4 font-medium text-gray-600">זכר</td>
-                                        <td class="py-4 px-4 font-mono font-bold text-gray-700">12/08/2020</td>
-                                        <td class="py-4 px-4 font-bold text-gray-700 text-lg">5.5 שנים</td>
-                                        <td class="py-4 px-4 text-center">
-                                            <span class="bg-orange-100 border border-orange-300 text-orange-800 text-xs px-3 py-1.5 font-black rounded-lg">
-                                                🚨 זכאי מענק - עולה לא' (אוגוסט הקרוב)
-                                            </span>
+                                <tbody id="family-tbody" class="divide-y divide-gray-100 text-gray-800 font-medium">
+                                    <!-- Populated by JS -->
+                                    <tr id="empty-family">
+                                        <td colspan="5" class="py-12 text-center text-gray-400">
+                                            <div class="text-4xl mb-3 opacity-50">👶</div>
+                                            <p class="font-bold text-lg">אין ילדים מדווחים במערכת</p>
+                                            <p class="text-sm mt-1">לחץ על כפתור השליחה למעלה כדי לבקש מהעובד לעדכן.</p>
                                         </td>
-                                    </tr>
-                                    <tr class="hover:bg-blue-50/50 transition">
-                                        <td class="py-4 px-4 font-extrabold text-base">נועה כהן</td>
-                                        <td class="py-4 px-4 font-medium text-gray-600">נקבה</td>
-                                        <td class="py-4 px-4 font-mono font-bold text-gray-700">01/01/2012</td>
-                                        <td class="py-4 px-4 font-bold text-gray-700 text-lg">14 שנים</td>
-                                        <td class="py-4 px-4 text-center text-gray-400 text-sm font-medium">ללא התראות אירוע קרובות</td>
                                     </tr>
                                 </tbody>
                             </table>
+                            <button class="mt-4 bg-white border border-gray-300 text-gray-600 font-bold px-4 py-2 rounded-lg text-sm hover:bg-gray-50 transition flex items-center gap-2 shadow-sm">
+                                <span class="text-lg leading-none">+</span> הוסף ילד ידנית למערכת
+                            </button>
                         </div>
                     </div>
                 </div>
 
                 <!-- ======================== TAB: WELFARE ======================== -->
-                <!-- Focusing entirely on gifts, grants and life events -->
                 <div id="tab-welfare" class="tab-content space-y-6">
-                    
-                    <div class="bg-gradient-to-bl from-green-50 to-white p-6 rounded-2xl shadow-sm border border-green-200">
-                        <div class="flex justify-between items-center mb-6">
-                            <h3 class="text-xl font-bold text-gray-900 border-b-2 border-green-300 pb-2 inline-block">🎁 ניהול מתנות חג וסקרים</h3>
-                        </div>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="bg-white p-6 rounded-2xl shadow border border-gray-100 flex flex-col">
-                                <span class="self-start px-3 py-1 bg-gray-100 text-gray-600 text-xs font-bold rounded-lg mb-2">פסח תשפ"ו (2026)</span>
-                                <p class="text-2xl font-black text-gray-900 mb-1">תווי שי לחג 500₪ (רמי לוי)</p>
-                                <p class="text-sm text-gray-500 font-medium pb-4 border-b">נבחר על ידי העובד דרך הטלפון הסלולרי</p>
-                                
-                                <div class="mt-4 bg-emerald-50 text-emerald-700 p-3 rounded-xl font-bold flex items-center justify-between border border-emerald-100">
-                                    <span class="flex items-center gap-2"><span class="text-xl">✓</span> העובד משך את המתנה</span>
-                                    <span class="text-xs text-emerald-600">ב: 24/03 14:10</span>
-                                </div>
-                            </div>
-                            
-                            <div class="bg-gray-50 p-6 rounded-2xl border border-dashed border-gray-300 flex flex-col justify-center items-center text-center">
-                                <span class="text-3xl mb-2">🎈</span>
-                                <p class="font-bold text-gray-800">הטבת יום הולדת לחבר ועד</p>
-                                <p class="text-sm text-gray-500 mt-1">יוענק תלוש בסך 150₪ בחודש אוגוסט באופן אוטומטי בהוספה למשכורת.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Grants based on family -->
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-blue-200 border-r-4 border-r-blue-500">
-                        <h3 class="font-bold text-gray-800 text-lg mb-4">מענקים רשמיים (נקבע מפורמט המשפחה):</h3>
-                        <div class="flex items-center justify-between p-4 bg-blue-50/50 rounded-xl border border-blue-100">
-                            <div>
-                                <p class="font-bold text-lg text-blue-900">מענק בני/בנות מגיעים למצוות</p>
-                                <p class="text-sm text-gray-600">שולם היסטורית עבור הילדה: נועה כהן (בת מצווה ב-2024)</p>
-                            </div>
-                            <span class="bg-gray-200 text-gray-700 font-bold px-4 py-2 rounded-lg">טופל ושולם בעבר</span>
-                        </div>
+                    <div class="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-gray-200 text-center">
+                        <h2 class="text-xl font-bold text-gray-400 py-12">היסטוריית רווחה ומתנות תוצג כאן...</h2>
                     </div>
                 </div>
 
-                <!-- ======================== TAB: TOURISM & FLIGHTS ======================== -->
+                <!-- ======================== TAB: TOURISM ======================== -->
                 <div id="tab-tourism" class="tab-content space-y-6">
-                    <div class="bg-gradient-to-r from-purple-50 to-white p-6 rounded-2xl shadow-sm border border-purple-200">
-                        
-                        <div class="flex items-center gap-3 mb-6 border-b border-purple-200 pb-4">
-                            <span class="bg-purple-200 text-purple-700 p-2 rounded-xl text-xl">✈️</span>
-                            <h3 class="text-2xl font-bold text-purple-900">תיירות, נופש מאוגד וסריקת דרכונים</h3>
-                        </div>
-
-                        <!-- Passport Status Card -->
-                        <div class="bg-white p-6 rounded-2xl shadow-sm mb-6 flex flex-col md:flex-row justify-between items-center border border-gray-100 gap-6">
-                            
-                            <div class="flex items-center gap-6 w-full md:w-auto">
-                                <div class="bg-purple-100/50 p-4 rounded-2xl border border-purple-100 w-full md:w-auto">
-                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">תוקף הדרכון במערכת</label>
-                                    <div class="flex items-center gap-3">
-                                        <div class="font-black text-3xl text-gray-800">14/05/2026</div>
-                                        <div class="bg-red-100 text-red-600 px-3 py-1 rounded-lg text-xs font-bold animate-pulse">פג תוקף בקרוב!</div>
-                                    </div>
-                                    <p class="text-sm font-medium text-gray-500 mt-2">מספר דרכון מזוהה (OCR): 31828833</p>
-                                </div>
-                            </div>
-                            
-                            <div class="flex flex-col gap-3 w-full md:w-64">
-                                <button class="bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-xl font-bold shadow-md transition w-full">
-                                    שלח SMS לבקשת חידוש ותמונה
-                                </button>
-                                <button class="bg-white border-2 border-gray-200 hover:bg-gray-50 text-gray-700 py-3 rounded-xl font-bold w-full transition">
-                                    ראה העתק דרכון מצולם
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Upcoming Trips Section -->
-                        <div class="bg-white p-5 rounded-xl border border-gray-200">
-                            <h4 class="font-bold text-gray-800 mb-4 text-lg">הרשמות לנופשים קרובים</h4>
-                            <div class="flex flex-col md:flex-row justify-between items-center p-4 bg-gray-50 rounded-lg border border-gray-200">
-                                <div>
-                                    <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded font-bold mb-2 inline-block">ספטמבר 2026</span>
-                                    <h5 class="font-bold text-xl text-gray-900">השתלמות ועד בוינה, אוסטריה (4 לילות)</h5>
-                                    <p class="text-sm text-gray-600 mt-1">סטטוס חדר: אושר הרשמה (זוגי) - בן זוג רשום.</p>
-                                </div>
-                                <div class="mt-4 md:mt-0">
-                                    <span class="bg-yellow-100 border border-yellow-300 text-yellow-800 font-bold px-4 py-2 rounded-lg block text-center">
-                                        ממתין לעדכון דרכון מהעובד
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-
+                    <div class="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-gray-200 text-center">
+                        <h2 class="text-xl font-bold text-gray-400 py-12">נופשים, תיירות ודרכונים יוצגו כאן...</h2>
                     </div>
                 </div>
 
                 <!-- TAB: DOCUMENTS -->
                 <div id="tab-documents" class="tab-content">
-                    <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100 text-center">
-                        <br><br><br>
-                        <h2 class="text-xl font-bold text-gray-400">המסמכים הופרדו לפה (טפסי הלוואות, תביעות) בהתאם לתכנון...</h2>
-                        <br><br><br>
+                    <div class="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-gray-200 text-center">
+                        <h2 class="text-xl font-bold text-gray-400 py-12">התיקייה האישית והמסמכים יוצגו כאן...</h2>
                     </div>
                 </div>
 
                 <!-- TAB: LOG (AUDIT TRAIL) -->
                 <div id="tab-log" class="tab-content">
-                    <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100">
-                         <div class="mb-4 border-b pb-4">
-                             <h3 class="text-xl font-bold text-gray-800">לוג פעולות מערכת והיסטוריית עדכונים (Audit Trail)</h3>
-                         </div>
-                         
-                         <div class="relative border-r-4 border-gray-100 pr-8 mt-6 pb-4">
-                            <div class="relative mt-8">
-                                <span class="absolute -right-[43px] top-1 w-6 h-6 bg-indigo-100 border-2 border-indigo-500 rounded-full"></span>
-                                <div class="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100">
-                                    <p class="text-xs font-bold text-indigo-500 mb-1">היום, 14/04/2026 | 10:15</p>
-                                    <p class="font-bold text-gray-800 text-lg">תיקון שנת לידה של הבן "אורי" (Self Updated)</p>
-                                    <p class="text-sm text-gray-600 mt-1">עודכן על ידי הלקוח דרך SMS משנת 2021 לשנת 2020. המערכת עדכנה לסטטוס "עולה לכיתה א'".</p>
-                                </div>
-                            </div>
-                         </div>
+                    <div class="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-gray-200 text-center">
+                        <h2 class="text-xl font-bold text-gray-400 py-12">לוג הפעולות יוצג כאן...</h2>
                     </div>
                 </div>
 
@@ -289,9 +311,253 @@ function switchTab(tabId) {
     document.getElementById('tab-' + tabId).classList.add('active');
     
     let btn = document.getElementById('btn-' + tabId);
-    btn.classList.remove('font-medium', 'hover:text-indigo-600');
-    btn.classList.add('text-indigo-700', 'border-b-2', 'border-indigo-600', 'font-bold');
+    if(btn) {
+        btn.classList.remove('font-medium', 'hover:text-indigo-600');
+        btn.classList.add('text-indigo-700', 'border-b-2', 'border-indigo-600', 'font-bold');
+    }
 }
+
+// Data Logic
+let currentWorkerId = null;
+let currentWorkerData = null;
+let allWorkers = [];
+
+function init() {
+    const urlParams = new URLSearchParams(window.location.search);
+    currentWorkerId = urlParams.get('id');
+
+    const stored = localStorage.getItem('committee_workers');
+    if(stored) {
+        allWorkers = JSON.parse(stored);
+    }
+
+    if(currentWorkerId && allWorkers.length > 0) {
+        currentWorkerData = allWorkers.find(w => w.id === currentWorkerId);
+    }
+
+    // Fallback if not found or no ID
+    if(!currentWorkerData) {
+        if(allWorkers.length > 0) {
+            currentWorkerData = allWorkers[0]; // load first worker as demo
+            currentWorkerId = currentWorkerData.id;
+        } else {
+            alert("לא נמצאו עובדים במסד הנתונים!");
+            return;
+        }
+    }
+
+    populateForm();
+    
+    // Auto-calculate age on dob change
+    document.getElementById('pd-dob').addEventListener('change', (e) => {
+        const span = document.getElementById('pd-age');
+        if(e.target.value) {
+            const birth = new Date(e.target.value);
+            const ageDifMs = Date.now() - birth.getTime();
+            const ageDate = new Date(ageDifMs); 
+            const age = Math.abs(ageDate.getUTCFullYear() - 1970);
+            span.textContent = `(גיל: ${age})`;
+            span.classList.remove('hidden');
+        } else {
+            span.classList.add('hidden');
+        }
+    });
+}
+
+function generateAvatarColor(str) {
+    const colors = [
+        'bg-blue-100 text-blue-600',
+        'bg-purple-100 text-purple-600',
+        'bg-orange-100 text-orange-600',
+        'bg-teal-100 text-teal-600',
+        'bg-amber-100 text-amber-600'
+    ];
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    return colors[Math.abs(hash) % colors.length];
+}
+
+function populateForm() {
+    const w = currentWorkerData;
+    
+    // Header
+    document.getElementById('profile-name').textContent = `${w.firstName} ${w.lastName}`;
+    document.getElementById('profile-id-display').textContent = `ID: ${w.id}`;
+    
+    // Avatar
+    const avatarContainer = document.getElementById('profile-avatar');
+    if(w.avatar) {
+        avatarContainer.innerHTML = `<img src="${w.avatar}" alt="Profile" class="w-full h-full object-cover">`;
+        avatarContainer.className = "w-28 h-28 rounded-full bg-gray-200 border-4 border-white shadow-lg overflow-hidden shrink-0";
+    } else {
+        const initials = (w.firstName[0] || '') + (w.lastName[0] || '');
+        const colorClass = w.avatarColor ? w.avatarColor.replace('border-', 'xx') : generateAvatarColor(w.id); // hack for color
+        avatarContainer.innerHTML = initials;
+        avatarContainer.className = `w-28 h-28 rounded-full border-4 border-white shadow-lg overflow-hidden shrink-0 flex items-center justify-center font-black text-4xl ${colorClass.split(' ').slice(0,2).join(' ')}`;
+    }
+
+    // Set Header Selects/Inputs
+    if(w.status) document.getElementById('profile-status').value = w.status;
+    document.getElementById('profile-dept').value = w.department || '';
+    if(w.startDate) document.getElementById('profile-start-date').value = w.startDate;
+    if(w.fte) document.getElementById('profile-fte').value = w.fte;
+    if(w.association) document.getElementById('profile-association').value = w.association;
+    if(w.sector) document.getElementById('profile-sector').value = w.sector;
+
+    renderTags();
+
+    // Personal Details Tab
+    document.getElementById('pd-id').value = w.id;
+    document.getElementById('pd-first').value = w.firstName;
+    document.getElementById('pd-last').value = w.lastName;
+    document.getElementById('pd-cell').value = w.phone || '';
+    
+    if(w.gender) document.getElementById('pd-gender').value = w.gender;
+    if(w.dob) {
+        document.getElementById('pd-dob').value = w.dob;
+        document.getElementById('pd-dob').dispatchEvent(new Event('change')); // trigger age calc
+    }
+    if(w.homePhone) document.getElementById('pd-home').value = w.homePhone;
+    if(w.email) document.getElementById('pd-email').value = w.email;
+
+    // Address
+    if(w.address) {
+        document.getElementById('addr-city').value = w.address.city || '';
+        document.getElementById('addr-street').value = w.address.street || '';
+        document.getElementById('addr-bldg').value = w.address.bldg || '';
+        document.getElementById('addr-apt').value = w.address.apt || '';
+        document.getElementById('addr-zip').value = w.address.zip || '';
+    }
+
+    // Family (Hardcoded demo if empty for legacy, but empty if clean)
+    const familyTbody = document.getElementById('family-tbody');
+    if(w.children && w.children.length > 0) {
+        familyTbody.innerHTML = w.children.map(c => `
+            <tr class="hover:bg-blue-50/50 transition">
+                <td class="py-4 px-4 font-extrabold text-base">${c.name}</td>
+                <td class="py-4 px-4 font-medium text-gray-600">${c.gender}</td>
+                <td class="py-4 px-4 font-mono font-bold text-gray-700">${c.dob}</td>
+                <td class="py-4 px-4 font-bold text-gray-700">${c.ageStr}</td>
+                <td class="py-4 px-4">
+                    <span class="bg-gray-100 text-gray-600 text-xs px-3 py-1 font-bold rounded-lg border border-gray-200">ללא התראות</span>
+                </td>
+            </tr>
+        `).join('');
+    } else {
+        // Keep the empty state
+        familyTbody.innerHTML = `
+            <tr id="empty-family">
+                <td colspan="5" class="py-12 text-center text-gray-400">
+                    <div class="text-4xl mb-3 opacity-50">👶</div>
+                    <p class="font-bold text-lg">אין ילדים מדווחים במערכת</p>
+                    <p class="text-sm mt-1">לחץ על כפתור השליחה למעלה כדי לבקש מהעובד לעדכן.</p>
+                </td>
+            </tr>
+        `;
+    }
+}
+
+function saveProfile() {
+    const idx = allWorkers.findIndex(w => w.id === currentWorkerId);
+    if(idx === -1) return;
+
+    // Collect Data
+    const w = allWorkers[idx];
+    
+    // Header
+    w.status = document.getElementById('profile-status').value;
+    w.department = document.getElementById('profile-dept').value;
+    w.startDate = document.getElementById('profile-start-date').value;
+    w.fte = document.getElementById('profile-fte').value;
+    w.association = document.getElementById('profile-association').value;
+    w.sector = document.getElementById('profile-sector').value;
+
+    // Personal Details
+    w.firstName = document.getElementById('pd-first').value;
+    w.lastName = document.getElementById('pd-last').value;
+    w.gender = document.getElementById('pd-gender').value;
+    w.dob = document.getElementById('pd-dob').value;
+    w.phone = document.getElementById('pd-cell').value;
+    w.homePhone = document.getElementById('pd-home').value;
+    w.email = document.getElementById('pd-email').value;
+
+    // Address
+    w.address = {
+        city: document.getElementById('addr-city').value,
+        street: document.getElementById('addr-street').value,
+        bldg: document.getElementById('addr-bldg').value,
+        apt: document.getElementById('addr-apt').value,
+        zip: document.getElementById('addr-zip').value
+    };
+
+    // Save
+    localStorage.setItem('committee_workers', JSON.stringify(allWorkers));
+    
+    // Re-render header just in case name changed
+    document.getElementById('profile-name').textContent = `${w.firstName} ${w.lastName}`;
+    
+    alert('השינויים נשמרו בהצלחה במסד הנתונים!');
+}
+
+function goBack() {
+    if (window.parent && window.parent.loadPage) {
+        window.parent.loadPage('workers-index.html', null);
+    } else {
+        window.location.href = 'workers-index.html';
+    }
+}
+
+function getTagStyles(tag) {
+    if(tag.includes("פנסיה")) return "bg-yellow-100 text-yellow-800 border-yellow-300";
+    if(tag.includes("וינה") || tag.includes("נופש")) return "bg-purple-100 text-purple-800 border-purple-300";
+    if(tag.includes("מילואים")) return "bg-green-100 text-green-800 border-green-300";
+    if(tag.includes("עולה ל") || tag.includes("ילדים")) return "bg-blue-100 text-blue-800 border-blue-300";
+    if(tag.includes("קליטה")) return "bg-orange-100 text-orange-800 border-orange-300";
+    return "bg-gray-100 text-gray-700 border-gray-300";
+}
+
+function renderTags() {
+    const container = document.getElementById('profile-tags-container');
+    if (!container) return;
+    const tags = currentWorkerData.tags || [];
+    
+    if (tags.length === 0) {
+        container.innerHTML = '<span class="text-xs text-gray-400 font-medium">ללא תגיות</span>';
+        return;
+    }
+    
+    container.innerHTML = tags.map((t, idx) => `
+        <div class="${getTagStyles(t)} text-[13px] px-3 py-1 font-bold rounded-lg flex items-center gap-2 shadow-sm border">
+            <span>${t}</span>
+            <button onclick="removeTag(${idx})" class="hover:text-red-600 transition text-base leading-none" title="הסר תגית">&times;</button>
+        </div>
+    `).join('');
+}
+
+function promptNewTag() {
+    const newTag = prompt("הזן תגית חדשה לסינון (לדוגמה: מילואימניק, אב חד הורי):");
+    if (newTag && newTag.trim() !== '') {
+        if (!currentWorkerData.tags) currentWorkerData.tags = [];
+        if (!currentWorkerData.tags.includes(newTag.trim())) {
+            currentWorkerData.tags.push(newTag.trim());
+            renderTags();
+            saveProfile(); // Auto-save when tags change
+        } else {
+            alert("התגית כבר קיימת אצל עובד זה.");
+        }
+    }
+}
+
+function removeTag(idx) {
+    if(confirm("האם אתה בטוח שברצונך להסיר תגית זו?")) {
+        currentWorkerData.tags.splice(idx, 1);
+        renderTags();
+        saveProfile(); // Auto-save when tags change
+    }
+}
+
+// Start
+init();
 </script>
 </body>
 </html>
