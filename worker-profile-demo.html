@@ -50,21 +50,21 @@
                             <div class="flex flex-wrap items-center justify-center md:justify-start gap-3">
                                 <h2 id="profile-name" class="text-3xl font-extrabold text-gray-900 tracking-tight text-center md:text-right">...</h2>
                                 <select id="profile-status" class="px-4 py-1.5 bg-green-100 text-green-800 text-sm font-bold rounded-full border border-green-200 outline-none focus:ring-2 focus:ring-green-400 cursor-pointer transition shadow-sm text-center">
-                                    <option value="עובדים">סטטוס: עובדים</option>
-                                    <option value="בכירים">סטטוס: בכירים</option>
-                                    <option value="פנסיונרים">סטטוס: פנסיונרים</option>
-                                    <option value="שארים">סטטוס: שארים</option>
-                                    <option value="עזב">סטטוס: עזב</option>
-                                    <option value="אחר">סטטוס: אחר</option>
+                                    <option value="פעיל">סטטוס: פעיל</option>
+                                    <option value="לא פעיל">סטטוס: לא פעיל</option>
                                 </select>
                             </div>
                             <div class="text-gray-400 text-sm font-mono tracking-widest" id="profile-id-display">ID: 000000000</div>
                         </div>
                         
-                        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-5 bg-slate-50/50 p-4 rounded-2xl border border-slate-100">
-                            <div class="col-span-1 md:col-span-1 lg:col-span-1">
-                                <label class="block text-base font-black text-gray-800 mb-1">תפקיד / מחלקה</label>
-                                <input type="text" id="profile-dept" class="w-full bg-transparent outline-none border-b-2 border-transparent hover:border-dashed hover:border-gray-300 focus:border-indigo-500 focus:border-solid pb-1 transition placeholder-gray-300 text-sm font-medium text-gray-600" placeholder="למשל: תברואה">
+                        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-5 bg-slate-50/50 p-4 rounded-2xl border border-slate-100">
+                            <div>
+                                <label class="block text-base font-black text-gray-800 mb-1">קוד מחלקה</label>
+                                <input type="text" id="profile-dept-code" class="w-full bg-transparent outline-none border-b-2 border-transparent hover:border-dashed hover:border-gray-300 focus:border-indigo-500 focus:border-solid pb-1 transition placeholder-gray-300 text-sm font-medium text-gray-600" placeholder="לדוג': 102">
+                            </div>
+                            <div>
+                                <label class="block text-base font-black text-gray-800 mb-1">תיאור מחלקה</label>
+                                <input type="text" id="profile-dept-name" class="w-full bg-transparent outline-none border-b-2 border-transparent hover:border-dashed hover:border-gray-300 focus:border-indigo-500 focus:border-solid pb-1 transition placeholder-gray-300 text-sm font-medium text-gray-600" placeholder="לדוג': תברואה">
                             </div>
                             <div>
                                 <label class="block text-base font-black text-gray-800 mb-1">תאריך תחילת עבודה</label>
@@ -73,8 +73,7 @@
                             <div>
                                 <label class="block text-base font-black text-gray-800 mb-1">אחוז משרה</label>
                                 <div class="flex items-center gap-1 group">
-                                    <input type="number" id="profile-fte" class="w-16 bg-transparent outline-none border-b-2 border-transparent hover:border-dashed hover:border-gray-300 focus:border-indigo-500 focus:border-solid pb-1 transition text-left text-sm font-medium text-gray-600" value="100" min="0" max="100"> 
-                                    <span class="font-bold text-gray-500 group-hover:text-gray-800 transition">%</span>
+                                    <input type="number" id="profile-fte" class="w-16 bg-transparent outline-none border-b-2 border-transparent hover:border-dashed hover:border-gray-300 focus:border-indigo-500 focus:border-solid pb-1 transition text-left text-sm font-medium text-gray-600" placeholder="-" min="0" max="100">
                                 </div>
                             </div>
                             <div>
@@ -89,9 +88,9 @@
                             <div>
                                 <label class="block text-base font-black text-gray-800 mb-1">סקטור (קבוצה)</label>
                                 <select id="profile-sector" class="w-full bg-transparent outline-none border-b-2 border-transparent hover:border-dashed hover:border-gray-300 focus:border-indigo-500 focus:border-solid pb-1 cursor-pointer transition text-sm font-medium text-gray-600">
+                                    <option value="" selected>-- לא נבחר --</option>
                                     <option value="מנהלה">מנהלה</option>
                                     <option value="חינוך">חינוך</option>
-                                    <option value="">ריק (ללא סקטור)</option>
                                 </select>
                             </div>
                         </div>
@@ -382,7 +381,7 @@ function populateForm() {
     
     // Header
     document.getElementById('profile-name').textContent = `${w.firstName} ${w.lastName}`;
-    document.getElementById('profile-id-display').textContent = `ID: ${w.id}`;
+    document.getElementById('profile-id-display').textContent = `ID: ${Number(w.id)}`;
     
     // Avatar
     const avatarContainer = document.getElementById('profile-avatar');
@@ -397,17 +396,18 @@ function populateForm() {
     }
 
     // Set Header Selects/Inputs
-    if(w.status) document.getElementById('profile-status').value = w.status;
-    document.getElementById('profile-dept').value = w.department || '';
-    if(w.startDate) document.getElementById('profile-start-date').value = w.startDate;
-    if(w.fte) document.getElementById('profile-fte').value = w.fte;
-    if(w.association) document.getElementById('profile-association').value = w.association;
-    if(w.sector) document.getElementById('profile-sector').value = w.sector;
+    document.getElementById('profile-status').value = w.status || 'פעיל';
+    document.getElementById('profile-dept-code').value = w.departmentCode || '';
+    document.getElementById('profile-dept-name').value = w.departmentName || w.department || '';
+    document.getElementById('profile-start-date').value = w.startDate || '';
+    document.getElementById('profile-fte').value = w.fte || '';
+    document.getElementById('profile-association').value = w.association || '';
+    document.getElementById('profile-sector').value = w.sector || '';
 
     renderTags();
 
     // Personal Details Tab
-    document.getElementById('pd-id').value = w.id;
+    document.getElementById('pd-id').value = Number(w.id);
     document.getElementById('pd-first').value = w.firstName;
     document.getElementById('pd-last').value = w.lastName;
     document.getElementById('pd-cell').value = w.phone || '';
@@ -466,7 +466,8 @@ function saveProfile() {
     
     // Header
     w.status = document.getElementById('profile-status').value;
-    w.department = document.getElementById('profile-dept').value;
+    w.departmentCode = document.getElementById('profile-dept-code').value;
+    w.departmentName = document.getElementById('profile-dept-name').value;
     w.startDate = document.getElementById('profile-start-date').value;
     w.fte = document.getElementById('profile-fte').value;
     w.association = document.getElementById('profile-association').value;

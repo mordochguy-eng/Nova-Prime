@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>מערכת ועד - אינדקס כרטסות עובדים</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         html { font-size: 14px; } body { font-family: 'Heebo', sans-serif; background-color: #f8fafc; }
@@ -24,9 +25,15 @@
             <button onclick="openNewEmployeeModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold shadow transition">
                 <span class="text-lg">+</span> קליטת עובד חדש
             </button>
-            <button class="bg-white border-2 border-indigo-100 text-indigo-700 hover:bg-indigo-50 flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold shadow-sm transition">
-                <span class="text-lg">📥</span> ייבוא מאקסל
+            <button onclick="checkDuplicates()" class="bg-amber-500 hover:bg-amber-600 text-white flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold shadow transition">
+                <span class="text-lg">🔍</span> בדיקת כפילויות
             </button>
+            <div class="relative overflow-hidden">
+                <button type="button" class="bg-white border-2 border-indigo-100 text-indigo-700 hover:bg-indigo-50 flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold shadow-sm transition cursor-pointer">
+                    <span class="text-lg">📥</span> ייבוא מאקסל
+                </button>
+                <input type="file" id="excel-upload" accept=".xlsx, .xls, .csv" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onclick="this.value=null" onchange="handleExcelUpload(event)">
+            </div>
         </div>
     </header>
 
@@ -53,19 +60,32 @@
                     <option>אבות / אמהות חד הוריים</option>
                     <option>לקראת גיל פרישה / פנסיה</option>
                 </select>
+                <div class="flex items-center gap-2">
+                    <button onclick="renderWorkers()" class="bg-gray-800 hover:bg-gray-900 text-white px-6 py-2 rounded-lg font-bold shadow-sm transition flex items-center justify-center gap-2">
+                        🔍 חפש
+                    </button>
+                    <button onclick="document.getElementById('search-input').value = ''; document.getElementById('sector-filter').value = 'all'; renderWorkers();" class="bg-white hover:bg-gray-100 border-2 border-gray-200 text-gray-700 px-4 py-2 rounded-lg font-bold shadow-sm transition flex items-center justify-center gap-2" title="נקה סינון">
+                        ✖ נקה
+                    </button>
+                </div>
             </div>
         </div>
 
         <!-- Workers Table -->
-        <div class="overflow-y-auto flex-1">
-            <table class="w-full text-right border-collapse">
-                <thead class="sticky top-0 z-10 bg-white">
-                    <tr class="bg-gray-50 border-b border-gray-200 text-gray-500 text-sm tracking-widest uppercase shadow-sm">
-                        <th class="py-4 px-6 font-bold">שם ותעודת זהות</th>
-                        <th class="py-4 px-6 font-bold">סקטור ומחלקה</th>
-                        <th class="py-4 px-6 font-bold">תגיות עובד (Tags)</th>
-                        <th class="py-4 px-6 font-bold">שנות ותק</th>
-                        <th class="py-4 px-6 font-bold text-center">פעולות מוועד</th>
+        <div class="overflow-y-auto overflow-x-auto flex-1 custom-scrollbar pb-2">
+            <table class="w-full text-right border-collapse min-w-max">
+                <thead class="sticky top-0 z-10 bg-white shadow-sm">
+                    <tr class="bg-gray-50 border-b border-gray-200 text-gray-500 text-sm tracking-widest uppercase">
+                        <th class="py-4 px-6 font-bold cursor-pointer hover:bg-gray-200 transition select-none" onclick="sortBy('id')">תעודת זהות <span id="sort-icon-id" class="text-xs text-indigo-500 inline-block w-3"></span></th>
+                        <th class="py-4 px-6 font-bold cursor-pointer hover:bg-gray-200 transition select-none" onclick="sortBy('firstName')">שם פרטי <span id="sort-icon-firstName" class="text-xs text-indigo-500 inline-block w-3"></span></th>
+                        <th class="py-4 px-6 font-bold cursor-pointer hover:bg-gray-200 transition select-none" onclick="sortBy('lastName')">שם משפחה <span id="sort-icon-lastName" class="text-xs text-indigo-500 inline-block w-3"></span></th>
+                        <th class="py-4 px-6 font-bold cursor-pointer hover:bg-gray-200 transition select-none" onclick="sortBy('gender')">מין <span id="sort-icon-gender" class="text-xs text-indigo-500 inline-block w-3"></span></th>
+                        <th class="py-4 px-6 font-bold cursor-pointer hover:bg-gray-200 transition select-none" onclick="sortBy('phone')">סלולרי <span id="sort-icon-phone" class="text-xs text-indigo-500 inline-block w-3"></span></th>
+                        <th class="py-4 px-6 font-bold cursor-pointer hover:bg-gray-200 transition select-none" onclick="sortBy('departmentCode')">קוד מחלקה <span id="sort-icon-departmentCode" class="text-xs text-indigo-500 inline-block w-3"></span></th>
+                        <th class="py-4 px-6 font-bold cursor-pointer hover:bg-gray-200 transition select-none" onclick="sortBy('departmentName')">תיאור מחלקה <span id="sort-icon-departmentName" class="text-xs text-indigo-500 inline-block w-3"></span></th>
+                        <th class="py-4 px-6 font-bold cursor-pointer hover:bg-gray-200 transition select-none" onclick="sortBy('status')">סטטוס <span id="sort-icon-status" class="text-xs text-indigo-500 inline-block w-3"></span></th>
+                        <th class="py-4 px-6 font-bold">תגיות</th>
+                        <th class="py-4 px-6 font-bold text-center">פעולות</th>
                     </tr>
                 </thead>
                 <tbody id="workers-tbody" class="text-gray-700 divide-y divide-gray-100">
@@ -161,6 +181,58 @@
             </form>
         </div>
     </div>
+
+    <!-- Excel Mapping Modal -->
+    <div id="excel-mapping-modal" class="hidden fixed inset-0 bg-gray-900/40 z-50 flex items-center justify-center p-4">
+        <div class="bg-white w-[95vw] max-w-none rounded-3xl shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="bg-indigo-50 p-6 border-b border-indigo-100 flex justify-between items-center shrink-0">
+                <div>
+                    <h3 class="text-2xl font-black text-indigo-900">מיפוי עמודות אקסל</h3>
+                    <p class="text-indigo-700 font-medium text-sm mt-1">אנא התאם בין השדות במערכת לעמודות בקובץ האקסל שהעלית. עמודה שלא תמופה - לא תיקלט.</p>
+                </div>
+                <button onclick="closeMappingModal()" class="w-10 h-10 rounded-xl bg-white text-indigo-600 hover:bg-indigo-100 font-bold text-xl transition shadow-sm border border-indigo-200 flex justify-center items-center">&times;</button>
+            </div>
+            
+            <div class="p-6 overflow-y-auto flex-1 bg-gray-50/50">
+                <div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-xl mb-6 text-sm font-bold shadow-sm flex items-start gap-3">
+                    <span class="text-xl">ℹ️</span>
+                    <p>נתונים קיימים לעולם לא יידרסו על ידי תאים ריקים באקסל. המערכת תעדכן כרטסת קיימת רק אם באקסל מופיע מידע ממשי, כדי להגן על המידע שכבר שמור במערכת.</p>
+                </div>
+
+                <div id="mapping-container" class="w-full">
+                    <!-- Mapping rows generated via JS -->
+                </div>
+            </div>
+
+            <div class="p-6 border-t border-gray-100 flex justify-end gap-3 shrink-0 bg-white">
+                <button type="button" onclick="closeMappingModal()" class="px-6 py-2 border-2 border-gray-200 text-gray-600 font-bold rounded-xl hover:bg-gray-50 transition">ביטול ייבוא</button>
+                <button type="button" onclick="executeExcelImport()" class="px-8 py-2 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition shadow-md flex items-center gap-2">
+                    התחל קליטה למערכת <span id="import-row-count" class="bg-indigo-500 text-xs px-2 py-0.5 rounded-md"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Duplicates Modal (outside main layout for proper z-index) -->
+<div id="duplicates-modal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:99999; backdrop-filter:blur(4px);">
+    <div style="display:flex; align-items:center; justify-content:center; width:100%; height:100%; padding:1rem;">
+        <div style="background:white; width:100%; max-width:48rem; border-radius:1.5rem; box-shadow:0 25px 50px -12px rgba(0,0,0,.25); overflow:hidden; display:flex; flex-direction:column; max-height:85vh;">
+            <div style="background:#fffbeb; padding:1.5rem; border-bottom:1px solid #fde68a; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
+                <div>
+                    <h3 style="font-size:1.5rem; font-weight:900; color:#78350f;">&#9888;&#65039; בדיקת כפילויות</h3>
+                    <p style="color:#92400e; font-size:0.875rem; margin-top:0.25rem;">המערכת סורקת תעודות זהות דומות ושמות זהים לאיתור רשומות כפולות.</p>
+                </div>
+                <button onclick="document.getElementById('duplicates-modal').style.display='none'" style="width:2.5rem; height:2.5rem; border-radius:0.75rem; background:white; color:#d97706; font-size:1.25rem; font-weight:bold; border:1px solid #fde68a; cursor:pointer;">&times;</button>
+            </div>
+            <div id="duplicates-content" style="padding:1.5rem; overflow-y:auto; flex:1;">
+                <!-- Filled dynamically -->
+            </div>
+            <div style="padding:1rem; border-top:1px solid #f3f4f6; display:flex; justify-content:flex-end; flex-shrink:0; background:white;">
+                <button onclick="document.getElementById('duplicates-modal').style.display='none'" style="padding:0.5rem 1.5rem; background:#1f2937; color:white; font-weight:bold; border-radius:0.75rem; border:none; cursor:pointer;">סגור</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -245,24 +317,76 @@
         return "bg-gray-100 text-gray-700 border-gray-200";
     }
 
+    let currentSortCol = null;
+    let currentSortDir = 'asc';
+
+    window.sortBy = function(col) {
+        if (currentSortCol === col) {
+            currentSortDir = currentSortDir === 'asc' ? 'desc' : 'asc';
+        } else {
+            currentSortCol = col;
+            currentSortDir = 'asc';
+        }
+        renderWorkers();
+        updateSortIcons();
+    };
+
+    function updateSortIcons() {
+        const cols = ['id', 'firstName', 'lastName', 'gender', 'phone', 'departmentCode', 'departmentName', 'status'];
+        cols.forEach(c => {
+            const iconSpan = document.getElementById('sort-icon-' + c);
+            if (iconSpan) {
+                if (c === currentSortCol) {
+                    iconSpan.innerHTML = currentSortDir === 'asc' ? '▲' : '▼';
+                } else {
+                    iconSpan.innerHTML = '';
+                }
+            }
+        });
+    }
+
     function renderWorkers() {
         const searchTerm = searchInput.value.toLowerCase();
         const sectorTerm = sectorFilter.value;
 
-        // Filter
+        // Sort the full dataset first
+        if (currentSortCol) {
+            workers.sort((a, b) => {
+                let valA = a[currentSortCol] || '';
+                let valB = b[currentSortCol] || '';
+                
+                if (currentSortCol === 'id' || currentSortCol === 'departmentCode') {
+                    valA = Number(valA) || 0;
+                    valB = Number(valB) || 0;
+                } else if (typeof valA === 'string' && typeof valB === 'string') {
+                    return currentSortDir === 'asc' 
+                        ? valA.localeCompare(valB, 'he') 
+                        : valB.localeCompare(valA, 'he');
+                }
+                
+                if (valA < valB) return currentSortDir === 'asc' ? -1 : 1;
+                if (valA > valB) return currentSortDir === 'asc' ? 1 : -1;
+                return 0;
+            });
+        }
+
+        // Normalize phone for flexible matching (strip dashes and leading zero)
+        const normalizePhone = (p) => (p || '').replace(/[-\s]/g, '').replace(/^0+/, '');
+        const searchPhoneNorm = normalizePhone(searchTerm);
+
+        // Then filter
         let filtered = workers.filter(w => {
-            const matchesSearch = w.id.includes(searchTerm) || 
-                                  w.firstName.includes(searchTerm) || 
-                                  w.lastName.includes(searchTerm) || 
-                                  w.phone.includes(searchTerm);
+            const matchesName = (w.firstName || '').toLowerCase().includes(searchTerm) || 
+                                (w.lastName || '').toLowerCase().includes(searchTerm);
+            const matchesId = (w.id || '').includes(searchTerm);
+            const matchesPhone = (w.phone || '').includes(searchTerm) || 
+                                 (searchPhoneNorm && normalizePhone(w.phone).includes(searchPhoneNorm));
             
+            const matchesSearch = matchesName || matchesId || matchesPhone;
             const matchesSector = sectorTerm === 'all' || w.sector === sectorTerm;
             
             return matchesSearch && matchesSector;
         });
-
-        // Sort: newest first or by name (for simplicity, we'll just reverse so new ones are on top)
-        filtered = filtered.reverse();
 
         totalCount.textContent = workers.length.toLocaleString();
 
@@ -290,40 +414,58 @@
             // Tags logic
             let tagsHtml = '';
             if (w.tags && w.tags.length > 0) {
-                tagsHtml = `<div class="flex flex-wrap gap-2">` + 
-                    w.tags.map(t => `<span class="${getTagStyles(t)} border text-xs px-2 py-1 rounded-md font-bold shadow-sm">${t}</span>`).join('') + 
+                tagsHtml = `<div class="flex flex-wrap gap-1 max-w-[150px]">` + 
+                    w.tags.map(t => `<span class="${getTagStyles(t)} border text-[10px] px-1.5 py-0.5 rounded font-bold shadow-sm">${t}</span>`).join('') + 
                 `</div>`;
             } else {
-                tagsHtml = `<span class="text-gray-400 text-sm font-medium">ללא תגיות מיוחדות</span>`;
+                tagsHtml = `<span class="text-gray-400 text-xs font-medium">-</span>`;
             }
 
-            // Department formatting
-            const deptText = w.department || 'טרם שובץ למחלקה';
-            const sectorBadge = w.sector ? `<p class="text-xs bg-gray-200 text-gray-700 inline-block px-2 py-0.5 rounded mt-1 font-bold">${w.sector}</p>` : '';
+            const deptCode = w.departmentCode || '-';
+            const deptText = w.departmentName || w.department || '-';
+            const phoneText = w.phone || '-';
+            const genderText = w.gender || '-';
+            const statusBadge = w.status === 'לא פעיל' ? `<span class="text-sm bg-red-100 text-red-700 px-3 py-1 rounded font-bold">לא פעיל</span>` : `<span class="text-sm bg-green-100 text-green-700 px-3 py-1 rounded font-bold">${w.status || 'פעיל'}</span>`;
 
             return `
-                <tr class="hover:bg-indigo-50/40 transition group cursor-pointer" onclick="openProfile('${w.id}')">
-                    <td class="py-4 px-6 font-medium">
+                <tr class="hover:bg-indigo-50/40 transition group cursor-pointer border-b border-gray-100" onclick="openProfile('${w.id}')">
+                    <td class="py-3 px-6 whitespace-nowrap">
+                        <p class="font-mono text-gray-500 font-bold">${Number(w.id)}</p>
+                    </td>
+                    <td class="py-3 px-6 whitespace-nowrap">
                         <div class="flex items-center gap-3">
                             ${avatarHtml}
-                            <div>
-                                <p class="font-extrabold text-gray-900 text-base group-hover:text-indigo-600 transition">${w.firstName} ${w.lastName}</p>
-                                <p class="text-xs text-gray-400 font-mono tracking-widest">${w.id}</p>
-                            </div>
+                            <p class="font-extrabold text-gray-900 text-base group-hover:text-indigo-600 transition">${w.firstName || '-'}</p>
                         </div>
                     </td>
-                    <td class="py-4 px-6">
-                        <p class="font-bold text-gray-800 text-base">${deptText}</p>
-                        ${sectorBadge}
+                    <td class="py-3 px-6 whitespace-nowrap">
+                        <p class="font-extrabold text-gray-900 text-base group-hover:text-indigo-600 transition">${w.lastName || '-'}</p>
                     </td>
-                    <td class="py-4 px-6">
+                    <td class="py-3 px-6 whitespace-nowrap">
+                        <p class="font-bold text-gray-800 text-sm">${genderText}</p>
+                    </td>
+                    <td class="py-3 px-6 whitespace-nowrap">
+                        <p class="font-mono text-gray-800 text-sm font-bold">${phoneText}</p>
+                    </td>
+                    <td class="py-3 px-6 whitespace-nowrap">
+                        <p class="font-mono text-gray-600 text-sm font-bold">${deptCode}</p>
+                    </td>
+                    <td class="py-3 px-6 whitespace-nowrap">
+                        <p class="font-bold text-gray-800 text-sm truncate max-w-[160px]" title="${deptText}">${deptText}</p>
+                    </td>
+                    <td class="py-3 px-6 whitespace-nowrap">
+                        ${statusBadge}
+                    </td>
+                    <td class="py-3 px-6">
                         ${tagsHtml}
                     </td>
-                    <td class="py-4 px-6 font-black text-gray-500 text-lg">
-                        ${w.years !== undefined ? `${w.years} <span class="text-sm font-bold opacity-70">שנים</span>` : '<span class="text-sm font-medium text-gray-400">חדש</span>'}
-                    </td>
-                    <td class="py-4 px-6 text-center">
-                        <button onclick="event.stopPropagation(); openProfile('${w.id}');" class="bg-white border-2 border-indigo-100 hover:bg-indigo-50 text-indigo-700 px-5 py-2 font-bold rounded-xl text-sm transition shadow-sm group-hover:bg-indigo-600 group-hover:text-white group-hover:border-indigo-600">פתח כרטסת בחלון</button>
+                    <td class="py-3 px-6 text-center whitespace-nowrap">
+                        <div class="flex items-center justify-center gap-2">
+                            <button onclick="event.stopPropagation(); deleteWorker('${w.id}')" class="w-8 h-8 flex items-center justify-center bg-white border border-red-200 text-red-500 rounded-lg hover:bg-red-50 hover:border-red-300 hover:text-red-600 transition shadow-sm" title="מחק כרטסת">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            </button>
+                            <button onclick="event.stopPropagation(); openProfile('${w.id}');" class="bg-white border-2 border-indigo-100 hover:bg-indigo-50 text-indigo-700 px-3 py-1.5 font-bold rounded-lg text-xs transition shadow-sm group-hover:bg-indigo-600 group-hover:text-white group-hover:border-indigo-600">פתח כרטסת</button>
+                        </div>
                     </td>
                 </tr>
             `;
@@ -331,8 +473,7 @@
     }
 
     function setupListeners() {
-        searchInput.addEventListener('input', renderWorkers);
-        sectorFilter.addEventListener('change', renderWorkers);
+        // Search button triggers renderWorkers manually now.
 
         // ID validation on blur to remove error
         idInput.addEventListener('input', () => {
@@ -388,6 +529,197 @@
         modal.classList.add('hidden');
     }
 
+    window.deleteWorker = function(id) {
+        if (confirm('האם אתה בטוח שברצונך למחוק כרטסת עובד זו?\nפעולה זו אינה ניתנת לביטול!')) {
+            workers = workers.filter(w => w.id !== id);
+            saveWorkers();
+            renderWorkers();
+        }
+    };
+
+    // --- DUPLICATE DETECTION ---
+    function editDistance(a, b) {
+        if (a.length === 0) return b.length;
+        if (b.length === 0) return a.length;
+        if (Math.abs(a.length - b.length) > 2) return 99;
+        const matrix = [];
+        for (let i = 0; i <= b.length; i++) matrix[i] = [i];
+        for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+        for (let i = 1; i <= b.length; i++) {
+            for (let j = 1; j <= a.length; j++) {
+                if (b[i-1] === a[j-1]) {
+                    matrix[i][j] = matrix[i-1][j-1];
+                } else {
+                    matrix[i][j] = Math.min(
+                        matrix[i-1][j-1] + 1,
+                        matrix[i][j-1] + 1,
+                        matrix[i-1][j] + 1
+                    );
+                }
+            }
+        }
+        return matrix[b.length][a.length];
+    }
+
+    function findDuplicates() {
+        const pairs = [];
+        try {
+            for (let i = 0; i < workers.length; i++) {
+                for (let j = i + 1; j < workers.length; j++) {
+                    const a = workers[i], b = workers[j];
+                    const idA = normalizeId(String(a.id || ''));
+                    const idB = normalizeId(String(b.id || ''));
+                    if (!idA || !idB) continue;
+                    const reasons = [];
+
+                    // Exact ID match
+                    if (idA === idB) {
+                        reasons.push('ת.ז. זהה לחלוטין');
+                    } else {
+                        // Near ID match (edit distance 1 on normalized)
+                        const dist = editDistance(idA, idB);
+                        if (dist === 1) {
+                            reasons.push('ת.ז. נבדלת בספרה אחת בלבד');
+                        }
+                        // Also compare stripped versions (no leading zeros)
+                        const strippedA = idA.replace(/^0+/, '');
+                        const strippedB = idB.replace(/^0+/, '');
+                        if (dist > 1 && strippedA && strippedB) {
+                            // Check if one is a prefix/suffix of the other (missing digit)
+                            if (strippedA.includes(strippedB) || strippedB.includes(strippedA)) {
+                                if (Math.abs(strippedA.length - strippedB.length) <= 1) {
+                                    reasons.push('ת.ז. חסרה/עודפת ספרה');
+                                }
+                            }
+                            // Also check edit distance on stripped versions
+                            const strippedDist = editDistance(strippedA, strippedB);
+                            if (strippedDist === 1 && reasons.length === 0) {
+                                reasons.push('ת.ז. נבדלת בספרה אחת');
+                            }
+                        }
+                    }
+                    // Same full name
+                    const fnA = (a.firstName || '').trim();
+                    const lnA = (a.lastName || '').trim();
+                    const fnB = (b.firstName || '').trim();
+                    const lnB = (b.lastName || '').trim();
+                    if (fnA && lnA && fnB && lnB && fnA === fnB && lnA === lnB) {
+                        reasons.push('שם פרטי ושם משפחה זהים');
+                    }
+
+                    if (reasons.length > 0) {
+                        pairs.push({ workerA: a, workerB: b, reasons });
+                    }
+                }
+            }
+        } catch(e) {
+            console.error('findDuplicates error:', e);
+        }
+        return pairs;
+    }
+
+    function findNearMatchInWorkers(newNormId, firstName, lastName) {
+        const warnings = [];
+        for (const w of workers) {
+            const existingId = normalizeId(String(w.id || ''));
+            if (!existingId || existingId === newNormId) continue;
+            const dist = editDistance(existingId, newNormId);
+            if (dist === 1) {
+                warnings.push(`ת.ז. ${Number(newNormId)} דומה מאוד ל-${Number(existingId)} (${w.firstName || ''} ${w.lastName || ''}) - הבדל של ספרה אחת בלבד!`);
+            }
+            if (firstName && lastName && w.firstName && w.lastName &&
+                firstName.trim() === w.firstName.trim() && lastName.trim() === w.lastName.trim() && dist > 1) {
+                warnings.push(`השם "${firstName} ${lastName}" כבר קיים במערכת תחת ת.ז. ${Number(existingId)}`);
+            }
+        }
+        return warnings;
+    }
+
+    window.checkDuplicates = function() {
+        try {
+            const pairs = findDuplicates();
+            const container = document.getElementById('duplicates-content');
+
+            if (pairs.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center p-12">
+                        <span class="text-6xl block mb-4">✅</span>
+                        <h3 class="text-xl font-black text-green-700 mb-2">לא נמצאו כפילויות!</h3>
+                        <p class="text-gray-500 font-medium">כל הרשומות במערכת ייחודיות. לא נמצאו תעודות זהות דומות או שמות כפולים.</p>
+                    </div>`;
+            } else {
+                let html = '<div class="bg-red-50 border border-red-200 text-red-800 p-4 rounded-xl mb-6 text-sm font-bold flex items-start gap-3">';
+                html += '<span class="text-xl">🚨</span>';
+                html += '<p>נמצאו <span class="text-red-600 font-black text-base">' + pairs.length + '</span> חשדות לכפילויות. בדוק כל זוג ומחק את הרשומה המיותרת במידת הצורך.</p>';
+                html += '</div>';
+
+                for (let idx = 0; idx < pairs.length; idx++) {
+                    const p = pairs[idx];
+                    const nameA = (p.workerA.firstName || '') + ' ' + (p.workerA.lastName || '');
+                    const nameB = (p.workerB.firstName || '') + ' ' + (p.workerB.lastName || '');
+                    const idA = String(p.workerA.id || '');
+                    const idB = String(p.workerB.id || '');
+                    const deptA = p.workerA.departmentName || p.workerA.department || '';
+                    const deptB = p.workerB.departmentName || p.workerB.department || '';
+
+                    let reasonTags = '';
+                    for (let r = 0; r < p.reasons.length; r++) {
+                        reasonTags += '<span class="text-xs bg-amber-200 text-amber-900 px-2 py-1 rounded font-bold">' + p.reasons[r] + '</span> ';
+                    }
+
+                    html += '<div class="border border-amber-200 rounded-2xl mb-4 overflow-hidden shadow-sm">';
+                    html += '<div class="bg-amber-50 px-5 py-3 border-b border-amber-200 flex justify-between items-center">';
+                    html += '<span class="font-black text-amber-800">חשד #' + (idx + 1) + '</span>';
+                    html += '<div class="flex gap-1">' + reasonTags + '</div>';
+                    html += '</div>';
+                    html += '<div class="grid grid-cols-2 divide-x divide-x-reverse divide-gray-200">';
+                    
+                    html += '<div class="p-4">';
+                    html += '<p class="font-black text-base text-gray-900">' + nameA + '</p>';
+                    html += '<p class="font-mono text-sm text-gray-500 mt-1">ת.ז: ' + Number(idA) + '</p>';
+                    html += '<p class="text-xs text-gray-400 mt-1">' + deptA + '</p>';
+                    html += '<div class="mt-3 flex gap-2">';
+                    html += '<button data-action="profile" data-id="' + idA + '" class="dup-action-btn text-xs bg-indigo-50 text-indigo-700 px-3 py-1 rounded-lg font-bold hover:bg-indigo-100 transition cursor-pointer">פתח כרטסת</button>';
+                    html += '<button data-action="delete" data-id="' + idA + '" class="dup-action-btn text-xs bg-red-50 text-red-700 px-3 py-1 rounded-lg font-bold hover:bg-red-100 transition cursor-pointer">מחק</button>';
+                    html += '</div></div>';
+
+                    html += '<div class="p-4">';
+                    html += '<p class="font-black text-base text-gray-900">' + nameB + '</p>';
+                    html += '<p class="font-mono text-sm text-gray-500 mt-1">ת.ז: ' + Number(idB) + '</p>';
+                    html += '<p class="text-xs text-gray-400 mt-1">' + deptB + '</p>';
+                    html += '<div class="mt-3 flex gap-2">';
+                    html += '<button data-action="profile" data-id="' + idB + '" class="dup-action-btn text-xs bg-indigo-50 text-indigo-700 px-3 py-1 rounded-lg font-bold hover:bg-indigo-100 transition cursor-pointer">פתח כרטסת</button>';
+                    html += '<button data-action="delete" data-id="' + idB + '" class="dup-action-btn text-xs bg-red-50 text-red-700 px-3 py-1 rounded-lg font-bold hover:bg-red-100 transition cursor-pointer">מחק</button>';
+                    html += '</div></div>';
+
+                    html += '</div></div>';
+                }
+                container.innerHTML = html;
+
+                // Attach click handlers via event delegation
+                container.querySelectorAll('.dup-action-btn').forEach(function(btn) {
+                    btn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        var action = this.getAttribute('data-action');
+                        var wId = this.getAttribute('data-id');
+                        if (action === 'profile') {
+                            document.getElementById('duplicates-modal').style.display = 'none';
+                            openProfile(wId);
+                        } else if (action === 'delete') {
+                            deleteWorker(wId);
+                            checkDuplicates();
+                        }
+                    });
+                });
+            }
+
+            document.getElementById('duplicates-modal').style.display = 'block';
+        } catch(e) {
+            console.error('checkDuplicates error:', e);
+            alert('שגיאה בבדיקת כפילויות: ' + e.message);
+        }
+    };
+
     // Navigation logic
     window.openProfile = function(id) {
         const url = `worker-profile-demo.html?id=${id}`;
@@ -397,6 +729,320 @@
             window.location.href = url;
         }
     }
+
+    // --- EXCEL IMPORT LOGIC ---
+    let excelData = [];
+    let excelHeaders = [];
+    
+    window.handleExcelUpload = function(e) {
+        const file = e.target.files[0];
+        if (!file) {
+            alert("לא נבחר קובץ.");
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onerror = function() {
+            alert("שגיאה: לא הצלחתי לקרוא את הקובץ מהדיסק. ייתכן שהקובץ פתוח בתוכנה אחרת או שאין הרשאות קריאה.");
+        };
+        reader.onload = function(evt) {
+            try {
+                if (typeof XLSX === 'undefined') {
+                    throw new Error("ספריית האקסל לא נטענה. אנא בדוק חיבור לאינטרנט או נסה לרענן.");
+                }
+                const data = new Uint8Array(evt.target.result);
+                const workbook = XLSX.read(data, {type: 'array', cellDates: true});
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                
+                // Convert to JSON with stringified dates
+                excelData = XLSX.utils.sheet_to_json(worksheet, {defval: "", raw: false, dateNF: "dd/mm/yyyy"});
+                
+                if (excelData.length === 0) {
+                    alert("הקובץ ריק או לא תקין.");
+                    return;
+                }
+                
+                // Get headers from first row
+                excelHeaders = Object.keys(excelData[0]);
+                
+                buildMappingUI();
+                
+                const modal = document.getElementById('excel-mapping-modal');
+                if (!modal) {
+                    alert("שגיאה אנושה: לא מצאתי את חלון המיפוי בקוד ה-HTML!");
+                    return;
+                }
+                
+                // Append to body to ensure it breaks out of any containers
+                document.body.appendChild(modal);
+                
+                modal.classList.remove('hidden');
+                modal.style.setProperty('display', 'flex', 'important');
+                modal.style.setProperty('z-index', '999999', 'important');
+                
+                document.getElementById('import-row-count').textContent = excelData.length + ' שורות';
+                
+                // Reset input so same file can be selected again if needed
+                document.getElementById('excel-upload').value = '';
+            } catch (err) {
+                console.error(err);
+                alert("שגיאה בפענוח הקובץ: " + err.message);
+            }
+        };
+        reader.readAsArrayBuffer(file);
+    };
+
+    window.closeMappingModal = function() {
+        const modal = document.getElementById('excel-mapping-modal');
+        if (modal) {
+            modal.classList.add('hidden');
+            modal.style.removeProperty('display');
+            modal.style.removeProperty('z-index');
+        }
+        excelData = [];
+        excelHeaders = [];
+    };
+
+    const systemFields = [
+        { key: 'id', label: 'תעודת זהות (שדה חובה)', req: true },
+        { key: 'firstName', label: 'שם פרטי' },
+        { key: 'lastName', label: 'שם משפחה' },
+        { key: 'departmentCode', label: 'קוד מחלקה' },
+        { key: 'departmentName', label: 'תיאור מילולי מחלקה' },
+        { key: 'startDate', label: 'תאריך תחילת עבודה' },
+        { key: 'fte', label: 'אחוז משרה' },
+        { key: 'phone', label: 'סלולרי' },
+        { key: 'homePhone', label: 'טלפון בית' },
+        { key: 'email', label: 'דואר אלקטרוני' },
+        { key: 'dob', label: 'תאריך לידה' },
+        { key: 'gender', label: 'מין' },
+        { key: 'familyStatus', label: 'מצב משפחתי' },
+        { key: 'childrenCount', label: 'מספר ילדים' },
+        { key: 'city', label: 'עיר מגורים' },
+        { key: 'street', label: 'רחוב' },
+        { key: 'house', label: 'מספר בית' },
+        { key: 'apt', label: 'מספר דירה' },
+        { key: 'zip', label: 'מיקוד' }
+    ];
+
+    function buildMappingUI() {
+        const container = document.getElementById('mapping-container');
+        
+        let html = `
+            <div class="w-full max-h-[60vh] overflow-auto custom-scrollbar border border-gray-200 shadow-inner bg-gray-50 rounded-xl relative">
+                <table class="w-full text-right border-collapse min-w-max">
+                    <thead class="sticky top-0 z-20 shadow-md bg-white">
+                        <tr>
+        `;
+        
+        excelHeaders.forEach((h, index) => {
+            // Try to auto guess
+            let bestMatch = '';
+            systemFields.forEach(f => {
+                const testLabel = f.label.replace(' (שדה חובה)', '');
+                if (h.includes(testLabel) || testLabel.includes(h) || 
+                   (f.key === 'id' && (h.includes('ת.ז') || h.includes('זהות'))) ||
+                   (f.key === 'phone' && (h.includes('נייד') || h.includes('טלפון')))) {
+                    bestMatch = f.key;
+                }
+            });
+
+            let optionsHtml = `<option value="">-- התעלם מעמודה זו --</option>`;
+            systemFields.forEach(f => {
+                const isSelected = (f.key === bestMatch) ? 'selected' : '';
+                optionsHtml += `<option value="${f.key}" ${isSelected}>${f.label}</option>`;
+            });
+            
+            let selectClass = bestMatch ? 'bg-green-50 border-green-300 text-green-700' : 'bg-red-50 border-red-300 text-red-700';
+
+            html += `
+                <th class="p-4 border border-gray-200 bg-indigo-50/30 align-top min-w-[140px]">
+                    <div class="font-bold text-gray-900 mb-3 truncate text-base" title="${h}">עמודה: ${h}</div>
+                    <select id="map-col-${index}" class="map-col-select w-full border-2 rounded-lg py-2 px-3 outline-none focus:ring-2 font-bold transition shadow-sm cursor-pointer ${selectClass}">
+                        ${optionsHtml}
+                    </select>
+                </th>
+            `;
+        });
+        
+        html += `
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm font-medium">
+        `;
+
+        for(let i=0; i<excelData.length; i++) {
+            html += `<tr class="hover:bg-gray-50 transition">`;
+            const row = excelData[i];
+            excelHeaders.forEach(h => {
+                const val = row[h] !== undefined && row[h] !== null ? row[h] : '<span class="text-gray-300 italic">ריק</span>';
+                html += `<td class="p-4 border border-gray-200 text-gray-700 truncate max-w-[200px] bg-white">${val}</td>`;
+            });
+            html += `</tr>`;
+        }
+        
+        html += `
+                    </tbody>
+                </table>
+            </div>
+        `;
+        
+        container.innerHTML = html;
+
+        // Apply color change logic dynamically
+        document.querySelectorAll('.map-col-select').forEach(select => {
+            select.addEventListener('change', function() {
+                if (this.value) {
+                    this.className = "map-col-select w-full border-2 rounded-lg py-2 px-3 outline-none focus:ring-2 font-bold transition shadow-sm cursor-pointer bg-green-50 border-green-300 text-green-700";
+                } else {
+                    this.className = "map-col-select w-full border-2 rounded-lg py-2 px-3 outline-none focus:ring-2 font-bold transition shadow-sm cursor-pointer bg-red-50 border-red-300 text-red-700";
+                }
+            });
+        });
+    }
+
+    window.executeExcelImport = function() {
+        const fieldMapping = {};
+        let idColName = null;
+
+        excelHeaders.forEach((h, index) => {
+            const select = document.getElementById(`map-col-${index}`);
+            if(select && select.value) {
+                fieldMapping[select.value] = h;
+                if(select.value === 'id') idColName = h;
+            }
+        });
+
+        if (!idColName) {
+            alert("חובה לבחור לאיזו עמודה באקסל יש לשייך את שדה החובה 'תעודת זהות'.");
+            return;
+        }
+
+        let newCount = 0;
+        let updateCount = 0;
+        let errorCount = 0;
+
+        excelData.forEach(row => {
+            const rawId = row[idColName];
+            if (!rawId) {
+                errorCount++;
+                return;
+            }
+
+            const normId = normalizeId(String(rawId));
+            
+            // Find existing worker
+            let worker = workers.find(w => normalizeId(String(w.id || '')) === normId);
+            let isNew = false;
+            
+            if (!worker) {
+                isNew = true;
+                worker = { id: normId, tags: ["יובא מאקסל"], years: 0 };
+            }
+
+            // Helper to convert DD/MM/YYYY or MM/DD/YYYY to YYYY-MM-DD for date inputs
+            const parseDateToISO = (val) => {
+                if (val === undefined || val === null || String(val).trim() === '') return '';
+                
+                // If it's a number (Excel Serial Number)
+                if (typeof val === 'number' || (!isNaN(Number(val)) && Number(val) > 10000 && Number(val) < 100000)) {
+                    // Excel epoch is 1899-12-30
+                    const excelEpoch = new Date(Date.UTC(1899, 11, 30));
+                    const jsDate = new Date(excelEpoch.getTime() + Number(val) * 86400000);
+                    return jsDate.toISOString().split('T')[0];
+                }
+
+                // If it's a JS Date object
+                if (val instanceof Date) {
+                    const y = val.getFullYear();
+                    const m = String(val.getMonth() + 1).padStart(2, '0');
+                    const d = String(val.getDate()).padStart(2, '0');
+                    return `${y}-${m}-${d}`;
+                }
+                
+                let strVal = String(val).trim();
+                if (/^\d{4}-\d{2}-\d{2}$/.test(strVal)) return strVal;
+
+                strVal = strVal.replace(/\./g, '/').replace(/-/g, '/');
+                if (strVal.includes('/')) {
+                    const p = strVal.split('/');
+                    if (p.length === 3) {
+                        let y = p[2], m = p[1], d = p[0];
+                        if (p[0].length === 4) {
+                            y = p[0]; m = p[1]; d = p[2];
+                        }
+                        if (Number(m) > 12 && Number(d) <= 12) {
+                            let temp = m; m = d; d = temp;
+                        }
+                        if (y.length === 2) {
+                           y = Number(y) > 50 ? '19' + y : '20' + y;
+                        }
+                        return `${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
+                    }
+                }
+                
+                const parsed = new Date(strVal);
+                if (!isNaN(parsed.getTime())) {
+                    const y = parsed.getFullYear();
+                    const m = String(parsed.getMonth() + 1).padStart(2, '0');
+                    const d = String(parsed.getDate()).padStart(2, '0');
+                    return `${y}-${m}-${d}`;
+                }
+
+                return strVal;
+            };
+
+            // Map fields safely
+            systemFields.forEach(f => {
+                if (f.key === 'id') return; // already handled
+                
+                const colName = fieldMapping[f.key];
+                if (colName && row[colName] !== undefined && row[colName] !== null && String(row[colName]).trim() !== '') {
+                    let rawValue = row[colName];
+                    let finalVal = '';
+                    
+                    if (f.key === 'startDate' || f.key === 'dob') {
+                        finalVal = parseDateToISO(rawValue);
+                    } else {
+                        finalVal = String(rawValue).trim();
+                    }
+                    
+                    const addressKeys = ['city', 'street', 'house', 'apt', 'zip', 'mailbox'];
+                    if (addressKeys.includes(f.key)) {
+                        if (!worker.address) worker.address = {};
+                        worker.address[f.key] = finalVal;
+                    } else {
+                        worker[f.key] = finalVal;
+                    }
+                }
+            });
+
+            if (isNew) {
+                workers.push(worker);
+                newCount++;
+            } else {
+                updateCount++;
+            }
+        });
+
+        saveWorkers();
+        renderWorkers();
+        closeMappingModal();
+        
+        // Check for near-duplicates introduced by this import
+        try {
+            const postImportDups = findDuplicates();
+            let dupWarning = '';
+            if (postImportDups.length > 0) {
+                dupWarning = '\n\n⚠️ שים לב! נמצאו ' + postImportDups.length + ' חשדות לכפילויות. לחץ על כפתור "בדיקת כפילויות" לבדיקה מפורטת.';
+            }
+            alert('הקליטה הסתיימה בהצלחה!\nנוספו: ' + newCount + ' עובדים חדשים.\nעודכנו: ' + updateCount + ' עובדים קיימים.\nשורות שהתעלמנו (ללא ת.ז): ' + errorCount + dupWarning);
+        } catch(e) {
+            console.error('Post-import check error:', e);
+            alert('הקליטה הסתיימה בהצלחה!\nנוספו: ' + newCount + ' עובדים חדשים.\nעודכנו: ' + updateCount + ' עובדים קיימים.\nשורות שהתעלמנו (ללא ת.ז): ' + errorCount);
+        }
+    };
 
     // Run
     init();
