@@ -54,17 +54,14 @@
                     <option value="מנהלה">מנהלה בלבד</option>
                     <option value="חינוך">חינוך בלבד</option>
                 </select>
-                <select class="border-2 border-indigo-200 text-indigo-700 bg-indigo-50 rounded-lg py-2 px-4 focus:ring outline-none font-bold shadow-sm">
-                    <option>🏷️ חיתוך לפי תגיות חכמות...</option>
-                    <option>מילואימניקים פעילים</option>
-                    <option>אבות / אמהות חד הוריים</option>
-                    <option>לקראת גיל פרישה / פנסיה</option>
+                <select id="tag-filter" onchange="renderWorkers()" class="border-2 border-indigo-200 text-indigo-700 bg-indigo-50 rounded-lg py-2 px-4 focus:ring outline-none font-bold shadow-sm max-w-[220px]">
+                    <option value="all">🏷️ חיתוך לפי תגיות חכמות...</option>
                 </select>
                 <div class="flex items-center gap-2">
                     <button onclick="renderWorkers()" class="bg-gray-800 hover:bg-gray-900 text-white px-6 py-2 rounded-lg font-bold shadow-sm transition flex items-center justify-center gap-2">
                         🔍 חפש
                     </button>
-                    <button onclick="document.getElementById('search-input').value = ''; document.getElementById('sector-filter').value = 'all'; renderWorkers();" class="bg-white hover:bg-gray-100 border-2 border-gray-200 text-gray-700 px-4 py-2 rounded-lg font-bold shadow-sm transition flex items-center justify-center gap-2" title="נקה סינון">
+                    <button onclick="document.getElementById('search-input').value = ''; document.getElementById('sector-filter').value = 'all'; document.getElementById('tag-filter').value = 'all'; renderWorkers();" class="bg-white hover:bg-gray-100 border-2 border-gray-200 text-gray-700 px-4 py-2 rounded-lg font-bold shadow-sm transition flex items-center justify-center gap-2" title="נקה סינון">
                         ✖ נקה
                     </button>
                 </div>
@@ -84,6 +81,7 @@
                         <th class="py-4 px-6 font-bold cursor-pointer hover:bg-gray-200 transition select-none" onclick="sortBy('departmentCode')">קוד מחלקה <span id="sort-icon-departmentCode" class="text-xs text-indigo-500 inline-block w-3"></span></th>
                         <th class="py-4 px-6 font-bold cursor-pointer hover:bg-gray-200 transition select-none" onclick="sortBy('departmentName')">תיאור מחלקה <span id="sort-icon-departmentName" class="text-xs text-indigo-500 inline-block w-3"></span></th>
                         <th class="py-4 px-6 font-bold cursor-pointer hover:bg-gray-200 transition select-none" onclick="sortBy('status')">סטטוס <span id="sort-icon-status" class="text-xs text-indigo-500 inline-block w-3"></span></th>
+                        <th class="py-4 px-6 font-bold cursor-pointer hover:bg-gray-200 transition select-none" onclick="sortBy('workerType')">דירוג <span id="sort-icon-workerType" class="text-xs text-indigo-500 inline-block w-3"></span></th>
                         <th class="py-4 px-6 font-bold">תגיות</th>
                         <th class="py-4 px-6 font-bold text-center">פעולות</th>
                     </tr>
@@ -217,7 +215,7 @@
 <!-- Duplicates Modal (outside main layout for proper z-index) -->
 <div id="duplicates-modal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:99999; backdrop-filter:blur(4px);">
     <div style="display:flex; align-items:center; justify-content:center; width:100%; height:100%; padding:1rem;">
-        <div style="background:white; width:100%; max-width:48rem; border-radius:1.5rem; box-shadow:0 25px 50px -12px rgba(0,0,0,.25); overflow:hidden; display:flex; flex-direction:column; max-height:85vh;">
+        <div style="background:white; width:100%; max-width:90vw; border-radius:1.5rem; box-shadow:0 25px 50px -12px rgba(0,0,0,.25); overflow:hidden; display:flex; flex-direction:column; max-height:85vh;">
             <div style="background:#fffbeb; padding:1.5rem; border-bottom:1px solid #fde68a; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
                 <div>
                     <h3 style="font-size:1.5rem; font-weight:900; color:#78350f;">&#9888;&#65039; בדיקת כפילויות</h3>
@@ -230,6 +228,33 @@
             </div>
             <div style="padding:1rem; border-top:1px solid #f3f4f6; display:flex; justify-content:flex-end; flex-shrink:0; background:white;">
                 <button onclick="document.getElementById('duplicates-modal').style.display='none'" style="padding:0.5rem 1.5rem; background:#1f2937; color:white; font-weight:bold; border-radius:0.75rem; border:none; cursor:pointer;">סגור</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Merge Modal -->
+<div id="merge-modal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.6); z-index:999999; backdrop-filter:blur(4px);">
+    <div style="display:flex; align-items:center; justify-content:center; width:100%; height:100%; padding:1rem;">
+        <div style="background:white; width:100%; max-width:64rem; border-radius:1.5rem; box-shadow:0 25px 50px -12px rgba(0,0,0,.25); overflow:hidden; display:flex; flex-direction:column; max-height:90vh;">
+            <div style="background:#f0fdfa; padding:1.5rem; border-bottom:1px solid #ccfbf1; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
+                <div>
+                    <h3 style="font-size:1.5rem; font-weight:900; color:#115e59; display:flex; align-items:center; gap:0.5rem;"><span style="font-size:1.8rem;">🤝</span> איחוד כרטסות חכם</h3>
+                    <p style="color:#0f766e; font-size:0.875rem; margin-top:0.25rem; font-weight:bold;">בחר אילו נתונים לשמור במקרה של חוסר התאמה. רשימות (כמו תגיות) ימוזגו אוטומטית.</p>
+                </div>
+                <button onclick="closeMergeModal()" style="width:2.5rem; height:2.5rem; border-radius:0.75rem; background:white; color:#0f766e; font-size:1.25rem; font-weight:bold; border:1px solid #ccfbf1; cursor:pointer; display:flex; align-items:center; justify-content:center;">&times;</button>
+            </div>
+            
+            <div id="merge-content" style="padding:1.5rem; overflow-y:auto; flex:1; background:#f8fafc;">
+                <!-- dynamic merge rows -->
+            </div>
+            
+            <div style="padding:1rem 1.5rem; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; flex-shrink:0; background:white;">
+                <button onclick="closeMergeModal()" style="padding:0.75rem 1.5rem; background:white; color:#64748b; font-weight:bold; border-radius:0.75rem; border:2px solid #e2e8f0; cursor:pointer; transition:all 0.2s;" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='white'">ביטול איחוד</button>
+                <button onclick="executeMerge()" style="padding:0.75rem 2rem; background:#0d9488; color:white; font-weight:bold; border-radius:0.75rem; border:none; cursor:pointer; display:flex; align-items:center; gap:0.5rem; box-shadow:0 4px 6px -1px rgba(13,148,136,0.2); transition:all 0.2s;" onmouseover="this.style.background='#0f766e'" onmouseout="this.style.background='#0d9488'">
+                    <span>בצע איחוד ושמור</span>
+                    <span>✓</span>
+                </button>
             </div>
         </div>
     </div>
@@ -283,12 +308,43 @@
             saveWorkers();
         }
         
+        populateTagFilter();
         renderWorkers();
         setupListeners();
     }
 
     function saveWorkers() {
         localStorage.setItem('committee_workers', JSON.stringify(workers));
+        populateTagFilter();
+    }
+
+    function populateTagFilter() {
+        const tagFilter = document.getElementById('tag-filter');
+        if (!tagFilter) return;
+        
+        const allTagsSet = new Set();
+        workers.forEach(w => {
+            if (w.tags) {
+                w.tags.forEach(t => allTagsSet.add(t));
+            }
+        });
+        
+        // Preserve the selected value if it exists in the new list, else default to 'all'
+        const currentVal = tagFilter.value;
+        
+        let html = '<option value="all">🏷️ חיתוך לפי תגיות חכמות...</option>';
+        Array.from(allTagsSet)
+            .sort((a, b) => a.localeCompare(b, 'he'))
+            .forEach(t => {
+                html += `<option value="${t}">${t}</option>`;
+            });
+            
+        tagFilter.innerHTML = html;
+        if (allTagsSet.has(currentVal)) {
+            tagFilter.value = currentVal;
+        } else {
+            tagFilter.value = 'all';
+        }
     }
 
     function normalizeId(id) {
@@ -332,7 +388,7 @@
     };
 
     function updateSortIcons() {
-        const cols = ['id', 'firstName', 'lastName', 'gender', 'phone', 'departmentCode', 'departmentName', 'status'];
+        const cols = ['id', 'firstName', 'lastName', 'gender', 'phone', 'departmentCode', 'departmentName', 'status', 'workerType'];
         cols.forEach(c => {
             const iconSpan = document.getElementById('sort-icon-' + c);
             if (iconSpan) {
@@ -348,6 +404,8 @@
     function renderWorkers() {
         const searchTerm = searchInput.value.toLowerCase();
         const sectorTerm = sectorFilter.value;
+        const tagFilterEl = document.getElementById('tag-filter');
+        const tagTerm = tagFilterEl ? tagFilterEl.value : 'all';
 
         // Sort the full dataset first
         if (currentSortCol) {
@@ -384,8 +442,9 @@
             
             const matchesSearch = matchesName || matchesId || matchesPhone;
             const matchesSector = sectorTerm === 'all' || w.sector === sectorTerm;
+            const matchesTag = tagTerm === 'all' || (w.tags && w.tags.includes(tagTerm));
             
-            return matchesSearch && matchesSector;
+            return matchesSearch && matchesSector && matchesTag;
         });
 
         totalCount.textContent = workers.length.toLocaleString();
@@ -456,6 +515,9 @@
                     <td class="py-3 px-6 whitespace-nowrap">
                         ${statusBadge}
                     </td>
+                    <td class="py-3 px-6 whitespace-nowrap">
+                        <span class="text-sm font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded">${w.workerType || 'עובדים'}</span>
+                    </td>
                     <td class="py-3 px-6">
                         ${tagsHtml}
                     </td>
@@ -474,6 +536,11 @@
 
     function setupListeners() {
         // Search button triggers renderWorkers manually now.
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                renderWorkers();
+            }
+        });
 
         // ID validation on blur to remove error
         idInput.addEventListener('input', () => {
@@ -672,25 +739,57 @@
                     html += '<span class="font-black text-amber-800">חשד #' + (idx + 1) + '</span>';
                     html += '<div class="flex gap-1">' + reasonTags + '</div>';
                     html += '</div>';
+                    const phoneA = p.workerA.phone || 'אין טלפון';
+                    const phoneB = p.workerB.phone || 'אין טלפון';
+                    const statusA = p.workerA.status || 'אין סטטוס';
+                    const statusB = p.workerB.status || 'אין סטטוס';
+                    const sectorA = p.workerA.sector || 'אין סקטור';
+                    const sectorB = p.workerB.sector || 'אין סקטור';
+                    const workerTypeA = p.workerA.workerType || 'אין דירוג';
+                    const workerTypeB = p.workerB.workerType || 'אין דירוג';
+                    const assocA = p.workerA.association || 'אין עמותה';
+                    const assocB = p.workerB.association || 'אין עמותה';
+
                     html += '<div class="grid grid-cols-2 divide-x divide-x-reverse divide-gray-200">';
                     
-                    html += '<div class="p-4">';
-                    html += '<p class="font-black text-base text-gray-900">' + nameA + '</p>';
+                    html += '<div class="p-5 flex flex-col justify-between">';
+                    html += '<div>';
+                    html += '<p class="font-black text-xl text-gray-900">' + nameA + '</p>';
                     html += '<p class="font-mono text-sm text-gray-500 mt-1">ת.ז: ' + Number(idA) + '</p>';
-                    html += '<p class="text-xs text-gray-400 mt-1">' + deptA + '</p>';
-                    html += '<div class="mt-3 flex gap-2">';
-                    html += '<button data-action="profile" data-id="' + idA + '" class="dup-action-btn text-xs bg-indigo-50 text-indigo-700 px-3 py-1 rounded-lg font-bold hover:bg-indigo-100 transition cursor-pointer">פתח כרטסת</button>';
-                    html += '<button data-action="delete" data-id="' + idA + '" class="dup-action-btn text-xs bg-red-50 text-red-700 px-3 py-1 rounded-lg font-bold hover:bg-red-100 transition cursor-pointer">מחק</button>';
+                    html += '<div class="mt-3 space-y-1">';
+                    html += '<p class="text-sm text-gray-700"><strong>מחלקה:</strong> ' + deptA + '</p>';
+                    html += '<p class="text-sm text-gray-700"><strong>טלפון:</strong> <span class="font-mono">' + phoneA + '</span></p>';
+                    html += '<p class="text-sm text-gray-700"><strong>סקטור:</strong> ' + sectorA + '</p>';
+                    html += '<p class="text-sm text-gray-700"><strong>סטטוס:</strong> ' + statusA + '</p>';
+                    html += '<p class="text-sm text-gray-700"><strong>דירוג:</strong> ' + workerTypeA + '</p>';
+                    html += '<p class="text-sm text-gray-700"><strong>עמותה:</strong> ' + assocA + '</p>';
+                    html += '</div></div>';
+                    html += '<div class="mt-5 flex gap-3">';
+                    html += '<button data-action="profile" data-id="' + idA + '" class="dup-action-btn text-sm bg-indigo-50 text-indigo-700 px-4 py-2 rounded-lg font-bold hover:bg-indigo-100 transition cursor-pointer flex-1">פתח כרטסת</button>';
+                    html += '<button data-action="delete" data-id="' + idA + '" class="dup-action-btn text-sm bg-red-50 text-red-700 px-4 py-2 rounded-lg font-bold hover:bg-red-100 transition cursor-pointer flex-1">מחק רשומה</button>';
                     html += '</div></div>';
 
-                    html += '<div class="p-4">';
-                    html += '<p class="font-black text-base text-gray-900">' + nameB + '</p>';
+                    html += '<div class="p-5 flex flex-col justify-between bg-gray-50/50">';
+                    html += '<div>';
+                    html += '<p class="font-black text-xl text-gray-900">' + nameB + '</p>';
                     html += '<p class="font-mono text-sm text-gray-500 mt-1">ת.ז: ' + Number(idB) + '</p>';
-                    html += '<p class="text-xs text-gray-400 mt-1">' + deptB + '</p>';
-                    html += '<div class="mt-3 flex gap-2">';
-                    html += '<button data-action="profile" data-id="' + idB + '" class="dup-action-btn text-xs bg-indigo-50 text-indigo-700 px-3 py-1 rounded-lg font-bold hover:bg-indigo-100 transition cursor-pointer">פתח כרטסת</button>';
-                    html += '<button data-action="delete" data-id="' + idB + '" class="dup-action-btn text-xs bg-red-50 text-red-700 px-3 py-1 rounded-lg font-bold hover:bg-red-100 transition cursor-pointer">מחק</button>';
+                    html += '<div class="mt-3 space-y-1">';
+                    html += '<p class="text-sm text-gray-700"><strong>מחלקה:</strong> ' + deptB + '</p>';
+                    html += '<p class="text-sm text-gray-700"><strong>טלפון:</strong> <span class="font-mono">' + phoneB + '</span></p>';
+                    html += '<p class="text-sm text-gray-700"><strong>סקטור:</strong> ' + sectorB + '</p>';
+                    html += '<p class="text-sm text-gray-700"><strong>סטטוס:</strong> ' + statusB + '</p>';
+                    html += '<p class="text-sm text-gray-700"><strong>דירוג:</strong> ' + workerTypeB + '</p>';
+                    html += '<p class="text-sm text-gray-700"><strong>עמותה:</strong> ' + assocB + '</p>';
                     html += '</div></div>';
+                    html += '<div class="mt-5 flex gap-3">';
+                    html += '<button data-action="profile" data-id="' + idB + '" class="dup-action-btn text-sm bg-indigo-50 text-indigo-700 px-4 py-2 rounded-lg font-bold hover:bg-indigo-100 transition cursor-pointer flex-1">פתח כרטסת</button>';
+                    html += '<button data-action="delete" data-id="' + idB + '" class="dup-action-btn text-sm bg-red-50 text-red-700 px-4 py-2 rounded-lg font-bold hover:bg-red-100 transition cursor-pointer flex-1">מחק רשומה</button>';
+                    html += '</div></div>';
+
+                    html += '<div class="bg-teal-50/50 px-5 py-3 border-t border-teal-100 flex justify-center">';
+                    html += `<button data-action="merge" data-ida="${idA}" data-idb="${idB}" class="dup-action-btn bg-teal-600 hover:bg-teal-700 text-white px-6 py-2.5 rounded-xl font-bold transition shadow-sm flex items-center gap-2">`;
+                    html += '<span>🤝</span> <span>אחד רשומות חכם (Merge)</span>';
+                    html += '</button></div>';
 
                     html += '</div></div>';
                 }
@@ -708,6 +807,10 @@
                         } else if (action === 'delete') {
                             deleteWorker(wId);
                             checkDuplicates();
+                        } else if (action === 'merge') {
+                            var idA = this.getAttribute('data-ida');
+                            var idB = this.getAttribute('data-idb');
+                            openMergeModal(idA, idB);
                         }
                     });
                 });
@@ -719,6 +822,172 @@
             alert('שגיאה בבדיקת כפילויות: ' + e.message);
         }
     };
+
+    // --- MERGE LOGIC ---
+    let mergeWorkerA = null;
+    let mergeWorkerB = null;
+
+    window.closeMergeModal = function() {
+        document.getElementById('merge-modal').style.display = 'none';
+        mergeWorkerA = null;
+        mergeWorkerB = null;
+    }
+
+    window.openMergeModal = function(idA, idB) {
+        document.getElementById('duplicates-modal').style.display = 'none';
+        
+        mergeWorkerA = workers.find(w => String(w.id) === String(idA));
+        mergeWorkerB = workers.find(w => String(w.id) === String(idB));
+        
+        if (!mergeWorkerA || !mergeWorkerB) return;
+        
+        const container = document.getElementById('merge-content');
+        
+        let html = '<div class="space-y-3">';
+        
+        const fields = [
+            { key: 'firstName', label: 'שם פרטי' },
+            { key: 'lastName', label: 'שם משפחה' },
+            { key: 'id', label: 'תעודת זהות' },
+            { key: 'phone', label: 'טלפון נייד' },
+            { key: 'departmentCode', label: 'קוד מחלקה' },
+            { key: 'departmentName', label: 'תיאור מחלקה' },
+            { key: 'sector', label: 'סקטור' },
+            { key: 'status', label: 'סטטוס' },
+            { key: 'workerType', label: 'דירוג' },
+            { key: 'association', label: 'שיוך לעמותה' },
+            { key: 'gender', label: 'מין' }
+        ];
+        
+        fields.forEach(f => {
+            const valA = mergeWorkerA[f.key] || '';
+            const valB = mergeWorkerB[f.key] || '';
+            
+            html += '<div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col md:flex-row md:items-center gap-4">';
+            html += `<div class="w-32 font-bold text-gray-700">${f.label}</div>`;
+            
+            if (valA === valB) {
+                html += `<div class="flex-1 flex items-center gap-2 text-green-700 bg-green-50 px-4 py-2 rounded-lg border border-green-100">
+                    <span class="font-bold">${valA || '-'}</span> <span class="text-xs font-bold">(זהה בשתי הרשומות)</span>
+                    <input type="hidden" name="merge_${f.key}" value="A">
+                </div>`;
+            } else {
+                html += `<div class="flex-1 grid grid-cols-2 gap-4">
+                    <label class="flex items-center gap-3 p-3 rounded-lg border-2 border-amber-200 bg-amber-50 cursor-pointer hover:bg-amber-100 transition relative overflow-hidden group">
+                        <input type="radio" name="merge_${f.key}" value="A" class="w-5 h-5 text-teal-600 focus:ring-teal-500 border-gray-300" checked>
+                        <div class="flex flex-col">
+                            <span class="text-xs text-amber-700 font-bold mb-0.5">מתוך רשומה א'</span>
+                            <span class="font-bold text-gray-900">${valA || '<span class="text-gray-400 italic">ריק</span>'}</span>
+                        </div>
+                    </label>
+                    <label class="flex items-center gap-3 p-3 rounded-lg border-2 border-amber-200 bg-amber-50 cursor-pointer hover:bg-amber-100 transition relative overflow-hidden group">
+                        <input type="radio" name="merge_${f.key}" value="B" class="w-5 h-5 text-teal-600 focus:ring-teal-500 border-gray-300">
+                        <div class="flex flex-col">
+                            <span class="text-xs text-amber-700 font-bold mb-0.5">מתוך רשומה ב'</span>
+                            <span class="font-bold text-gray-900">${valB || '<span class="text-gray-400 italic">ריק</span>'}</span>
+                        </div>
+                    </label>
+                </div>`;
+            }
+            html += '</div>';
+        });
+
+        // Tags & Children (Automatic Union)
+        const tagsA = mergeWorkerA.tags || [];
+        const tagsB = mergeWorkerB.tags || [];
+        const mergedTags = Array.from(new Set([...tagsA, ...tagsB]));
+        
+        const childrenCountA = (mergeWorkerA.children || []).length;
+        const childrenCountB = (mergeWorkerB.children || []).length;
+        
+        html += `<div class="bg-indigo-50 p-4 rounded-xl border border-indigo-100 shadow-sm flex flex-col md:flex-row md:items-start gap-4 mt-6">
+            <div class="w-32 font-bold text-indigo-900 mt-2">תגיות ומשפחה</div>
+            <div class="flex-1">
+                <p class="text-sm text-indigo-700 font-bold mb-2">יתבצע איחוד אוטומטי ללא אובדן נתונים:</p>
+                <div class="flex flex-wrap gap-2 mb-3">
+                    <span class="text-xs font-bold bg-white text-indigo-600 px-2 py-1 rounded shadow-sm border border-indigo-100">תגיות:</span>
+                    ${mergedTags.map(t => `<span class="bg-indigo-200 text-indigo-900 px-2 py-1 rounded text-xs font-bold">${t}</span>`).join('')}
+                    ${mergedTags.length === 0 ? '<span class="text-xs text-indigo-400 font-medium px-2 py-1">אין תגיות</span>' : ''}
+                </div>
+                <div class="flex flex-wrap gap-2 mb-3">
+                    <span class="text-xs font-bold bg-white text-indigo-600 px-2 py-1 rounded shadow-sm border border-indigo-100">ילדים (עד גיל 18):</span>
+                    <span class="text-xs text-indigo-800 font-medium px-2 py-1">ייכללו כל הילדים המופיעים בכרטסות.</span>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <span class="text-xs font-bold bg-white text-indigo-600 px-2 py-1 rounded shadow-sm border border-indigo-100">תשלומי מס ועד:</span>
+                    <span class="text-xs text-indigo-800 font-medium px-2 py-1">כלל חודשי התשלום יאוחדו אוטומטית למניעת אובדן.</span>
+                </div>
+            </div>
+        </div>`;
+        
+        html += '</div>';
+        
+        container.innerHTML = html;
+        document.getElementById('merge-modal').style.display = 'block';
+    }
+
+    window.executeMerge = function() {
+        if (!mergeWorkerA || !mergeWorkerB) return;
+        
+        const mergedWorker = {};
+        
+        const fields = ['firstName', 'lastName', 'id', 'phone', 'departmentCode', 'departmentName', 'sector', 'status', 'workerType', 'association', 'gender'];
+        
+        fields.forEach(f => {
+            const radios = document.getElementsByName('merge_' + f);
+            let selectedVal = 'A';
+            for (let i = 0; i < radios.length; i++) {
+                if (radios[i].checked || radios[i].type === 'hidden') {
+                    selectedVal = radios[i].value;
+                    break;
+                }
+            }
+            mergedWorker[f] = selectedVal === 'A' ? mergeWorkerA[f] : mergeWorkerB[f];
+        });
+        
+        // Auto Merge arrays and objects
+        mergedWorker.tags = Array.from(new Set([...(mergeWorkerA.tags || []), ...(mergeWorkerB.tags || [])]));
+        
+        mergedWorker.unionTaxPayments = JSON.parse(JSON.stringify(mergeWorkerA.unionTaxPayments || {}));
+        const taxB = mergeWorkerB.unionTaxPayments || {};
+        for (let yr in taxB) {
+            if (!mergedWorker.unionTaxPayments[yr]) {
+                mergedWorker.unionTaxPayments[yr] = [...taxB[yr]];
+            } else {
+                mergedWorker.unionTaxPayments[yr] = Array.from(new Set([...mergedWorker.unionTaxPayments[yr], ...taxB[yr]]));
+            }
+        }
+        
+        // children logic
+        const childrenMap = new Map();
+        [...(mergeWorkerA.children || []), ...(mergeWorkerB.children || [])].forEach(c => {
+            if (c && c.name) childrenMap.set(c.name.trim(), c);
+        });
+        mergedWorker.children = Array.from(childrenMap.values());
+        
+        // address fallback
+        mergedWorker.address = mergeWorkerA.address || mergeWorkerB.address || null;
+        
+        // other fields
+        mergedWorker.avatar = mergeWorkerA.avatar || mergeWorkerB.avatar;
+        mergedWorker.years = Math.max(mergeWorkerA.years || 0, mergeWorkerB.years || 0);
+        mergedWorker.startDate = mergeWorkerA.startDate || mergeWorkerB.startDate;
+        mergedWorker.fte = mergeWorkerA.fte || mergeWorkerB.fte;
+        mergedWorker.association = mergeWorkerA.association || mergeWorkerB.association;
+
+        // Remove old A and B
+        workers = workers.filter(w => w.id !== mergeWorkerA.id && w.id !== mergeWorkerB.id);
+        
+        // Add new
+        workers.push(mergedWorker);
+        saveWorkers();
+        
+        closeMergeModal();
+        renderWorkers();
+        
+        alert('המיזוג בוצע בהצלחה! שתי הכרטסות הישנות הוחלפו בכרטסת מאוחדת.');
+        checkDuplicates(); // refresh duplicates list
+    }
 
     // Navigation logic
     window.openProfile = function(id) {
@@ -823,7 +1092,11 @@
         { key: 'street', label: 'רחוב' },
         { key: 'house', label: 'מספר בית' },
         { key: 'apt', label: 'מספר דירה' },
-        { key: 'zip', label: 'מיקוד' }
+        { key: 'zip', label: 'מיקוד' },
+        { key: 'association', label: 'שיוך לעמותה (שחר און/מחר/קרן ידע/אחר)' },
+        { key: 'sector', label: 'סקטור (מנהלה/חינוך - רק לשחר און)' },
+        { key: 'workerType', label: 'דירוג (עובדים/בכירים/גמלאים)' },
+        { key: 'unionTaxDate', label: 'מס ועד - תאריך אחרון ששולם' }
     ];
 
     function buildMappingUI() {
@@ -1017,6 +1290,115 @@
                     }
                 }
             });
+
+            // Normalizations and specific logic
+            // Gender Normalization
+            if (worker.gender) {
+                let g = worker.gender.trim();
+                if (g === 'ז' || g === 'זכר') worker.gender = 'זכר';
+                else if (g === 'נ' || g === 'נקבה') worker.gender = 'נקבה';
+                else worker.gender = 'אחר';
+            }
+
+            // Association Normalization
+            if (worker.association) {
+                let assoc = worker.association;
+                if (assoc.includes('שחר')) worker.association = 'שחר און';
+                else if (assoc.includes('מחר') || assoc.includes('מח"ר')) worker.association = 'מח"ר';
+                else if (assoc.includes('ידע')) worker.association = 'קרן ידע';
+                else worker.association = 'אחר';
+            }
+
+            // Sector Normalization
+            if (worker.sector && worker.association === 'שחר און') {
+                let sec = worker.sector;
+                if (sec.includes('מנהלה')) worker.sector = 'מנהלה';
+                else if (sec.includes('חינוך')) worker.sector = 'חינוך';
+                else worker.sector = '';
+            } else {
+                worker.sector = ''; // clear if not shachar on
+            }
+
+            // Worker Type Normalization
+            if (worker.workerType) {
+                let wt = worker.workerType.trim();
+                if (wt.includes('בכיר')) worker.workerType = 'בכירים';
+                else if (wt.includes('פנס') || wt.includes('גמלאי')) worker.workerType = 'גמלאים';
+                else worker.workerType = 'עובדים';
+            }
+
+            // Union Tax Logic
+            if (worker.unionTaxDate) {
+                let dateStr = String(worker.unionTaxDate).trim().toLowerCase();
+                let year, month;
+                
+                // מילון חודשים - תומך בעברית ובאנגלית (פורמט אקסל כמו Apr-26)
+                const monthMap = {
+                    'ינו': 1, 'פבר': 2, 'מרץ': 3, 'אפר': 4, 'מאי': 5, 'יונ': 6,
+                    'יול': 7, 'אוג': 8, 'ספט': 9, 'אוק': 10, 'נוב': 11, 'דצמ': 12,
+                    'jan': 1, 'feb': 2, 'mar': 3, 'apr': 4, 'may': 5, 'jun': 6,
+                    'jul': 7, 'aug': 8, 'sep': 9, 'oct': 10, 'nov': 11, 'dec': 12
+                };
+                
+                let foundMonthKey = Object.keys(monthMap).find(k => dateStr.includes(k));
+                
+                if (foundMonthKey) {
+                    month = monthMap[foundMonthKey];
+                    let digits = dateStr.replace(/[^\d]/g, '');
+                    if (digits) {
+                        year = parseInt(digits);
+                        if (year < 100) year += 2000;
+                        else if (year > 9999) year = parseInt(digits.slice(-2)) + 2000;
+                    } else {
+                        year = new Date().getFullYear();
+                    }
+                } else if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+                    // 2026-04-01
+                    const parts = dateStr.split('-');
+                    year = parseInt(parts[0]);
+                    month = parseInt(parts[1]);
+                } else if (dateStr.includes('/')) {
+                    // 04/2026 או 01/04/2026
+                    const parts = dateStr.split('/');
+                    if (parts.length === 2) {
+                        month = parseInt(parts[0]);
+                        year = parseInt(parts[1]);
+                        if (year < 100) year += 2000;
+                    } else if (parts.length === 3) {
+                        month = parseInt(parts[1]); // חודש הוא תמיד באמצע בפורמט DD/MM/YYYY
+                        year = parseInt(parts[2]);
+                        if (year < 100) year += 2000;
+                    }
+                } else if (dateStr.includes('-')) {
+                    // 04-2026 או 01-04-2026
+                    const parts = dateStr.split('-');
+                    if (parts.length === 2) {
+                        month = parseInt(parts[0]);
+                        year = parseInt(parts[1]);
+                        if (year < 100) year += 2000;
+                    } else if (parts.length === 3) {
+                        month = parseInt(parts[1]);
+                        year = parseInt(parts[2]);
+                        if (year < 100) year += 2000;
+                    }
+                } else if (/^\d{1,2}$/.test(dateStr)) {
+                    // Only a month number (e.g., "5" or "05")
+                    month = parseInt(dateStr);
+                    year = new Date().getFullYear(); // Assume current year
+                }
+
+                if (year && month && !isNaN(year) && !isNaN(month) && month >= 1 && month <= 12) {
+                    if (!worker.unionTaxPayments) worker.unionTaxPayments = {};
+                    if (!worker.unionTaxPayments[year]) worker.unionTaxPayments[year] = [];
+                    // Only mark the specific month uploaded as paid
+                    if (!worker.unionTaxPayments[year].includes(month)) {
+                        worker.unionTaxPayments[year].push(month);
+                    }
+                } else {
+                    alert(`הערה: הערך '${dateStr}' בעמודת מס ועד עבור עובד ת.ז ${worker.id} לא פוענח בהצלחה ולא סומן. אנא ודא שהתאריך תקין.`);
+                }
+                delete worker.unionTaxDate;
+            }
 
             if (isNew) {
                 workers.push(worker);

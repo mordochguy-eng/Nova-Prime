@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ComManager - מרכז רווחה ארגוני</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    <style>
+        html { font-size: 14px; }
+        body { font-family: 'Heebo', sans-serif; background-color: #f1f5f9; }
+        .glass { background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+        .fade-in { animation: fadeIn 0.3s ease-out; }
+        .action-btn { transition: all 0.2s ease; }
+        .action-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 24px -8px rgba(0,0,0,0.15); }
+    </style>
+</head>
+<body class="text-gray-800">
+<div class="min-h-screen flex">
+    <div class="flex-1 flex flex-col overflow-hidden h-screen">
+
+        <!-- Header -->
+        <header class="glass shadow-sm z-10 p-5 px-8 flex justify-between items-center border-b border-slate-200">
+            <div>
+                <h1 class="text-2xl font-black text-slate-800">🎪 מרכז רווחה ארגוני</h1>
+                <p class="text-sm text-slate-500 mt-1 font-medium">ניהול כל פעילויות הרווחה, האירועים והנופשים של הארגון</p>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-4 lg:p-8">
+            <div class="max-w-7xl mx-auto space-y-8">
+
+                <!-- Quick Action Buttons -->
+                <section>
+                    <h2 class="text-lg font-black text-slate-700 mb-4 flex items-center gap-2">
+                        <span class="bg-indigo-100 text-indigo-600 w-8 h-8 rounded-lg flex items-center justify-center text-sm">+</span>
+                        הקמת פעילות חדשה
+                    </h2>
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                        <button onclick="openCreateModal('פעילויות רווחה','🎪','indigo')" class="action-btn bg-white border-2 border-indigo-100 hover:border-indigo-400 rounded-2xl p-5 flex flex-col items-center gap-3 shadow-sm">
+                            <span class="text-3xl w-14 h-14 bg-indigo-50 rounded-xl flex items-center justify-center">🎪</span>
+                            <span class="font-bold text-sm text-slate-700">פעילויות רווחה</span>
+                        </button>
+                        <button onclick="openCreateModal('הצגות ומופעים','🎭','purple')" class="action-btn bg-white border-2 border-purple-100 hover:border-purple-400 rounded-2xl p-5 flex flex-col items-center gap-3 shadow-sm">
+                            <span class="text-3xl w-14 h-14 bg-purple-50 rounded-xl flex items-center justify-center">🎭</span>
+                            <span class="font-bold text-sm text-slate-700">הצגות ומופעים</span>
+                        </button>
+                        <button onclick="openCreateModal('נופש בארץ','🏖️','emerald')" class="action-btn bg-white border-2 border-emerald-100 hover:border-emerald-400 rounded-2xl p-5 flex flex-col items-center gap-3 shadow-sm">
+                            <span class="text-3xl w-14 h-14 bg-emerald-50 rounded-xl flex items-center justify-center">🏖️</span>
+                            <span class="font-bold text-sm text-slate-700">נופש בארץ</span>
+                        </button>
+                        <button onclick="openCreateModal('נופש בחו\"ל','✈️','blue')" class="action-btn bg-white border-2 border-blue-100 hover:border-blue-400 rounded-2xl p-5 flex flex-col items-center gap-3 shadow-sm">
+                            <span class="text-3xl w-14 h-14 bg-blue-50 rounded-xl flex items-center justify-center">✈️</span>
+                            <span class="font-bold text-sm text-slate-700">נופש בחו"ל</span>
+                        </button>
+                        <button onclick="openCreateModal('ימי כיף וגיבוש','🎯','orange')" class="action-btn bg-white border-2 border-orange-100 hover:border-orange-400 rounded-2xl p-5 flex flex-col items-center gap-3 shadow-sm">
+                            <span class="text-3xl w-14 h-14 bg-orange-50 rounded-xl flex items-center justify-center">🎯</span>
+                            <span class="font-bold text-sm text-slate-700">ימי כיף וגיבוש</span>
+                        </button>
+                        <button onclick="openCreateModal('פעילויות עמותות','🏛️','rose')" class="action-btn bg-white border-2 border-rose-100 hover:border-rose-400 rounded-2xl p-5 flex flex-col items-center gap-3 shadow-sm">
+                            <span class="text-3xl w-14 h-14 bg-rose-50 rounded-xl flex items-center justify-center">🏛️</span>
+                            <span class="font-bold text-sm text-slate-700">פעילויות עמותות</span>
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Activities Table -->
+                <section class="bg-white rounded-3xl border border-gray-200 shadow-sm flex flex-col overflow-hidden">
+                    <div class="p-6 border-b border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4 bg-gray-50/50">
+                        <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                            <span class="text-xl">📋</span> פעילויות מתוכננות ופעילות
+                        </h2>
+                        <div class="flex flex-wrap gap-3 items-center">
+                            <input type="text" id="search-input" onkeyup="renderTable()" placeholder="🔍 חיפוש פעילות..." class="border-2 border-gray-200 rounded-lg py-2 px-4 focus:ring outline-none font-bold text-sm shadow-sm w-52">
+                            <select id="filter-category" onchange="renderTable()" class="border-2 border-indigo-200 text-indigo-700 bg-indigo-50 rounded-lg py-2 px-4 outline-none font-bold shadow-sm text-sm">
+                                <option value="">כל הקטגוריות</option>
+                                <option value="פעילויות רווחה">🎪 פעילויות רווחה</option>
+                                <option value="הצגות ומופעים">🎭 הצגות ומופעים</option>
+                                <option value="נופש בארץ">🏖️ נופש בארץ</option>
+                                <option value="נופש בחו&quot;ל">✈️ נופש בחו"ל</option>
+                                <option value="ימי כיף וגיבוש">🎯 ימי כיף וגיבוש</option>
+                                <option value="פעילויות עמותות">🏛️ פעילויות עמותות</option>
+                            </select>
+                            <select id="filter-status" onchange="renderTable()" class="border-2 border-gray-200 rounded-lg py-2 px-4 outline-none font-bold shadow-sm text-sm">
+                                <option value="">כל הסטטוסים</option>
+                                <option value="בתכנון">בתכנון</option>
+                                <option value="באוויר">באוויר</option>
+                                <option value="הסתיים">הסתיים</option>
+                            </select>
+                            <button onclick="clearFilters()" class="text-sm font-bold text-gray-500 hover:text-red-500 transition">🗑️ נקה</button>
+                        </div>
+                    </div>
+                    <div id="activities-container" class="p-6 flex flex-col gap-6 bg-slate-50/50"></div>
+                    <div id="empty-state" class="hidden py-16 text-center text-gray-400">
+                        <div class="text-5xl mb-3 opacity-50">🎪</div>
+                        <p class="font-bold text-lg">אין פעילויות להצגה</p>
+                        <p class="text-sm mt-1">לחץ על אחד הכפתורים למעלה כדי ליצור פעילות חדשה</p>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Create Activity Modal -->
+<div id="create-modal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:9999; backdrop-filter:blur(4px);">
+    <div style="display:flex; align-items:center; justify-content:center; height:100%;">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden fade-in">
+            <!-- Modal Header -->
+            <div id="modal-header" class="p-6 border-b border-gray-100 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <span id="modal-icon" class="text-2xl w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center">🎪</span>
+                    <div>
+                        <h3 id="modal-title" class="text-xl font-black text-slate-800">הקמת פעילות חדשה</h3>
+                        <p class="text-sm text-slate-500 font-medium">מלא את הפרטים וצור פעילות</p>
+                    </div>
+                </div>
+                <button onclick="closeCreateModal()" class="w-10 h-10 rounded-xl bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-500 text-xl transition">&times;</button>
+            </div>
+            <!-- Modal Body -->
+            <div class="p-6 space-y-5">
+                <div>
+                    <label class="block text-sm font-black text-slate-600 mb-1.5">שם הפעילות</label>
+                    <input type="text" id="m-name" placeholder="לדוג': סופ״ש זוגות באילת" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 font-bold text-slate-800">
+                </div>
+                <input type="hidden" id="m-category">
+                <div class="grid grid-cols-2 gap-4" id="date-container-single">
+                    <div>
+                        <label class="block text-sm font-black text-slate-600 mb-1.5">תאריך הפעילות</label>
+                        <input type="date" id="m-date" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 outline-none focus:border-indigo-500 font-bold text-slate-700">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-black text-slate-600 mb-1.5">מכסת משתתפים</label>
+                        <input type="number" id="m-capacity" placeholder="לדוג': 50" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 outline-none focus:border-indigo-500 font-bold text-slate-700">
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-3 gap-4 hidden" id="date-container-range">
+                    <div>
+                        <label class="block text-sm font-black text-slate-600 mb-1.5">תאריך המראה/יציאה</label>
+                        <input type="date" id="m-date-start" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 outline-none focus:border-indigo-500 font-bold text-slate-700">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-black text-slate-600 mb-1.5">תאריך נחיתה/חזרה</label>
+                        <input type="date" id="m-date-end" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 outline-none focus:border-indigo-500 font-bold text-slate-700">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-black text-slate-600 mb-1.5">מכסת חדרים/מושבים</label>
+                        <input type="number" id="m-capacity-range" placeholder="לדוג': 50" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 outline-none focus:border-indigo-500 font-bold text-slate-700">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-black text-slate-600 mb-1.5">מיקום / מלון / אולם</label>
+                    <input type="text" id="m-location" placeholder="לדוג': מלון דן אילת" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 outline-none focus:border-indigo-500 font-bold text-slate-700">
+                </div>
+                <div>
+                    <label class="block text-sm font-black text-slate-600 mb-1.5">סטטוס</label>
+                    <select id="m-status" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 outline-none focus:border-indigo-500 font-bold text-slate-700">
+                        <option value="בתכנון">בתכנון</option>
+                        <option value="באוויר">באוויר</option>
+                        <option value="הסתיים">הסתיים</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-black text-slate-600 mb-1.5">העלאת ברושור / פלאייר גרפי לפעילות</label>
+                    <div class="border-2 border-dashed border-indigo-200 bg-indigo-50/50 rounded-xl p-4 text-center cursor-pointer hover:bg-indigo-50 transition group">
+                        <span class="text-2xl mb-1 block group-hover:scale-110 transition">📄</span>
+                        <span class="text-sm font-bold text-indigo-700">לחץ להעלאת קובץ או גרור לכאן</span>
+                        <p class="text-xs text-indigo-400 mt-1">PDF, JPG, PNG (עד 5MB)</p>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-black text-slate-600 mb-1.5">הערות ותיאור קצר</label>
+                    <textarea id="m-notes" rows="2" placeholder="פרטים נוספים..." class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 outline-none focus:border-indigo-500 font-medium text-slate-700"></textarea>
+                </div>
+            </div>
+            <!-- Modal Footer -->
+            <div class="p-6 border-t border-gray-100 bg-gray-50/50 flex gap-3">
+                <button onclick="saveActivity()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl shadow-md transition transform hover:-translate-y-0.5 text-lg">שמור פעילות</button>
+                <button onclick="closeCreateModal()" class="px-6 py-3 border-2 border-gray-200 rounded-xl font-bold text-gray-500 hover:bg-gray-100 transition">ביטול</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div id="toast-container" style="position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);z-index:99999;display:flex;flex-direction:column;gap:0.5rem;align-items:center;pointer-events:none;"></div>
+
+<script>
+const STORAGE_KEY = 'welfare_activities';
+const categoryStyles = {
+    'פעילויות רווחה': { icon:'🎪', bg:'bg-indigo-100', text:'text-indigo-800', border:'border-indigo-200' },
+    'הצגות ומופעים': { icon:'🎭', bg:'bg-purple-100', text:'text-purple-800', border:'border-purple-200' },
+    'נופש בארץ':     { icon:'🏖️', bg:'bg-emerald-100', text:'text-emerald-800', border:'border-emerald-200' },
+    'נופש בחו"ל':    { icon:'✈️', bg:'bg-blue-100', text:'text-blue-800', border:'border-blue-200' },
+    'ימי כיף וגיבוש':{ icon:'🎯', bg:'bg-orange-100', text:'text-orange-800', border:'border-orange-200' },
+    'פעילויות עמותות':{ icon:'🏛️', bg:'bg-rose-100', text:'text-rose-800', border:'border-rose-200' }
+};
+const statusStyles = {
+    'בתכנון': 'bg-yellow-100 text-yellow-800 border-yellow-200',
+    'באוויר': 'bg-emerald-100 text-emerald-800 border-emerald-200',
+    'הסתיים': 'bg-gray-100 text-gray-500 border-gray-200'
+};
+
+// Demo data
+const defaultActivities = [
+    { id:'d1', name:'סופ״ש זוגות באילת – מלון דן', category:'נופש בארץ', date:'2026-06-12', location:'מלון דן, אילת', capacity:50, registered:45, status:'באוויר', notes:'' },
+    { id:'d2', name:'הצגת "שלומי שבן" – קאמרי', category:'הצגות ומופעים', date:'2026-06-20', location:'תיאטרון קאמרי, ת"א', capacity:120, registered:88, status:'באוויר', notes:'' },
+    { id:'d3', name:'טיול מאורגן לפראג וינה', category:'נופש בחו"ל', date:'2026-08-15', location:'פראג + וינה, 5 לילות', capacity:40, registered:12, status:'בתכנון', notes:'' },
+    { id:'d4', name:'יום כיף משפחות – פארק המים שפיים', category:'ימי כיף וגיבוש', date:'2026-07-04', location:'שפיים, נתניה', capacity:200, registered:134, status:'באוויר', notes:'' },
+    { id:'d5', name:'סדנת בישול איטלקי', category:'פעילויות רווחה', date:'2026-05-22', location:'סטודיו שף, הרצליה', capacity:30, registered:30, status:'באוויר', notes:'מלא!' },
+    { id:'d6', name:'הרצאת העשרה – חינוך פיננסי', category:'פעילויות עמותות', date:'2026-05-10', location:'אולם הועד, בניין ראשי', capacity:80, registered:67, status:'באוויר', notes:'' },
+    { id:'d7', name:'חלוקת תווי שופרסל – פסח', category:'פעילויות רווחה', date:'2026-04-01', location:'משרד הועד', capacity:210, registered:210, status:'הסתיים', notes:'' },
+    { id:'d8', name:'מופע סטנדאפ – גורי אלפי', category:'הצגות ומופעים', date:'2026-09-15', location:'היכל התרבות, ת"א', capacity:150, registered:0, status:'בתכנון', notes:'' }
+];
+
+let activities = [];
+
+function loadActivities() {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) { activities = JSON.parse(stored); }
+    else { activities = [...defaultActivities]; saveToStorage(); }
+}
+
+function saveToStorage() { localStorage.setItem(STORAGE_KEY, JSON.stringify(activities)); }
+
+function formatDate(d) {
+    if (!d) return '-';
+    const parts = d.split('-');
+    return parts[2]+'/'+parts[1]+'/'+parts[0];
+}
+
+function renderTable() {
+    const search = (document.getElementById('search-input').value || '').trim().toLowerCase();
+    const catFilter = document.getElementById('filter-category').value;
+    const statusFilter = document.getElementById('filter-status').value;
+
+    let filtered = activities.filter(a => {
+        if (catFilter && a.category !== catFilter) return false;
+        if (statusFilter && a.status !== statusFilter) return false;
+        if (search && !a.name.toLowerCase().includes(search) && !a.location.toLowerCase().includes(search) && !a.category.toLowerCase().includes(search)) return false;
+        return true;
+    });
+
+    // Sort: באוויר first, then בתכנון, then הסתיים; within each group by date
+    const statusOrder = {'באוויר':0,'בתכנון':1,'הסתיים':2};
+    filtered.sort((a,b) => (statusOrder[a.status]||9) - (statusOrder[b.status]||9) || a.date.localeCompare(b.date));
+
+    const container = document.getElementById('activities-container');
+    const emptyState = document.getElementById('empty-state');
+
+    if (filtered.length === 0) {
+        container.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        return;
+    }
+    emptyState.classList.add('hidden');
+
+    const monthNamesEn = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+    const themeMap = {
+        'באוויר': { bgLeft: 'bg-emerald-400', dateBg: 'bg-emerald-50', dateBorder: 'border-emerald-100', dayText: 'text-emerald-800', monthText: 'text-emerald-600', yearBg: 'bg-emerald-600', countText: 'text-emerald-700', badge: '<span class="bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 font-bold uppercase tracking-wider rounded border border-emerald-200 flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> באוויר</span>' },
+        'בתכנון': { bgLeft: 'bg-orange-400', dateBg: 'bg-orange-50', dateBorder: 'border-orange-100', dayText: 'text-orange-800', monthText: 'text-orange-600', yearBg: 'bg-orange-600', countText: 'text-orange-700', badge: '<span class="bg-orange-100 text-orange-800 text-[10px] px-2 py-0.5 font-bold uppercase tracking-wider rounded border border-orange-200">בתכנון (טרם שווק)</span>' },
+        'הסתיים': { bgLeft: 'bg-slate-400', dateBg: 'bg-slate-200', dateBorder: 'border-slate-300', dayText: 'text-slate-600', monthText: 'text-slate-500', yearBg: 'bg-slate-500', countText: 'text-slate-700', badge: '<span class="bg-slate-200 text-slate-600 text-[10px] px-2 py-0.5 font-bold uppercase tracking-wider rounded border border-slate-300">הסתיים וארכיון</span>' }
+    };
+
+    container.innerHTML = filtered.map(a => {
+        const cs = categoryStyles[a.category] || categoryStyles['פעילויות רווחה'];
+        const pct = a.capacity > 0 ? Math.round((a.registered/a.capacity)*100) : 0;
+        const barColor = pct >= 90 ? 'bg-red-500' : pct >= 60 ? 'bg-amber-500' : 'bg-emerald-500';
+        const isArchived = a.status === 'הסתיים';
+        const theme = themeMap[a.status] || themeMap['בתכנון'];
+
+        let dateObj = new Date(a.date);
+        let day = dateObj.getDate() || '01';
+        let monthStr = monthNamesEn[dateObj.getMonth()] || 'JAN';
+        let year = dateObj.getFullYear() || '2026';
+        if (isNaN(day)) { day = '01'; monthStr = 'JAN'; year = '2026'; }
+
+        const cardClass = isArchived 
+            ? "bg-slate-50 rounded-2xl p-6 border border-slate-200 opacity-60 flex flex-col md:flex-row gap-6 relative overflow-hidden grayscale-[30%] cursor-pointer hover:opacity-100 transition"
+            : "bg-white rounded-2xl p-6 shadow-sm border border-slate-200 hover:shadow-md transition group flex flex-col md:flex-row gap-6 relative overflow-hidden cursor-pointer hover:border-indigo-300";
+
+        return `
+        <div class="${cardClass}" onclick="window.location.href='event-profile-demo.html?id=${a.id}'">
+            <div class="absolute right-0 top-0 w-2 h-full ${theme.bgLeft}"></div>
+            
+            <div class="flex flex-col items-center justify-center ${theme.dateBg} rounded-2xl w-24 h-24 border ${theme.dateBorder} shrink-0">
+                <span class="font-black text-2xl ${theme.dayText}">${String(day).padStart(2,'0')}</span>
+                <span class="font-bold ${theme.monthText} uppercase text-sm">${monthStr}</span>
+                <span class="${theme.yearBg} text-white text-[9px] px-2 py-0.5 rounded-full mt-1 font-black">${year}</span>
+            </div>
+
+            <div class="flex-1 flex flex-col justify-center">
+                <div class="flex items-center gap-3">
+                    <span class="bg-slate-100 text-slate-600 text-[10px] px-2 py-0.5 font-black uppercase tracking-wider rounded">${cs.icon} ${a.category}</span>
+                    ${theme.badge}
+                </div>
+                <h3 class="text-xl font-black text-slate-900 mt-2 ${isArchived ? 'line-through decoration-slate-300' : 'group-hover:text-indigo-600 transition'} inline-block">${a.name}</h3>
+                <p class="text-slate-500 mt-1 font-medium text-sm flex items-center gap-2">
+                    <span class="text-xs">📍</span> ${a.location || 'ללא מיקום מוגדר'}
+                </p>
+                ${a.notes ? `<p class="text-slate-400 mt-1 text-xs font-bold">${a.notes}</p>` : ''}
+            </div>
+
+            <div class="flex flex-col justify-center items-end w-48 shrink-0 relative">
+                ${isArchived ? '<div class="absolute inset-0 flex items-center justify-center pointer-events-none"><span class="rotate-[-10deg] border-4 border-slate-300 text-slate-400 text-lg font-black px-4 py-1 rounded inline-block opacity-80">ARCHIVED</span></div>' : ''}
+                <div class="w-full text-left mb-2 relative z-10">
+                    <p class="text-[11px] font-black text-slate-500 uppercase tracking-widest text-right">מכסה פנימית</p>
+                    <p class="text-lg font-black ${theme.countText} text-right">${a.registered} <span class="text-xs text-slate-400">/ ${a.capacity || 'ללא'} מושבים</span></p>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-2 mb-3 hidden md:block border border-slate-200 relative z-10">
+                    <div class="${barColor} h-2 rounded-full" style="width: ${pct}%;"></div>
+                </div>
+                
+                <button onclick="event.stopPropagation(); distributeActivity('${a.id}')" class="relative z-10 bg-white border-2 border-slate-200 hover:border-indigo-400 hover:text-indigo-700 text-slate-700 w-full py-2 rounded-xl font-bold transition shadow-sm text-sm flex items-center justify-center gap-2" ${isArchived ? 'disabled style="opacity:0; pointer-events:none;"' : ''}>
+                    <span class="text-base">📢</span> הפץ אירוע
+                </button>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function openCreateModal(category, icon, color) {
+    document.getElementById('m-category').value = category;
+    document.getElementById('modal-icon').textContent = icon;
+    document.getElementById('modal-title').textContent = 'הקמת ' + category;
+    document.getElementById('m-name').value = '';
+    document.getElementById('m-location').value = '';
+    document.getElementById('m-status').value = 'בתכנון';
+    document.getElementById('m-notes').value = '';
+    
+    // Dynamic Date Logic
+    const isVacation = category.includes('נופש');
+    if (isVacation) {
+        document.getElementById('date-container-single').classList.add('hidden');
+        document.getElementById('date-container-range').classList.remove('hidden');
+        document.getElementById('m-date-start').value = '';
+        document.getElementById('m-date-end').value = '';
+        document.getElementById('m-capacity-range').value = '';
+    } else {
+        document.getElementById('date-container-single').classList.remove('hidden');
+        document.getElementById('date-container-range').classList.add('hidden');
+        document.getElementById('m-date').value = '';
+        document.getElementById('m-capacity').value = '';
+    }
+
+    document.getElementById('create-modal').style.display = 'block';
+    setTimeout(() => document.getElementById('m-name').focus(), 200);
+}
+
+function closeCreateModal() { document.getElementById('create-modal').style.display = 'none'; }
+
+function saveActivity() {
+    const name = document.getElementById('m-name').value.trim();
+    if (!name) { showToast('⚠️ נא להזין שם פעילות','warn'); return; }
+    
+    const category = document.getElementById('m-category').value;
+    const isVacation = category.includes('נופש');
+    
+    let activityDate = '';
+    let activityCapacity = 0;
+    
+    if (isVacation) {
+        const start = document.getElementById('m-date-start').value;
+        const end = document.getElementById('m-date-end').value;
+        activityDate = start && end ? `${start} עד ${end}` : (start || end || '');
+        activityCapacity = parseInt(document.getElementById('m-capacity-range').value) || 0;
+    } else {
+        activityDate = document.getElementById('m-date').value;
+        activityCapacity = parseInt(document.getElementById('m-capacity').value) || 0;
+    }
+
+    const a = {
+        id: 'a' + Date.now(),
+        name: name,
+        category: category,
+        date: activityDate,
+        location: document.getElementById('m-location').value.trim(),
+        capacity: activityCapacity,
+        registered: 0,
+        status: document.getElementById('m-status').value,
+        notes: document.getElementById('m-notes').value.trim()
+    };
+    activities.unshift(a);
+    saveToStorage();
+    renderTable();
+    closeCreateModal();
+    showToast('✅ הפעילות "' + name + '" נוצרה בהצלחה!','success');
+}
+
+function distributeActivity(id) {
+    if (window.parent && window.parent.loadPage) {
+        window.parent.loadPage(`communications-hub.html?activityId=${id}`, null);
+    } else {
+        window.location.href = `communications-hub.html?activityId=${id}`;
+    }
+}
+
+function clearFilters() {
+    document.getElementById('search-input').value = '';
+    document.getElementById('filter-category').value = '';
+    document.getElementById('filter-status').value = '';
+    renderTable();
+}
+
+function showToast(msg, type) {
+    const c = document.getElementById('toast-container');
+    const t = document.createElement('div');
+    t.style.cssText = 'background:#1e293b;color:white;padding:0.75rem 1.5rem;border-radius:9999px;font-size:0.9rem;opacity:0;transform:translateY(10px);transition:all 0.3s ease;box-shadow:0 4px 20px rgba(0,0,0,0.2);font-family:Heebo,sans-serif;pointer-events:auto;';
+    if (type==='success') t.style.borderLeft='4px solid #10b981';
+    if (type==='warn') t.style.borderLeft='4px solid #f59e0b';
+    t.textContent = msg;
+    c.appendChild(t);
+    setTimeout(()=>{t.style.opacity='1';t.style.transform='translateY(0)';},10);
+    setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),350);},3500);
+}
+
+// Close modal on overlay click
+document.getElementById('create-modal').addEventListener('click', function(e) { if (e.target === this) closeCreateModal(); });
+
+// Init
+loadActivities();
+renderTable();
+</script>
+</body>
+</html>

@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מערכת ועד - כרטסת אירוע</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Heebo', sans-serif; background-color: #f8fafc; }
+        .tab-btn.active { border-bottom: 3px solid #4f46e5; color: #4f46e5; font-weight: 800; background: #eef2ff; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="text-slate-800">
+
+<div class="h-screen flex flex-col p-6 md:p-8 overflow-y-auto">
+    
+    <!-- Top Bar Navigation -->
+    <div class="mb-6 flex items-center justify-between">
+        <button onclick="window.history.back()" class="bg-white border-2 border-slate-200 hover:border-indigo-300 text-slate-600 px-4 py-2 rounded-xl font-bold flex items-center gap-2 transition shadow-sm">
+            <span>&rarr;</span> חזרה לרשימת האירועים
+        </button>
+        <div class="flex gap-3">
+            <button class="bg-white border-2 border-slate-200 hover:border-slate-300 text-slate-600 px-4 py-2 rounded-xl font-bold flex items-center gap-2 transition shadow-sm">
+                🖨️ הדפס דוח נוכחות
+            </button>
+            <button class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-xl font-bold flex items-center gap-2 transition shadow-sm">
+                ✏️ עריכת פרטי אירוע
+            </button>
+        </div>
+    </div>
+
+    <!-- Header Banner -->
+    <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-8 mb-6 relative overflow-hidden flex flex-col md:flex-row gap-8 items-center">
+        <!-- Decoration -->
+        <div class="absolute -right-16 -top-16 w-48 h-48 bg-indigo-50 rounded-full blur-3xl opacity-60 pointer-events-none"></div>
+        <div class="absolute -left-16 -bottom-16 w-48 h-48 bg-emerald-50 rounded-full blur-3xl opacity-60 pointer-events-none"></div>
+        
+        <!-- Big Icon -->
+        <div class="relative z-10 shrink-0">
+            <div class="w-32 h-32 bg-indigo-50 border-4 border-indigo-100 rounded-[2rem] flex items-center justify-center text-6xl shadow-inner">
+                🏖️
+            </div>
+            <div class="absolute -bottom-3 -left-3 bg-emerald-500 text-white text-xs px-3 py-1 rounded-full font-black uppercase tracking-wider border-2 border-white shadow-sm flex items-center gap-1">
+                <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span> באוויר
+            </div>
+        </div>
+
+        <!-- Info -->
+        <div class="relative z-10 flex-1">
+            <div class="flex items-center gap-3 mb-2">
+                <span class="bg-slate-100 text-slate-600 px-3 py-1 rounded-lg text-xs font-black uppercase tracking-wider">נופש בארץ</span>
+                <span class="bg-slate-100 text-slate-500 px-3 py-1 rounded-lg text-xs font-bold font-mono">ID: EV-9942</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight">סוף שבוע באילת למחלקת מנהלה</h1>
+            <p class="text-slate-500 mt-2 font-medium text-lg flex items-center gap-2">
+                <span>📍 מלון דן, אילת</span>
+                <span class="text-slate-300">|</span>
+                <span>📅 12-14 ביוני, 2026</span>
+            </p>
+        </div>
+
+        <!-- Progress Widget -->
+        <div class="relative z-10 shrink-0 w-full md:w-64 bg-slate-50 border border-slate-200 rounded-2xl p-5 shadow-inner">
+            <div class="flex justify-between items-end mb-2">
+                <span class="text-sm font-black text-slate-500 uppercase">תפוסה</span>
+                <span class="text-2xl font-black text-indigo-700">45<span class="text-sm text-slate-400 font-bold">/50</span></span>
+            </div>
+            <div class="w-full bg-slate-200 rounded-full h-3 mb-2">
+                <div class="bg-indigo-500 h-3 rounded-full" style="width: 90%;"></div>
+            </div>
+            <p class="text-xs font-bold text-slate-500 text-center">נשארו 5 מקומות פנויים</p>
+            <button class="w-full mt-3 bg-white border border-indigo-200 hover:bg-indigo-50 text-indigo-700 font-bold py-1.5 rounded-lg text-sm transition">📢 הפץ הודעה לפנויים</button>
+        </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="flex flex-col lg:flex-row gap-6">
+        
+        <!-- Left Sidebar (Quick Info) -->
+        <div class="w-full lg:w-1/3 flex flex-col gap-6">
+            <!-- Timing Card -->
+            <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
+                <h3 class="text-lg font-black text-slate-800 mb-4 flex items-center gap-2">⏳ זמנים ותאריכים</h3>
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-white rounded-lg shadow-sm border border-slate-200 flex items-center justify-center text-lg">🛫</div>
+                            <div>
+                                <p class="text-xs font-bold text-slate-400">יציאה / המראה</p>
+                                <p class="font-bold text-slate-700">יום ה', 12/06/2026 <span class="text-slate-400 text-xs">(09:30)</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-white rounded-lg shadow-sm border border-slate-200 flex items-center justify-center text-lg">🛬</div>
+                            <div>
+                                <p class="text-xs font-bold text-slate-400">חזרה / נחיתה</p>
+                                <p class="font-bold text-slate-700">מוצ"ש, 14/06/2026 <span class="text-slate-400 text-xs">(21:00)</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-center">
+                        <p class="text-xs font-black text-amber-700 uppercase tracking-wider mb-1">סגירת הרשמה בעוד</p>
+                        <p class="text-2xl font-black text-amber-600">3 ימים, 14 שעות</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Documents Summary -->
+            <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
+                <h3 class="text-lg font-black text-slate-800 mb-4 flex items-center gap-2">📎 קבצים מקושרים</h3>
+                <div class="space-y-2">
+                    <a href="#" class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-200 transition group">
+                        <div class="text-2xl opacity-80 group-hover:scale-110 transition">📄</div>
+                        <div class="flex-1">
+                            <p class="font-bold text-slate-700 text-sm">הסכם ספק - דן אילת.pdf</p>
+                            <p class="text-xs text-slate-400">1.2 MB</p>
+                        </div>
+                        <div class="text-slate-300 group-hover:text-indigo-500 transition">⬇️</div>
+                    </a>
+                    <a href="#" class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-200 transition group">
+                        <div class="text-2xl opacity-80 group-hover:scale-110 transition">🖼️</div>
+                        <div class="flex-1">
+                            <p class="font-bold text-slate-700 text-sm">ברושור הפצה וואטסאפ.png</p>
+                            <p class="text-xs text-slate-400">850 KB</p>
+                        </div>
+                        <div class="text-slate-300 group-hover:text-indigo-500 transition">⬇️</div>
+                    </a>
+                    <a href="#" class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-200 transition group">
+                        <div class="text-2xl opacity-80 group-hover:scale-110 transition">📊</div>
+                        <div class="flex-1">
+                            <p class="font-bold text-slate-700 text-sm">הצעת מחיר חתומה.pdf</p>
+                            <p class="text-xs text-slate-400">2.1 MB</p>
+                        </div>
+                        <div class="text-slate-300 group-hover:text-indigo-500 transition">⬇️</div>
+                    </a>
+                </div>
+                <button class="w-full mt-4 border-2 border-dashed border-slate-200 hover:border-indigo-400 hover:bg-indigo-50 text-slate-500 hover:text-indigo-600 font-bold py-2 rounded-xl text-sm transition">
+                    + העלה מסמך נוסף
+                </button>
+            </div>
+        </div>
+
+        <!-- Right Main Area (Tabs) -->
+        <div class="w-full lg:w-2/3 bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden flex flex-col">
+            <!-- Tabs Header -->
+            <div class="flex border-b border-slate-200 bg-slate-50/50 px-4 pt-4 gap-2 overflow-x-auto scrollbar-hide">
+                <button onclick="switchTab('tab-general')" class="tab-btn active px-5 py-3 text-sm font-bold text-slate-500 hover:text-slate-800 rounded-t-xl transition whitespace-nowrap">פרטים ולוגיסטיקה</button>
+                <button onclick="switchTab('tab-registrants')" class="tab-btn px-5 py-3 text-sm font-bold text-slate-500 hover:text-slate-800 rounded-t-xl transition whitespace-nowrap">רשימת נרשמים (45)</button>
+                <button onclick="switchTab('tab-rooms')" class="tab-btn px-5 py-3 text-sm font-bold text-slate-500 hover:text-slate-800 rounded-t-xl transition whitespace-nowrap">הרכבי חדרים</button>
+                <button onclick="switchTab('tab-finance')" class="tab-btn px-5 py-3 text-sm font-bold text-slate-500 hover:text-slate-800 rounded-t-xl transition whitespace-nowrap">תקציב וספקים</button>
+            </div>
+
+            <!-- Tabs Content Area -->
+            <div class="p-6 md:p-8 flex-1">
+                
+                <!-- TAB 1: General Details -->
+                <div id="tab-general" class="tab-content active space-y-8">
+                    <div>
+                        <h4 class="text-sm font-black text-indigo-400 uppercase tracking-widest mb-3 border-b-2 border-indigo-100 inline-block pb-1">תיאור האירוע</h4>
+                        <p class="text-slate-600 leading-relaxed font-medium bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                            סוף שבוע גיבוש ונופש למחלקת מנהלה במלון דן אילת. האירוע כולל טיסות הלוך ושוב מנתב"ג, פנסיון חלקי (ארוחת בוקר וערב), וסיור שקיעה על יאכטה ביום שישי. השתתפות בן/בת זוג בתוספת תשלום מול המלון ישירות.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+                            <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">לוגיסטיקה והסעות</h4>
+                            <div class="space-y-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="text-xl">🚌</div>
+                                    <div>
+                                        <p class="text-xs text-slate-400 font-bold">הסעה מאורגנת?</p>
+                                        <p class="font-bold text-slate-700">לא (הגעה עצמאית לנתב"ג)</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div class="text-xl">✈️</div>
+                                    <div>
+                                        <p class="text-xs text-slate-400 font-bold">חברת תעופה</p>
+                                        <p class="font-bold text-slate-700">ארקיע (טיסה IZ-402)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+                            <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">פילוחי הפצה (מי זכאי?)</h4>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-lg text-xs font-bold">סקטור: מנהלה</span>
+                                <span class="bg-emerald-100 text-emerald-800 px-2 py-1 rounded-lg text-xs font-bold">וותק: מעל שנה</span>
+                                <span class="bg-amber-100 text-amber-800 px-2 py-1 rounded-lg text-xs font-bold">תשלום ועד תקין</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 2: Registrants -->
+                <div id="tab-registrants" class="tab-content">
+                    <div class="flex justify-between items-center mb-4">
+                        <input type="text" placeholder="חיפוש נרשם..." class="border border-slate-300 rounded-lg px-4 py-2 text-sm font-bold outline-none focus:border-indigo-500 w-64">
+                        <button class="text-sm text-indigo-600 font-bold hover:underline">ייצוא לאקסל</button>
+                    </div>
+                    <div class="border border-slate-200 rounded-2xl overflow-hidden">
+                        <table class="w-full text-right text-sm">
+                            <thead class="bg-slate-50 border-b border-slate-200 text-slate-500">
+                                <tr>
+                                    <th class="py-3 px-4 font-black">שם העובד</th>
+                                    <th class="py-3 px-4 font-black">ת.ז</th>
+                                    <th class="py-3 px-4 font-black">תאריך הרשמה</th>
+                                    <th class="py-3 px-4 font-black">סטטוס אישור</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                <tr class="hover:bg-slate-50 cursor-pointer">
+                                    <td class="py-3 px-4 font-bold text-slate-800">ישראל ישראלי</td>
+                                    <td class="py-3 px-4 text-slate-500 font-mono">123456789</td>
+                                    <td class="py-3 px-4 text-slate-500">01/05/2026, 10:23</td>
+                                    <td class="py-3 px-4"><span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded text-xs font-bold">מאושר</span></td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 cursor-pointer">
+                                    <td class="py-3 px-4 font-bold text-slate-800">דנה כהן</td>
+                                    <td class="py-3 px-4 text-slate-500 font-mono">987654321</td>
+                                    <td class="py-3 px-4 text-slate-500">01/05/2026, 11:40</td>
+                                    <td class="py-3 px-4"><span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded text-xs font-bold">מאושר</span></td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 cursor-pointer">
+                                    <td class="py-3 px-4 font-bold text-slate-800">רון לוי</td>
+                                    <td class="py-3 px-4 text-slate-500 font-mono">456789123</td>
+                                    <td class="py-3 px-4 text-slate-500">02/05/2026, 09:15</td>
+                                    <td class="py-3 px-4"><span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded text-xs font-bold">רשימת המתנה</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- TAB 3: Rooms -->
+                <div id="tab-rooms" class="tab-content text-center py-12">
+                    <div class="text-6xl mb-4">🛏️</div>
+                    <h3 class="text-xl font-black text-slate-700">מודול שיבוץ חדרים</h3>
+                    <p class="text-slate-500 mt-2">כאן יופיע ממשק גרירה (Drag & Drop) לשיבוץ עובדים לחדרים.</p>
+                </div>
+
+                <!-- TAB 4: Finance -->
+                <div id="tab-finance" class="tab-content">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                        <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200">
+                            <p class="text-xs text-slate-500 font-bold mb-1">עלות לעובד (ספק)</p>
+                            <p class="text-xl font-black text-slate-800">₪ 2,400</p>
+                        </div>
+                        <div class="bg-emerald-50 rounded-2xl p-4 border border-emerald-200">
+                            <p class="text-xs text-emerald-600 font-bold mb-1">סבסוד הועד</p>
+                            <p class="text-xl font-black text-emerald-700">₪ 1,000</p>
+                        </div>
+                        <div class="bg-blue-50 rounded-2xl p-4 border border-blue-200">
+                            <p class="text-xs text-blue-600 font-bold mb-1">השתתפות עצמית</p>
+                            <p class="text-xl font-black text-blue-700">₪ 1,400</p>
+                        </div>
+                        <div class="bg-indigo-50 rounded-2xl p-4 border border-indigo-200">
+                            <p class="text-xs text-indigo-600 font-bold mb-1">צפי תקציב כולל</p>
+                            <p class="text-xl font-black text-indigo-800">₪ 50,000</p>
+                        </div>
+                    </div>
+                    
+                    <h4 class="text-sm font-black text-slate-800 mb-3 border-b pb-2">פרטי התקשרות ספק</h4>
+                    <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="font-bold text-slate-800">אשת טורס - מחלקת קבוצות</p>
+                            <p class="text-sm text-slate-500">איש קשר: רונית מאיר | טלפון: 054-1234567</p>
+                        </div>
+                        <button class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 px-4 rounded-lg text-sm transition">פרטי ספק מלאים</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function switchTab(tabId) {
+        // Hide all tabs
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        // Deactivate all buttons
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        
+        // Show selected tab
+        document.getElementById(tabId).classList.add('active');
+        // Activate clicked button
+        event.currentTarget.classList.add('active');
+    }
+</script>
+
+</body>
+</html>
