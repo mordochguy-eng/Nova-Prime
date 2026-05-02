@@ -51,6 +51,7 @@
                         <!-- Chat Body -->
                         <div class="flex-1 p-4 flex flex-col justify-end gap-2" style="background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-size: cover;">
                             <div class="bg-[#dcf8c6] p-3 rounded-2xl rounded-tr-none shadow-sm max-w-[85%] self-end">
+                                <img id="preview-logo" src="" class="hidden w-full h-auto rounded-lg mb-2 border border-green-200 object-cover max-h-32">
                                 <p id="preview-text" class="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed font-medium">היי {שם}, פתחנו הרשמה לאירוע מיוחד! לכל הפרטים המלאים והרשמה לחץ על הלינק 👇</p>
                                 
                                 <!-- Link Card (Landing Page Preview) -->
@@ -204,37 +205,96 @@
                         שלב 2: ערוץ ותוכן
                     </h2>
                     
-                    <div class="space-y-6">
+                    <div class="space-y-8">
+                        
+                        <!-- 1. Channels -->
                         <div>
-                            <label class="block text-sm font-bold text-slate-600 mb-3">בחר ערוצי הפצה:</label>
+                            <label class="block text-sm font-bold text-slate-600 mb-3">בחר ערוץ הפצה (תמחור יחושב אוטומטית):</label>
                             <div class="flex gap-4">
-                                <label class="flex-1 flex flex-col items-center gap-2 p-4 border-2 border-green-500 bg-green-50 rounded-2xl cursor-pointer">
-                                    <input type="checkbox" checked class="hidden">
+                                <label class="flex-1 flex flex-col items-center gap-2 p-4 border-2 border-indigo-500 bg-indigo-50 rounded-2xl cursor-pointer transition-all duration-200 channel-btn" data-channel="whatsapp">
+                                    <input type="radio" name="channel" value="whatsapp" checked class="hidden" onchange="selectChannel('whatsapp')">
                                     <span class="text-3xl">💬</span>
-                                    <span class="font-bold text-green-800">WhatsApp</span>
+                                    <span class="font-bold text-indigo-800">WhatsApp</span>
                                 </label>
-                                <label class="flex-1 flex flex-col items-center gap-2 p-4 border-2 border-gray-200 rounded-2xl cursor-pointer hover:border-blue-400 opacity-60">
-                                    <input type="checkbox" class="hidden">
+                                <label class="flex-1 flex flex-col items-center gap-2 p-4 border-2 border-gray-200 rounded-2xl cursor-pointer hover:border-indigo-300 opacity-60 transition-all duration-200 channel-btn" data-channel="sms">
+                                    <input type="radio" name="channel" value="sms" class="hidden" onchange="selectChannel('sms')">
                                     <span class="text-3xl">📱</span>
                                     <span class="font-bold text-gray-600">SMS רגיל</span>
                                 </label>
-                                <label class="flex-1 flex flex-col items-center gap-2 p-4 border-2 border-gray-200 rounded-2xl cursor-pointer hover:border-blue-400 opacity-60">
-                                    <input type="checkbox" class="hidden">
+                                <label class="flex-1 flex flex-col items-center gap-2 p-4 border-2 border-gray-200 rounded-2xl cursor-pointer hover:border-indigo-300 opacity-60 transition-all duration-200 channel-btn" data-channel="email">
+                                    <input type="radio" name="channel" value="email" class="hidden" onchange="selectChannel('email')">
                                     <span class="text-3xl">📧</span>
                                     <span class="font-bold text-gray-600">דוא"ל</span>
                                 </label>
                             </div>
                         </div>
 
+                        <!-- 2. Templates -->
                         <div>
-                            <label class="block text-sm font-bold text-slate-600 mb-1.5 flex justify-between">
-                                <span>מלל הטיזר המקדים (יופיע לפני הלינק):</span>
-                                <button class="text-indigo-500 hover:text-indigo-700 text-xs font-bold" onclick="insertVariable('{שם_פרטי}')">+ הוסף שם פרטי</button>
-                            </label>
-                            <textarea id="teaser-input" rows="4" onkeyup="updatePreview()" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 outline-none focus:border-indigo-500 font-medium text-slate-700">היי {שם_פרטי}!
-פתחנו את ההרשמה לפעילות הבאה שלנו ואנחנו נשמח לראות אותך שם!
-כל הפרטים, הברושור, ואפשרות הרשמה מהירה מחכים לך בלינק המצורף 👇</textarea>
-                            <p class="text-xs text-gray-400 mt-2">הלינק לדף הנחיתה האישי יתווסף אוטומטית בסוף ההודעה.</p>
+                            <label class="block text-sm font-bold text-slate-600 mb-3">בחר תבנית הודעה (Template):</label>
+                            <select id="template-select" onchange="loadTemplate()" class="w-full border-2 border-slate-200 rounded-xl p-3 outline-none focus:border-indigo-500 font-bold text-slate-700 bg-white shadow-sm">
+                                <option value="free">📝 הודעה חופשית (טקסט ריק)</option>
+                                <option value="event">🎉 הזמנה ורישום לאירוע / נופש</option>
+                                <option value="survey">📊 סקר שביעות רצון (פידבק)</option>
+                                <option value="birthday">🎂 ברכת יום הולדת + שובר</option>
+                            </select>
+                        </div>
+                        
+                        <!-- 3. Logo Upload -->
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                            <label class="block text-sm font-bold text-slate-600 mb-2">לוגו / תמונת קאבר (אופציונלי):</label>
+                            <div class="flex items-center gap-4">
+                                <label class="bg-white border-2 border-dashed border-indigo-200 hover:border-indigo-400 text-indigo-600 px-4 py-2 rounded-lg font-bold cursor-pointer transition text-sm flex items-center gap-2">
+                                    <span>📸 העלה תמונה</span>
+                                    <input type="file" id="logo-upload" accept="image/*" class="hidden" onchange="handleLogoUpload(event)">
+                                </label>
+                                <span id="logo-filename" class="text-xs text-gray-500 font-medium">לא נבחרה תמונה</span>
+                                <button id="remove-logo-btn" onclick="removeLogo()" class="hidden text-red-500 hover:text-red-700 text-xs font-bold underline">הסר</button>
+                            </div>
+                        </div>
+
+                        <!-- 4. Text Editor & Variables -->
+                        <div>
+                            <label class="block text-sm font-bold text-slate-600 mb-2">מלל ההודעה (יופיע לפני הלינק):</label>
+                            
+                            <!-- Variables Toolbar -->
+                            <div class="flex flex-wrap gap-2 mb-2 p-2 bg-indigo-50 rounded-lg border border-indigo-100">
+                                <span class="text-xs font-bold text-indigo-800 flex items-center mr-1">משתנים חכמים:</span>
+                                <button class="text-indigo-600 hover:bg-indigo-200 hover:text-indigo-800 bg-indigo-100 px-2 py-1 rounded text-xs font-bold transition" onclick="insertVariable('{שם_פרטי}')">{שם_פרטי}</button>
+                                <button class="text-indigo-600 hover:bg-indigo-200 hover:text-indigo-800 bg-indigo-100 px-2 py-1 rounded text-xs font-bold transition" onclick="insertVariable('{שם_משפחה}')">{שם_משפחה}</button>
+                                <button class="text-indigo-600 hover:bg-indigo-200 hover:text-indigo-800 bg-indigo-100 px-2 py-1 rounded text-xs font-bold transition" onclick="insertVariable('{שם_פעילות}')">{שם_פעילות}</button>
+                                <button class="text-indigo-600 hover:bg-indigo-200 hover:text-indigo-800 bg-indigo-100 px-2 py-1 rounded text-xs font-bold transition" onclick="insertVariable('{לינק_אישי}')">{לינק_אישי}</button>
+                            </div>
+                            
+                            <textarea id="teaser-input" rows="6" onkeyup="updatePreview()" class="w-full bg-white border border-slate-200 rounded-xl py-3 px-4 outline-none focus:border-indigo-500 font-medium text-slate-700 shadow-sm"></textarea>
+                            <p class="text-xs text-gray-400 mt-2">אם לא תכניס `{לינק_אישי}`, הלינק לדף הנחיתה יתווסף אוטומטית בסוף ההודעה.</p>
+                        </div>
+                        
+                        <!-- 5. Landing Page Design Selection -->
+                        <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-5">
+                            <label class="block text-sm font-bold text-slate-800 mb-3">עיצוב דף הנחיתה (לעובדים שילחצו על הלינק):</label>
+                            <div class="grid grid-cols-2 gap-3" id="design-options">
+                                <label class="border-2 border-indigo-500 bg-white rounded-lg p-3 cursor-pointer flex items-center gap-3 transition design-btn opacity-100" onclick="selectDesign(this)">
+                                    <input type="radio" name="lp_design" value="modern_blue" checked class="hidden">
+                                    <div class="w-8 h-8 rounded-full bg-blue-500 shadow-inner"></div>
+                                    <span class="font-bold text-sm text-slate-700">מודרני (כחול)</span>
+                                </label>
+                                <label class="border-2 border-gray-200 hover:border-indigo-300 bg-white rounded-lg p-3 cursor-pointer flex items-center gap-3 transition design-btn opacity-60" onclick="selectDesign(this)">
+                                    <input type="radio" name="lp_design" value="festive_gold" class="hidden">
+                                    <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-yellow-400 to-yellow-600 shadow-inner"></div>
+                                    <span class="font-bold text-sm text-slate-700">חגיגי (זהב)</span>
+                                </label>
+                                <label class="border-2 border-gray-200 hover:border-indigo-300 bg-white rounded-lg p-3 cursor-pointer flex items-center gap-3 transition design-btn opacity-60" onclick="selectDesign(this)">
+                                    <input type="radio" name="lp_design" value="nature_green" class="hidden">
+                                    <div class="w-8 h-8 rounded-full bg-emerald-500 shadow-inner"></div>
+                                    <span class="font-bold text-sm text-slate-700">קליל (ירוק)</span>
+                                </label>
+                                <label class="border-2 border-gray-200 hover:border-indigo-300 bg-white rounded-lg p-3 cursor-pointer flex items-center gap-3 transition design-btn opacity-60" onclick="selectDesign(this)">
+                                    <input type="radio" name="lp_design" value="clean_white" class="hidden">
+                                    <div class="w-8 h-8 rounded-full bg-gray-100 border border-gray-300 shadow-inner"></div>
+                                    <span class="font-bold text-sm text-slate-700">נקי (מינימליסטי)</span>
+                                </label>
+                            </div>
                         </div>
                     </div>
 
@@ -257,23 +317,40 @@
                             <span id="summary-activity" class="font-black text-lg text-indigo-700">-</span>
                         </div>
                         <div class="flex justify-between items-center border-b border-gray-200 pb-4">
-                            <span class="text-gray-500 font-bold">כמות נמענים:</span>
-                            <span id="summary-count" class="font-black text-lg text-slate-800">450 עובדים</span>
+                            <span class="text-gray-500 font-bold">כמות נמענים (שסוננו):</span>
+                            <span id="summary-count" class="font-black text-lg text-slate-800">0 עובדים</span>
                         </div>
                         <div class="flex justify-between items-center border-b border-gray-200 pb-4">
-                            <span class="text-gray-500 font-bold">ערוץ הפצה:</span>
-                            <span class="font-black text-lg text-green-600">WhatsApp</span>
+                            <span class="text-gray-500 font-bold">ערוץ הפצה נבחר:</span>
+                            <span id="summary-channel" class="font-black text-lg text-indigo-600">WhatsApp</span>
                         </div>
                         <div class="flex justify-between items-center pt-2">
-                            <span class="text-gray-500 font-bold">עלות משוערת:</span>
-                            <span class="font-black text-lg text-slate-800">₪45.00</span>
+                            <span class="text-gray-500 font-bold">עלות משוערת לתקציב הוועד:</span>
+                            <span id="summary-cost" class="font-black text-2xl text-slate-800">₪0.00</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-5 mb-6">
+                        <label class="block text-sm font-bold text-slate-800 mb-3">מועד שיגור הקמפיין:</label>
+                        <div class="flex flex-col gap-3">
+                            <label class="flex items-center gap-3 cursor-pointer">
+                                <input type="radio" name="schedule_type" value="now" checked onchange="toggleSchedule()" class="w-4 h-4 text-indigo-600 focus:ring-indigo-500">
+                                <span class="font-bold text-slate-700">שליחה מיידית (עכשיו)</span>
+                            </label>
+                            <label class="flex items-center gap-3 cursor-pointer">
+                                <input type="radio" name="schedule_type" value="later" onchange="toggleSchedule()" class="w-4 h-4 text-indigo-600 focus:ring-indigo-500">
+                                <span class="font-bold text-slate-700">תזמן לעתיד</span>
+                            </label>
+                            <div id="schedule-datetime-container" class="hidden ml-7 mt-2">
+                                <input type="datetime-local" id="schedule-datetime" class="border-2 border-indigo-200 rounded-lg p-2 text-sm font-bold text-slate-700 outline-none focus:border-indigo-500 w-full md:w-auto">
+                            </div>
                         </div>
                     </div>
 
                     <div class="mt-8 flex justify-between border-t border-gray-100 pt-6">
                         <button onclick="goToStep(2)" class="px-6 py-3 border-2 border-gray-200 rounded-xl font-bold text-gray-500 hover:bg-gray-100 transition">→ חזור לעריכה</button>
-                        <button onclick="sendCampaign()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 px-10 rounded-xl shadow-lg transition transform hover:-translate-y-1 text-xl flex items-center gap-3">
-                            <span>🚀</span> שגר קמפיין עכשיו
+                        <button id="send-btn" onclick="sendCampaign()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 px-10 rounded-xl shadow-lg transition transform hover:-translate-y-1 text-xl flex items-center gap-3">
+                            <span id="send-btn-icon">🚀</span> <span id="send-btn-text">שגר קמפיין עכשיו</span>
                         </button>
                     </div>
                 </div>
@@ -472,8 +549,79 @@ function calculateAudience() {
     document.getElementById('summary-count').textContent = currentAudience + " עובדים";
 }
 
+let currentChannel = 'whatsapp';
+let logoDataUrl = null;
+let currentActivityName = "הפצה כללית (לא מקושר לפעילות)";
+const costs = {
+    'whatsapp': 0.15,
+    'sms': 0.05,
+    'email': 0.00
+};
+
+const templates = {
+    'free': '',
+    'event': 'היי {שם_פרטי}!\nפתחנו את ההרשמה ל{שם_פעילות} ואנחנו נשמח לראות אותך שם!\nכל הפרטים, הברושור, ואפשרות הרשמה מהירה מחכים לך בלינק המצורף 👇\n{לינק_אישי}',
+    'survey': 'היי {שם_פרטי},\nהיה לנו חשוב לשמוע את דעתך על הפעילות האחרונה שלנו.\nנודה לך אם תקדיש חצי דקה לענות על סקר קצרצרוצון בלינק המצורף:\n{לינק_אישי}\nתודה, ועד העובדים.',
+    'birthday': 'מזל טוב {שם_פרטי}!! 🎉🎂\nועד העובדים מאחל לך יום הולדת שמח, המון בריאות ואושר!\nמצורף כאן הלינק לשובר המתנה שלך, תהנה:\n{לינק_אישי}'
+};
+
+function selectChannel(channel) {
+    currentChannel = channel;
+    
+    // Update UI styling
+    document.querySelectorAll('.channel-btn').forEach(btn => {
+        if(btn.dataset.channel === channel) {
+            btn.classList.add('border-indigo-500', 'bg-indigo-50');
+            btn.classList.remove('border-gray-200', 'hover:border-indigo-300', 'opacity-60');
+            btn.querySelector('span:nth-child(3)').classList.add('text-indigo-800');
+            btn.querySelector('span:nth-child(3)').classList.remove('text-gray-600');
+        } else {
+            btn.classList.remove('border-indigo-500', 'bg-indigo-50');
+            btn.classList.add('border-gray-200', 'hover:border-indigo-300', 'opacity-60');
+            btn.querySelector('span:nth-child(3)').classList.remove('text-indigo-800');
+            btn.querySelector('span:nth-child(3)').classList.add('text-gray-600');
+        }
+    });
+}
+
+function loadTemplate() {
+    const val = document.getElementById('template-select').value;
+    const text = templates[val];
+    document.getElementById('teaser-input').value = text;
+    updatePreview();
+}
+
+function handleLogoUpload(event) {
+    const file = event.target.files[0];
+    if (file) {
+        document.getElementById('logo-filename').textContent = file.name;
+        document.getElementById('remove-logo-btn').classList.remove('hidden');
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            logoDataUrl = e.target.result;
+            const img = document.getElementById('preview-logo');
+            img.src = logoDataUrl;
+            img.classList.remove('hidden');
+        }
+        reader.readAsDataURL(file);
+    }
+}
+
+function removeLogo() {
+    logoDataUrl = null;
+    document.getElementById('logo-upload').value = '';
+    document.getElementById('logo-filename').textContent = 'לא נבחרה תמונה';
+    document.getElementById('remove-logo-btn').classList.add('hidden');
+    
+    const img = document.getElementById('preview-logo');
+    img.src = '';
+    img.classList.add('hidden');
+}
+
 function updatePreview() {
-    const text = document.getElementById('teaser-input').value;
+    let text = document.getElementById('teaser-input').value;
+    text = text.replace(/{שם_פעילות}/g, currentActivityName);
     document.getElementById('preview-text').innerHTML = text.replace(/\n/g, '<br>');
 }
 
@@ -485,6 +633,16 @@ function insertVariable(variable) {
 }
 
 function goToStep(step) {
+    if (step === 3) {
+        // Calculate costs and update summary dynamically before sliding in
+        const channelName = currentChannel === 'whatsapp' ? 'WhatsApp' : (currentChannel === 'sms' ? 'SMS רגיל' : 'דוא"ל');
+        document.getElementById('summary-channel').textContent = channelName;
+        document.getElementById('summary-count').textContent = currentAudience + " עובדים";
+        
+        const costStr = (currentAudience * costs[currentChannel]).toFixed(2);
+        document.getElementById('summary-cost').textContent = '₪' + costStr;
+    }
+
     document.getElementById('step-1').classList.add('hidden');
     document.getElementById('step-2').classList.add('hidden');
     document.getElementById('step-3').classList.add('hidden');
@@ -517,8 +675,82 @@ function goToStep(step) {
 }
 
 function sendCampaign() {
+    // 1. Save to history
+    const history = JSON.parse(localStorage.getItem('communications_history') || '[]');
+    const text = document.getElementById('teaser-input').value;
+    const costCalc = currentAudience * costs[currentChannel];
+    
+    const scheduleType = document.querySelector('input[name="schedule_type"]:checked').value;
+    let scheduledFor = "מיידי";
+    if(scheduleType === 'later') {
+        const dt = document.getElementById('schedule-datetime').value;
+        if(dt) scheduledFor = dt.replace('T', ' ');
+    }
+    
+    // Get Selected Design
+    const designInput = document.querySelector('input[name="lp_design"]:checked');
+    const lpDesign = designInput ? designInput.value : 'modern_blue';
+    
+    const newCampaign = {
+        id: 'camp_' + Date.now(),
+        date: new Date().toISOString(),
+        scheduledFor: scheduledFor,
+        activityName: currentActivityName,
+        audienceCount: currentAudience,
+        channel: currentChannel,
+        cost: costCalc,
+        message: text,
+        hasLogo: !!logoDataUrl,
+        lpDesign: lpDesign
+    };
+    
+    history.push(newCampaign);
+    localStorage.setItem('communications_history', JSON.stringify(history));
+
+    // 2. Show Modal
     document.getElementById('success-count').textContent = currentAudience;
+    
+    const modalTitle = document.querySelector('#success-modal h2');
+    const modalDesc = document.querySelector('#success-modal p');
+    if(scheduleType === 'later') {
+        modalTitle.textContent = 'הקמפיין תוכנן בהצלחה!';
+        modalDesc.innerHTML = `הקמפיין מתוזמן להישלח ל-<span id="success-count" class="font-bold text-emerald-600">${currentAudience}</span> עובדים במועד: <span class="font-bold">${scheduledFor}</span>.`;
+    } else {
+        modalTitle.textContent = 'הקמפיין שוגר בהצלחה!';
+        modalDesc.innerHTML = `ההודעות נשלחות כעת ל-<span id="success-count" class="font-bold text-emerald-600">${currentAudience}</span> עובדים ומעודכנות במערכת.`;
+    }
+    
     document.getElementById('success-modal').classList.remove('hidden');
+}
+
+function selectDesign(labelEl) {
+    // Reset all
+    document.querySelectorAll('.design-btn').forEach(btn => {
+        btn.classList.remove('border-indigo-500', 'opacity-100');
+        btn.classList.add('border-gray-200', 'opacity-60');
+    });
+    // Set active
+    labelEl.classList.remove('border-gray-200', 'opacity-60');
+    labelEl.classList.add('border-indigo-500', 'opacity-100');
+    // Check the radio inside
+    labelEl.querySelector('input').checked = true;
+}
+
+function toggleSchedule() {
+    const isLater = document.querySelector('input[name="schedule_type"]:checked').value === 'later';
+    const container = document.getElementById('schedule-datetime-container');
+    const btnText = document.getElementById('send-btn-text');
+    const btnIcon = document.getElementById('send-btn-icon');
+    
+    if(isLater) {
+        container.classList.remove('hidden');
+        btnText.textContent = 'תזמן קמפיין';
+        btnIcon.textContent = '⏳';
+    } else {
+        container.classList.add('hidden');
+        btnText.textContent = 'שגר קמפיין עכשיו';
+        btnIcon.textContent = '🚀';
+    }
 }
 
 function finishProcess() {

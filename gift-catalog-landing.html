@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>מערכת ועד - קטלוג מתנות חג</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    <!-- Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        body { font-family: 'Heebo', sans-serif; background-color: #f1f5f9; }
+        
+        /* Mobile simulation wrap */
+        .mobile-wrap {
+            max-width: 480px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background-color: #ffffff;
+            box-shadow: 0 0 40px rgba(0,0,0,0.1);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Hide scrollbar for categories */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .category-chip.active {
+            background-color: #d4af37; /* Gold */
+            color: white;
+            border-color: #d4af37;
+        }
+
+        .gift-card {
+            transition: all 0.2s ease;
+        }
+        .gift-card:active {
+            transform: scale(0.96);
+        }
+
+        /* Festive gradient */
+        .bg-festive {
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            border-bottom: 3px solid #d4af37;
+        }
+        
+        .fade-in { animation: fadeIn 0.4s ease forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="text-slate-800 antialiased selection:bg-yellow-200">
+
+<div class="mobile-wrap flex flex-col">
+
+    <!-- Header Section -->
+    <header class="bg-festive px-6 pt-10 pb-6 rounded-b-3xl shadow-sm relative overflow-hidden shrink-0">
+        <!-- Gold sparkles decoration -->
+        <div class="absolute top-4 right-4 text-2xl opacity-20">✨</div>
+        <div class="absolute bottom-4 left-4 text-3xl opacity-20">🌟</div>
+        
+        <div class="flex justify-between items-center mb-4">
+            <div class="flex items-center gap-2">
+                <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md font-bold text-slate-800 text-sm">
+                    ועד
+                </div>
+            </div>
+            <div class="text-sm font-bold text-slate-500 bg-white/50 px-3 py-1 rounded-full backdrop-blur-sm border border-white/60">
+                פסח 2026
+            </div>
+        </div>
+        
+        <h1 class="text-3xl font-black text-slate-800 leading-tight mb-2">
+            חג שמח,<br><span class="text-[#d4af37]">יוסי לוי!</span> 🎁
+        </h1>
+        <p class="text-slate-600 font-medium text-sm leading-relaxed max-w-[90%]">
+            ועד העובדים מודה לך על תרומתך ומאחל לך ולמשפחתך חג שמח. בחר את המתנה שלך מתוך הקטלוג מטה:
+        </p>
+    </header>
+
+    <!-- State: Already Chosen -->
+    <div id="chosen-state" class="hidden flex-1 flex flex-col items-center justify-center p-8 text-center fade-in">
+        <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center text-5xl mb-6 shadow-inner">
+            🎉
+        </div>
+        <h2 class="text-2xl font-black text-slate-800 mb-2">תתחדש על המתנה!</h2>
+        <p class="text-slate-600 font-medium mb-8">הבחירה שלך נשמרה במערכת. אנו נחכה לך במשרדי הוועד לחלוקה.</p>
+        
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 w-full text-right flex gap-4 items-center mb-8">
+            <img id="chosen-img" src="" class="w-20 h-20 object-cover rounded-xl border border-gray-100">
+            <div>
+                <p class="text-xs font-bold text-slate-400 mb-1">הבחירה שלך:</p>
+                <h3 id="chosen-title" class="font-black text-slate-800 text-lg leading-tight">...</h3>
+            </div>
+        </div>
+
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 text-right w-full">
+            <h4 class="font-bold text-amber-800 text-sm mb-1 flex items-center gap-2">
+                <span>📍</span> פרטי איסוף
+            </h4>
+            <p class="text-xs text-amber-700 font-medium leading-relaxed">
+                איסוף המתנות יתבצע ממשרדי ועד העובדים (בניין C, קומה 2).<br>
+                בין התאריכים 10.04 - 15.04.<br>
+                <strong>נא להצטייד בתעודת עובד מזהה.</strong>
+            </p>
+        </div>
+    </div>
+
+    <!-- State: Selection Catalog -->
+    <div id="catalog-state" class="flex-1 flex flex-col overflow-hidden">
+        
+        <!-- Categories Filter -->
+        <div class="px-2 pt-6 pb-2 overflow-x-auto no-scrollbar shrink-0">
+            <div class="flex gap-2 px-4 w-max" id="categories-container">
+                <button class="category-chip active px-4 py-2 rounded-full border border-gray-200 font-bold text-sm transition" onclick="filterCatalog('all', this)">הכל</button>
+                <button class="category-chip bg-white px-4 py-2 rounded-full border border-gray-200 font-bold text-slate-600 text-sm transition" onclick="filterCatalog('חשמל ואלקטרוניקה', this)">🔌 חשמל ואלקטרוניקה</button>
+                <button class="category-chip bg-white px-4 py-2 rounded-full border border-gray-200 font-bold text-slate-600 text-sm transition" onclick="filterCatalog('פנאי וקמפינג', this)">🏕️ פנאי וקמפינג</button>
+                <button class="category-chip bg-white px-4 py-2 rounded-full border border-gray-200 font-bold text-slate-600 text-sm transition" onclick="filterCatalog('תווי קנייה', this)">💳 תווי קנייה</button>
+            </div>
+        </div>
+
+        <!-- Gifts Grid -->
+        <div class="flex-1 overflow-y-auto px-6 py-4 pb-20">
+            <div class="grid grid-cols-2 gap-4" id="gifts-grid">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Confirmation Modal -->
+<div id="confirm-modal" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4">
+    <!-- Backdrop -->
+    <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onclick="closeModal()"></div>
+    
+    <!-- Modal Content -->
+    <div class="relative bg-white rounded-3xl w-full max-w-[420px] overflow-hidden shadow-2xl transform transition-all translate-y-full" id="modal-content" style="transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
+        
+        <div class="p-6">
+            <h3 class="text-xl font-black text-slate-800 mb-1 text-center">אישור בחירת מתנה</h3>
+            <p class="text-slate-500 text-sm text-center mb-6 font-medium">האם אתה בטוח שזו המתנה שתרצה?</p>
+            
+            <div class="bg-slate-50 rounded-2xl p-4 flex flex-col items-center gap-3 mb-6 border border-slate-100">
+                <img id="modal-img" src="" class="w-32 h-32 object-cover rounded-xl shadow-sm bg-white">
+                <h4 id="modal-title" class="font-black text-lg text-slate-800 text-center">...</h4>
+                <p id="modal-desc" class="text-xs text-slate-500 text-center font-medium px-2">...</p>
+            </div>
+
+            <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-6 flex gap-3 items-start">
+                <span class="text-amber-500 text-lg mt-0.5">ℹ️</span>
+                <p class="text-[11px] text-amber-700 font-bold leading-tight">
+                    שים לב: לא ניתן יהיה לשנות את הבחירה לאחר האישור. המתנה תחכה לך במשרדי הוועד לאיסוף עצמי בלבד.
+                </p>
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="closeModal()" class="flex-1 bg-white border-2 border-slate-200 text-slate-600 font-bold py-3.5 rounded-xl hover:bg-slate-50 transition">
+                    ביטול
+                </button>
+                <button onclick="confirmSelection()" class="flex-[2] bg-slate-800 hover:bg-slate-900 text-white font-black py-3.5 rounded-xl shadow-lg transition flex justify-center items-center gap-2">
+                    <span>אשר בחירה</span> <span class="text-[#d4af37]">✓</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Internal DB of Gifts
+    const giftsDB = [
+        {
+            id: 1,
+            title: "מכונת אספרסו",
+            category: "חשמל ואלקטרוניקה",
+            desc: "מכונת קפה כסופה יוקרתית, כולל מקציף חלב ומארז קפסולות מתנה.",
+            img: "assets/images/espresso_machine.png"
+        },
+        {
+            id: 2,
+            title: "כיסא גיימינג מנהלים",
+            category: "חשמל ואלקטרוניקה",
+            desc: "כיסא ארגונומי מקצועי, צבע אדום-שחור, תמיכה מלאה לגב.",
+            img: "assets/images/gaming_chair.png"
+        },
+        {
+            id: 3,
+            title: "שואב אבק רובוטי חכם",
+            category: "חשמל ואלקטרוניקה",
+            desc: "שואב אבק לבן וחכם, מתממשק לסמארטפון, כולל פונקציית שטיפה.",
+            img: "assets/images/robot_vacuum.png"
+        },
+        {
+            id: 4,
+            title: "אוהל פתיחה מהירה",
+            category: "פנאי וקמפינג",
+            desc: "אוהל קמפינג משפחתי ל-6 אנשים, מוקם תוך 60 שניות. אידיאלי לשטח.",
+            img: "assets/images/camping_tent.png"
+        },
+        {
+            id: 5,
+            title: "תווי קנייה 'תו זהב'",
+            category: "תווי קנייה",
+            desc: "כרטיס נטען בסך 400 ₪ התקף במגוון רשתות שיווק ומותגים.",
+            img: "assets/images/gift_card.png"
+        }
+    ];
+
+    let selectedGift = null;
+
+    function renderGifts(categoryFilter = 'all') {
+        const grid = document.getElementById('gifts-grid');
+        grid.innerHTML = '';
+
+        const filtered = categoryFilter === 'all' 
+            ? giftsDB 
+            : giftsDB.filter(g => g.category === categoryFilter);
+
+        filtered.forEach(gift => {
+            const card = document.createElement('div');
+            card.className = "gift-card bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-slate-100 overflow-hidden flex flex-col cursor-pointer hover:shadow-[0_8px_20px_rgba(0,0,0,0.08)] fade-in";
+            card.onclick = () => openModal(gift);
+            
+            card.innerHTML = `
+                <div class="h-32 bg-slate-50 relative p-2">
+                    <img src="${gift.img}" alt="${gift.title}" class="w-full h-full object-contain drop-shadow-md mix-blend-multiply">
+                </div>
+                <div class="p-4 flex-1 flex flex-col">
+                    <h3 class="font-black text-slate-800 text-sm leading-tight mb-1">${gift.title}</h3>
+                    <p class="text-[10px] text-slate-500 line-clamp-2 leading-relaxed flex-1 mb-3">${gift.desc}</p>
+                    <button class="w-full bg-[#fdfbfb] border border-[#d4af37] text-[#c59b27] font-bold py-1.5 rounded-lg text-xs hover:bg-[#d4af37] hover:text-white transition">
+                        בחר במתנה
+                    </button>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    function filterCatalog(category, btnElement) {
+        // Update active chip
+        document.querySelectorAll('.category-chip').forEach(btn => {
+            btn.classList.remove('active', 'bg-[#d4af37]', 'text-white', 'border-[#d4af37]');
+            btn.classList.add('bg-white', 'text-slate-600', 'border-gray-200');
+        });
+        btnElement.classList.add('active');
+        btnElement.classList.remove('bg-white', 'text-slate-600', 'border-gray-200');
+
+        renderGifts(category);
+    }
+
+    function openModal(gift) {
+        selectedGift = gift;
+        document.getElementById('modal-img').src = gift.img;
+        document.getElementById('modal-title').textContent = gift.title;
+        document.getElementById('modal-desc').textContent = gift.desc;
+        
+        const modal = document.getElementById('confirm-modal');
+        const content = document.getElementById('modal-content');
+        
+        modal.classList.remove('hidden');
+        // Slight delay to allow display:block to apply before animating transform
+        setTimeout(() => {
+            content.classList.remove('translate-y-full');
+            content.classList.add('translate-y-0');
+        }, 10);
+    }
+
+    function closeModal() {
+        const content = document.getElementById('modal-content');
+        content.classList.remove('translate-y-0');
+        content.classList.add('translate-y-full');
+        
+        setTimeout(() => {
+            document.getElementById('confirm-modal').classList.add('hidden');
+            selectedGift = null;
+        }, 300); // match transition duration
+    }
+
+    function confirmSelection() {
+        if(!selectedGift) return;
+        closeModal();
+        
+        // Show Confetti
+        var duration = 3000;
+        var end = Date.now() + duration;
+
+        (function frame() {
+            confetti({
+                particleCount: 5,
+                angle: 60,
+                spread: 55,
+                origin: { x: 0 },
+                colors: ['#d4af37', '#ffffff', '#4f46e5']
+            });
+            confetti({
+                particleCount: 5,
+                angle: 120,
+                spread: 55,
+                origin: { x: 1 },
+                colors: ['#d4af37', '#ffffff', '#4f46e5']
+            });
+
+            if (Date.now() < end) {
+                requestAnimationFrame(frame);
+            }
+        }());
+
+        // Update UI to success state
+        setTimeout(() => {
+            document.getElementById('catalog-state').classList.add('hidden');
+            
+            document.getElementById('chosen-img').src = selectedGift.img;
+            document.getElementById('chosen-title').textContent = selectedGift.title;
+            
+            document.getElementById('chosen-state').classList.remove('hidden');
+        }, 300);
+    }
+
+    // Init
+    document.addEventListener('DOMContentLoaded', () => {
+        renderGifts();
+    });
+
+</script>
+</body>
+</html>

@@ -174,15 +174,7 @@
                 </div>
             </a>
             
-            <!-- Sub-tree items -->
-            <div class="pl-4 pr-6 space-y-0.5 relative submenu-line">
-                <a href="#" onclick="event.preventDefault(); alert('הדמיה: מסך קליטת עובד חדש')" class="tree-link submenu-item relative flex items-center gap-3 px-3 py-1.5 rounded-lg font-medium text-xs">
-                    קליטת עובד חדש
-                </a>
-                <a href="#" onclick="event.preventDefault(); alert('הדמיה: מודול יבוא אקסל')" class="tree-link submenu-item relative flex items-center gap-3 px-3 py-1.5 rounded-lg font-medium text-xs">
-                    קליטת קובץ אקסל
-                </a>
-            </div>
+
 
             <div class="nav-group-title">רווחה ואירועים</div>
             <a href="#" onclick="loadPage('welfare-hub.html', this)" class="tree-link flex items-center justify-between px-3 py-2 rounded-xl font-semibold mb-1 text-sm">
@@ -191,16 +183,14 @@
                     מרכז רווחה ארגוני
                 </div>
             </a>
+            <a href="#" onclick="loadPage('gifts-manager-hub.html', this)" class="tree-link flex items-center justify-between px-3 py-2 rounded-xl font-semibold mb-1 text-sm">
+                <div class="flex items-center gap-3">
+                    <span class="text-lg">🎁</span>
+                    ניהול שי ומתנות לחג
+                </div>
+            </a>
             
-            <!-- Sub-tree items -->
-            <div class="pl-4 pr-6 space-y-0.5 relative submenu-line">
-                <a href="#" onclick="loadPage('events-manager-demo.html#new-campaign', this)" class="tree-link submenu-item relative flex items-center gap-3 px-3 py-1.5 rounded-lg font-medium text-xs">
-                    קמפיין אירוע חדש (יצירה)
-                </a>
-                <a href="#" onclick="loadPage('events-manager-demo.html#events-list', this)" class="tree-link submenu-item relative flex items-center gap-3 px-3 py-1.5 rounded-lg font-medium text-xs">
-                    רישום האירועים במערכת
-                </a>
-            </div>
+
 
             <div class="nav-group-title">אדמיניסטרציה ובירוקרטיה</div>
             <a href="#" onclick="loadPage('documents-hub.html', this)" class="tree-link flex items-center justify-between px-3 py-2 rounded-xl font-semibold mb-1 text-sm">
@@ -225,6 +215,10 @@
             <a href="#" onclick="loadPage('communications-hub.html', this)" class="tree-link flex items-center gap-3 px-3 py-2 rounded-xl font-semibold mb-1 text-sm transition-colors hover:bg-slate-800">
                 <span class="text-lg">💬</span>
                 מערכת דיוור וסמסים
+            </a>
+            <a href="#" onclick="loadPage('analytics-dashboard.html', this)" class="tree-link flex items-center gap-3 px-3 py-2 rounded-xl font-semibold mb-1 text-sm transition-colors hover:bg-slate-800">
+                <span class="text-lg">📈</span>
+                דוחות ואנליטיקה
             </a>
             
         </nav>

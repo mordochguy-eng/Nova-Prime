@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מערכת ועד - דוחות ואנליטיקה</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Heebo', sans-serif; background-color: #f8fafc; }
+        .stat-card { transition: all 0.3s ease; }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="text-slate-800 h-screen flex flex-col p-6 md:p-8 overflow-y-auto">
+
+    <!-- Header Banner -->
+    <div class="bg-gradient-to-r from-blue-700 to-indigo-800 rounded-3xl shadow-xl p-8 mb-8 relative overflow-hidden flex flex-col md:flex-row justify-between items-center text-white">
+        <!-- Decoration -->
+        <div class="absolute -right-16 -top-16 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -left-16 -bottom-16 w-64 h-64 bg-cyan-400/20 rounded-full blur-3xl pointer-events-none"></div>
+        
+        <div class="relative z-10">
+            <h1 class="text-3xl font-black mb-2 flex items-center gap-3">
+                <span class="bg-white/20 p-2 rounded-xl">📊</span> דוחות ואנליטיקת תקשורת
+            </h1>
+            <p class="text-indigo-100 text-lg">מעקב בזמן אמת אחרי קמפיינים, ניצול תקציב, ואחוזי המרה של פעילויות הוועד.</p>
+        </div>
+        
+        <div class="relative z-10 mt-6 md:mt-0">
+            <button onclick="window.history.back()" class="bg-white/20 hover:bg-white/30 backdrop-blur text-white px-6 py-3 rounded-xl font-bold transition shadow-sm border border-white/30">
+                חזרה למרכז ההפצות &rarr;
+            </button>
+        </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        
+        <!-- Total Budget Used -->
+        <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 stat-card flex items-center gap-5">
+            <div class="w-14 h-14 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center text-2xl shadow-inner">
+                💰
+            </div>
+            <div>
+                <p class="text-slate-500 font-bold text-sm">ניצול תקציב (החודש)</p>
+                <h3 class="text-3xl font-black text-slate-800" id="kpi-budget">₪0.00</h3>
+            </div>
+        </div>
+
+        <!-- Total Messages -->
+        <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 stat-card flex items-center gap-5">
+            <div class="w-14 h-14 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-2xl shadow-inner">
+                📨
+            </div>
+            <div>
+                <p class="text-slate-500 font-bold text-sm">סך הודעות שנשלחו</p>
+                <h3 class="text-3xl font-black text-slate-800" id="kpi-messages">0</h3>
+            </div>
+        </div>
+
+        <!-- Total Campaigns -->
+        <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 stat-card flex items-center gap-5">
+            <div class="w-14 h-14 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-2xl shadow-inner">
+                🚀
+            </div>
+            <div>
+                <p class="text-slate-500 font-bold text-sm">קמפיינים פעילים</p>
+                <h3 class="text-3xl font-black text-slate-800" id="kpi-campaigns">0</h3>
+            </div>
+        </div>
+
+        <!-- Average CTR -->
+        <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 stat-card flex items-center gap-5 relative overflow-hidden">
+            <div class="absolute right-0 top-0 w-2 h-full bg-blue-500"></div>
+            <div class="w-14 h-14 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center text-2xl shadow-inner">
+                👆
+            </div>
+            <div>
+                <p class="text-slate-500 font-bold text-sm">ממוצע הקלקות (CTR)</p>
+                <h3 class="text-3xl font-black text-slate-800" id="kpi-ctr">0%</h3>
+                <p class="text-xs text-emerald-500 font-bold mt-1">📈 עלייה של 12%</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <!-- Main Line Chart -->
+        <div class="lg:col-span-2 bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-black text-slate-800">מגמת חשיפה והודעות</h2>
+                <select class="bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-sm font-bold text-slate-600 outline-none">
+                    <option>7 ימים אחרונים</option>
+                    <option selected>30 ימים אחרונים</option>
+                    <option>שנה נוכחית</option>
+                </select>
+            </div>
+            <div class="relative h-72 w-full">
+                <canvas id="trendChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Doughnut Chart -->
+        <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 flex flex-col">
+            <h2 class="text-xl font-black text-slate-800 mb-2">פילוח ערוצי תקשורת</h2>
+            <p class="text-sm text-slate-500 mb-4 font-medium">כמות הנמענים לפי הערוץ שנבחר</p>
+            <div class="relative flex-1 flex items-center justify-center w-full min-h-[200px]">
+                <canvas id="channelsChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Table -->
+    <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+            <h2 class="text-xl font-black text-slate-800 flex items-center gap-2">
+                <span class="text-indigo-500">📋</span> היסטוריית קמפיינים
+            </h2>
+            <button class="text-sm font-bold text-indigo-600 hover:text-indigo-800 transition">יצא לאקסל ↓</button>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-right border-collapse min-w-[800px]">
+                <thead>
+                    <tr class="bg-white border-b border-slate-200 text-slate-500 text-sm">
+                        <th class="p-4 font-bold">תאריך ושעה</th>
+                        <th class="p-4 font-bold">שם הפעילות / קמפיין</th>
+                        <th class="p-4 font-bold">ערוץ</th>
+                        <th class="p-4 font-bold text-center">נמענים</th>
+                        <th class="p-4 font-bold text-center">הקלקות משוער</th>
+                        <th class="p-4 font-bold">עלות</th>
+                        <th class="p-4 font-bold">סטטוס</th>
+                    </tr>
+                </thead>
+                <tbody id="history-table-body">
+                    <!-- Populated by JS -->
+                </tbody>
+            </table>
+            <!-- Empty State -->
+            <div id="empty-state" class="hidden flex flex-col items-center justify-center p-12 text-center">
+                <div class="text-6xl mb-4 opacity-50">📭</div>
+                <h3 class="text-xl font-bold text-slate-700 mb-2">עדיין אין קמפיינים</h3>
+                <p class="text-slate-500">הקמפיינים שתיצור במרכז ההפצות יופיעו כאן אוטומטית.</p>
+                <a href="communications-hub.html" class="mt-6 bg-indigo-600 text-white px-6 py-2 rounded-xl font-bold shadow-md hover:bg-indigo-700 transition">צור קמפיין ראשון</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Set defaults for Chart.js
+        Chart.defaults.font.family = "'Heebo', sans-serif";
+        Chart.defaults.color = '#64748b'; // slate-500
+
+        // Format Currency
+        const formatter = new Intl.NumberFormat('he-IL', {
+            style: 'currency',
+            currency: 'ILS',
+        });
+
+        // Initialize Data
+        function loadDashboard() {
+            let history = JSON.parse(localStorage.getItem('communications_history') || '[]');
+            
+            // If empty, let's inject a couple of mock campaigns so the user sees a beautiful dashboard immediately
+            if (history.length === 0) {
+                history = [
+                    {
+                        id: 'mock_1',
+                        date: new Date(Date.now() - 3 * 24*60*60*1000).toISOString(),
+                        scheduledFor: 'מיידי',
+                        activityName: 'נופש חברה אילת 2026',
+                        audienceCount: 1250,
+                        channel: 'whatsapp',
+                        cost: 187.5,
+                        clicks: 850
+                    },
+                    {
+                        id: 'mock_2',
+                        date: new Date(Date.now() - 5 * 24*60*60*1000).toISOString(),
+                        scheduledFor: 'מיידי',
+                        activityName: 'חלוקת שי לחג פסח',
+                        audienceCount: 800,
+                        channel: 'sms',
+                        cost: 40.0,
+                        clicks: 620
+                    },
+                    {
+                        id: 'mock_3',
+                        date: new Date(Date.now() - 1 * 24*60*60*1000).toISOString(),
+                        scheduledFor: 'מיידי',
+                        activityName: 'הודעת הנהלה - עדכון נהלים',
+                        audienceCount: 450,
+                        channel: 'email',
+                        cost: 0,
+                        clicks: 120
+                    }
+                ];
+            }
+
+            // Calculate KPIs
+            let totalCost = 0;
+            let totalMessages = 0;
+            let totalCampaigns = history.length;
+            let totalClicks = 0;
+
+            const channelCounts = { 'whatsapp': 0, 'sms': 0, 'email': 0 };
+
+            const tableBody = document.getElementById('history-table-body');
+            tableBody.innerHTML = '';
+
+            // Sort history latest first
+            history.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            history.forEach(camp => {
+                totalCost += (camp.cost || 0);
+                totalMessages += (camp.audienceCount || 0);
+                
+                // Track channel stats
+                if(channelCounts[camp.channel] !== undefined) {
+                    channelCounts[camp.channel] += camp.audienceCount;
+                }
+
+                // Mock Clicks logic
+                let clicks = camp.clicks;
+                if(clicks === undefined) {
+                    // Random CTR between 40% and 80% if not defined
+                    const ctr = (Math.random() * 0.4 + 0.4);
+                    clicks = Math.floor(camp.audienceCount * ctr);
+                    // Add it so it stays consistent? Just runtime calculation is fine.
+                }
+                totalClicks += clicks;
+
+                // Format Date
+                const d = new Date(camp.date);
+                const dateStr = d.toLocaleDateString('he-IL') + ' ' + d.toLocaleTimeString('he-IL', {hour: '2-digit', minute:'2-digit'});
+                
+                // Formt Channel
+                let chanObj = {icon: '📧', name: 'Email', color: 'text-gray-600', bg: 'bg-gray-100'};
+                if(camp.channel === 'whatsapp') chanObj = {icon: '💬', name: 'WhatsApp', color: 'text-emerald-700', bg: 'bg-emerald-100'};
+                if(camp.channel === 'sms') chanObj = {icon: '📱', name: 'SMS', color: 'text-blue-700', bg: 'bg-blue-100'};
+
+                // Format Status
+                const isScheduled = camp.scheduledFor && camp.scheduledFor !== 'מיידי' && new Date(camp.scheduledFor) > new Date();
+                const statusHtml = isScheduled 
+                    ? `<span class="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap">⏳ מתוזמן ל-${camp.scheduledFor}</span>`
+                    : `<span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">✔️ שוגר</span>`;
+
+                // Add Row
+                const tr = document.createElement('tr');
+                tr.className = 'border-b border-slate-100 hover:bg-slate-50 transition';
+                tr.innerHTML = `
+                    <td class="p-4 text-sm font-medium text-slate-600 whitespace-nowrap">${dateStr}</td>
+                    <td class="p-4 font-bold text-slate-800">${camp.activityName || 'הפצה כללית'}</td>
+                    <td class="p-4">
+                        <span class="${chanObj.bg} ${chanObj.color} px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 w-fit">
+                            ${chanObj.icon} ${chanObj.name}
+                        </span>
+                    </td>
+                    <td class="p-4 text-center font-bold text-slate-700">${camp.audienceCount.toLocaleString()}</td>
+                    <td class="p-4 text-center">
+                        <div class="flex items-center justify-center gap-2">
+                            <span class="font-bold text-blue-600">${clicks.toLocaleString()}</span>
+                            <span class="text-xs text-slate-400">(${Math.round((clicks/camp.audienceCount)*100)}%)</span>
+                        </div>
+                    </td>
+                    <td class="p-4 font-bold text-slate-800">${formatter.format(camp.cost)}</td>
+                    <td class="p-4">${statusHtml}</td>
+                `;
+                tableBody.appendChild(tr);
+            });
+
+            if(history.length === 0) {
+                document.getElementById('empty-state').classList.remove('hidden');
+                document.getElementById('empty-state').classList.add('flex');
+            }
+
+            // Update KPI DOM
+            document.getElementById('kpi-budget').textContent = formatter.format(totalCost);
+            document.getElementById('kpi-messages').textContent = totalMessages.toLocaleString();
+            document.getElementById('kpi-campaigns').textContent = totalCampaigns;
+            
+            const avgCtr = totalMessages > 0 ? Math.round((totalClicks / totalMessages) * 100) : 0;
+            document.getElementById('kpi-ctr').textContent = avgCtr + '%';
+
+            // Draw Charts
+            drawCharts(channelCounts);
+        }
+
+        function drawCharts(channelCounts) {
+            // Trend Line Chart
+            const ctxTrend = document.getElementById('trendChart').getContext('2d');
+            
+            // Create Gradient
+            const gradient = ctxTrend.createLinearGradient(0, 0, 0, 300);
+            gradient.addColorStop(0, 'rgba(79, 70, 229, 0.4)'); // Indigo-600
+            gradient.addColorStop(1, 'rgba(79, 70, 229, 0.0)');
+            
+            new Chart(ctxTrend, {
+                type: 'line',
+                data: {
+                    labels: ['1 במאי', '5 במאי', '10 במאי', '15 במאי', '20 במאי', '25 במאי', '30 במאי'],
+                    datasets: [{
+                        label: 'כמות הודעות שנשלחו',
+                        data: [120, 450, 200, 1250, 400, 800, 600],
+                        borderColor: '#4f46e5',
+                        backgroundColor: gradient,
+                        borderWidth: 3,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#4f46e5',
+                        pointBorderWidth: 3,
+                        pointRadius: 5,
+                        pointHoverRadius: 7,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { borderDash: [4, 4], color: '#f1f5f9', drawBorder: false }
+                        },
+                        x: {
+                            grid: { display: false, drawBorder: false }
+                        }
+                    },
+                    interaction: { mode: 'index', intersect: false }
+                }
+            });
+
+            // Channels Doughnut Chart
+            const ctxChannels = document.getElementById('channelsChart').getContext('2d');
+            const dataCounts = [channelCounts.whatsapp, channelCounts.sms, channelCounts.email];
+            // Prevent all zeros chart crash
+            if(dataCounts[0]===0 && dataCounts[1]===0 && dataCounts[2]===0) {
+                dataCounts[0] = 1; 
+            }
+
+            new Chart(ctxChannels, {
+                type: 'doughnut',
+                data: {
+                    labels: ['WhatsApp', 'SMS', 'Email'],
+                    datasets: [{
+                        data: dataCounts,
+                        backgroundColor: ['#10b981', '#3b82f6', '#94a3b8'],
+                        borderWidth: 0,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '75%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { padding: 20, usePointStyle: true, pointStyle: 'circle' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', loadDashboard);
+    </script>
+</body>
+</html>

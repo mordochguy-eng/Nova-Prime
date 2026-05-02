@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ComManager - ניהול שי ומתנות לחג</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Heebo', sans-serif; background-color: #f8fafc; overflow-y: auto; }
+        
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Custom scrollbar for tables */
+        .table-scroll::-webkit-scrollbar { height: 8px; width: 8px; }
+        .table-scroll::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
+        .table-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        
+        /* Checkbox animation */
+        .animated-checkbox:checked + div {
+            background-color: #10b981;
+            border-color: #10b981;
+        }
+        .animated-checkbox:checked + div svg {
+            display: block;
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased p-4 lg:p-8">
+
+<div class="max-w-7xl mx-auto space-y-6 fade-in">
+    
+    <!-- Page Header -->
+    <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+        <div>
+            <div class="flex items-center gap-3 mb-1">
+                <span class="text-3xl bg-indigo-100 w-12 h-12 rounded-xl flex items-center justify-center shadow-sm">🎁</span>
+                <h1 class="text-2xl font-black text-slate-800">ניהול שי ומתנות - <span class="text-indigo-600">פסח 2026</span></h1>
+            </div>
+            <p class="text-slate-500 font-medium text-sm pr-16">ניהול ומעקב בזמן אמת אחר בחירות העובדים וחלוקת המתנות במשרדים.</p>
+        </div>
+        <div class="flex gap-3">
+            <button onclick="alert('ייפתח חלון יבוא קובץ קטלוג')" class="bg-white border-2 border-slate-200 text-slate-700 font-bold py-2 px-5 rounded-xl hover:bg-slate-50 hover:border-slate-300 transition shadow-sm text-sm flex items-center gap-2">
+                <span>יבוא קטלוג מאקסל</span>
+                <span>📊</span>
+            </button>
+            <button onclick="alert('פותח מרכז הפצות לשליחת הודעת התחלת קמפיין')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-5 rounded-xl shadow-md transition text-sm flex items-center gap-2">
+                <span>שלח לינק הרשמה לעובדים</span>
+                <span>📱</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- KPIs Section -->
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- KPI 1 -->
+        <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-[0_2px_15px_rgba(0,0,0,0.03)] flex items-center gap-5">
+            <div class="w-16 h-16 rounded-2xl bg-blue-50 text-blue-500 flex items-center justify-center text-3xl shrink-0">
+                👥
+            </div>
+            <div>
+                <p class="text-sm font-bold text-slate-500 mb-0.5">זכאים לשי בחג</p>
+                <div class="flex items-end gap-2">
+                    <h3 class="text-3xl font-black text-slate-800">540</h3>
+                    <span class="text-xs font-bold text-slate-400 mb-1">עובדים</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- KPI 2 -->
+        <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-[0_2px_15px_rgba(0,0,0,0.03)] flex items-center gap-5 relative overflow-hidden">
+            <div class="absolute bottom-0 left-0 w-full h-1 bg-slate-100"><div class="h-full bg-indigo-500 w-[78%] rounded-r-full"></div></div>
+            <div class="w-16 h-16 rounded-2xl bg-indigo-50 text-indigo-500 flex items-center justify-center text-3xl shrink-0">
+                🎯
+            </div>
+            <div>
+                <p class="text-sm font-bold text-slate-500 mb-0.5">בחרו מתנה</p>
+                <div class="flex items-end gap-2">
+                    <h3 class="text-3xl font-black text-slate-800">421</h3>
+                    <span class="text-xs font-bold text-slate-400 mb-1">מתוך 540 (78%)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- KPI 3 -->
+        <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-[0_2px_15px_rgba(0,0,0,0.03)] flex items-center gap-5 relative overflow-hidden">
+            <div class="absolute bottom-0 left-0 w-full h-1 bg-slate-100"><div class="h-full bg-emerald-500 w-[45%] rounded-r-full"></div></div>
+            <div class="w-16 h-16 rounded-2xl bg-emerald-50 text-emerald-500 flex items-center justify-center text-3xl shrink-0">
+                🛍️
+            </div>
+            <div>
+                <p class="text-sm font-bold text-slate-500 mb-0.5">נאספו ממשרד הוועד</p>
+                <div class="flex items-end gap-2">
+                    <h3 class="text-3xl font-black text-slate-800">189</h3>
+                    <span class="text-xs font-bold text-slate-400 mb-1">מתוך 421 (45%)</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
+        
+        <!-- Inventory / Catalog Summary (Left side on big screens) -->
+        <section class="xl:col-span-1 bg-white rounded-3xl border border-slate-100 shadow-[0_2px_15px_rgba(0,0,0,0.03)] p-6">
+            <h2 class="text-lg font-black text-slate-800 mb-5 flex items-center gap-2">
+                <span class="text-indigo-500">📊</span> התפלגות בחירות (מלאי נדרש)
+            </h2>
+            
+            <div class="space-y-4">
+                <!-- Item 1 -->
+                <div class="flex items-center justify-between p-3 rounded-2xl hover:bg-slate-50 transition border border-transparent hover:border-slate-100">
+                    <div class="flex items-center gap-3">
+                        <img src="assets/images/espresso_machine.png" onerror="this.src='https://placehold.co/100x100/f8fafc/94a3b8?text=Coffe'" class="w-12 h-12 rounded-xl object-cover bg-white border border-slate-100">
+                        <div>
+                            <h4 class="font-bold text-sm text-slate-800 leading-tight">מכונת אספרסו</h4>
+                            <p class="text-[11px] text-slate-500 font-medium">חשמל ואלקטרוניקה</p>
+                        </div>
+                    </div>
+                    <div class="text-left">
+                        <span class="block font-black text-lg text-slate-800 leading-tight">145</span>
+                        <span class="text-[10px] font-bold text-indigo-500 bg-indigo-50 px-1.5 py-0.5 rounded">הכי נבחר</span>
+                    </div>
+                </div>
+
+                <!-- Item 2 -->
+                <div class="flex items-center justify-between p-3 rounded-2xl hover:bg-slate-50 transition border border-transparent hover:border-slate-100">
+                    <div class="flex items-center gap-3">
+                        <img src="assets/images/robot_vacuum.png" onerror="this.src='https://placehold.co/100x100/f8fafc/94a3b8?text=Robot'" class="w-12 h-12 rounded-xl object-cover bg-white border border-slate-100">
+                        <div>
+                            <h4 class="font-bold text-sm text-slate-800 leading-tight">שואב אבק רובוטי</h4>
+                            <p class="text-[11px] text-slate-500 font-medium">חשמל ואלקטרוניקה</p>
+                        </div>
+                    </div>
+                    <div class="text-left">
+                        <span class="block font-black text-lg text-slate-800 leading-tight">98</span>
+                    </div>
+                </div>
+
+                <!-- Item 3 -->
+                <div class="flex items-center justify-between p-3 rounded-2xl hover:bg-slate-50 transition border border-transparent hover:border-slate-100">
+                    <div class="flex items-center gap-3">
+                        <img src="assets/images/gift_card.png" onerror="this.src='https://placehold.co/100x100/f8fafc/94a3b8?text=Card'" class="w-12 h-12 rounded-xl object-cover bg-white border border-slate-100">
+                        <div>
+                            <h4 class="font-bold text-sm text-slate-800 leading-tight">תווי קנייה 'תו זהב'</h4>
+                            <p class="text-[11px] text-slate-500 font-medium">תווי קנייה</p>
+                        </div>
+                    </div>
+                    <div class="text-left">
+                        <span class="block font-black text-lg text-slate-800 leading-tight">85</span>
+                    </div>
+                </div>
+
+                <!-- Item 4 -->
+                <div class="flex items-center justify-between p-3 rounded-2xl hover:bg-slate-50 transition border border-transparent hover:border-slate-100">
+                    <div class="flex items-center gap-3">
+                        <img src="assets/images/camping_tent.png" onerror="this.src='https://placehold.co/100x100/f8fafc/94a3b8?text=Tent'" class="w-12 h-12 rounded-xl object-cover bg-white border border-slate-100">
+                        <div>
+                            <h4 class="font-bold text-sm text-slate-800 leading-tight">אוהל משפחתי ענק</h4>
+                            <p class="text-[11px] text-slate-500 font-medium">פנאי וקמפינג</p>
+                        </div>
+                    </div>
+                    <div class="text-left">
+                        <span class="block font-black text-lg text-slate-800 leading-tight">62</span>
+                    </div>
+                </div>
+                
+                <!-- Item 5 -->
+                <div class="flex items-center justify-between p-3 rounded-2xl hover:bg-slate-50 transition border border-transparent hover:border-slate-100">
+                    <div class="flex items-center gap-3">
+                        <img src="assets/images/gaming_chair.png" onerror="this.src='https://placehold.co/100x100/f8fafc/94a3b8?text=Chair'" class="w-12 h-12 rounded-xl object-cover bg-white border border-slate-100">
+                        <div>
+                            <h4 class="font-bold text-sm text-slate-800 leading-tight">כיסא גיימינג מקצועי</h4>
+                            <p class="text-[11px] text-slate-500 font-medium">חשמל ואלקטרוניקה</p>
+                        </div>
+                    </div>
+                    <div class="text-left">
+                        <span class="block font-black text-lg text-slate-800 leading-tight">31</span>
+                    </div>
+                </div>
+
+            </div>
+            
+            <div class="mt-6 pt-5 border-t border-slate-100 flex justify-center">
+                <button onclick="alert('ייפתח קובץ אקסל מרכז לספק')" class="text-sm font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1">
+                    <span>הורד דוח ריכוז לספק</span>
+                    <span>📥</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Workers Tracking Table (Right side on big screens) -->
+        <section class="xl:col-span-2 bg-white rounded-3xl border border-slate-100 shadow-[0_2px_15px_rgba(0,0,0,0.03)] overflow-hidden flex flex-col h-[600px]">
+            <!-- Table Header Tools -->
+            <div class="p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between gap-4 items-center bg-slate-50/50 shrink-0">
+                <h2 class="text-lg font-black text-slate-800 flex items-center gap-2">
+                    <span class="text-emerald-500">📋</span> רשימת חלוקה ומעקב
+                </h2>
+                
+                <div class="flex items-center gap-3 w-full sm:w-auto">
+                    <div class="relative w-full sm:w-64">
+                        <span class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔍</span>
+                        <input type="text" placeholder="חיפוש עובד או ת.ז..." class="w-full bg-white border border-slate-200 rounded-xl py-2 pr-9 pl-4 outline-none focus:border-indigo-500 font-medium text-sm text-slate-700 shadow-sm transition">
+                    </div>
+                    <select class="bg-white border border-slate-200 rounded-xl py-2 px-3 outline-none focus:border-indigo-500 font-bold text-sm text-slate-700 shadow-sm shrink-0">
+                        <option value="">כל הסטטוסים</option>
+                        <option value="pending">ממתין לאיסוף</option>
+                        <option value="collected">נאסף</option>
+                        <option value="not_chosen">טרם בחר</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Table Content -->
+            <div class="overflow-x-auto table-scroll flex-1">
+                <table class="w-full text-right border-collapse">
+                    <thead class="bg-slate-50 sticky top-0 z-10 shadow-sm">
+                        <tr>
+                            <th class="py-3 px-6 text-xs font-black text-slate-500 border-b border-slate-200 w-12"></th>
+                            <th class="py-3 px-6 text-xs font-black text-slate-500 border-b border-slate-200">שם העובד</th>
+                            <th class="py-3 px-6 text-xs font-black text-slate-500 border-b border-slate-200">מחלקה</th>
+                            <th class="py-3 px-6 text-xs font-black text-slate-500 border-b border-slate-200">המתנה שנבחרה</th>
+                            <th class="py-3 px-6 text-xs font-black text-slate-500 border-b border-slate-200">סטטוס חלוקה</th>
+                            <th class="py-3 px-6 text-xs font-black text-slate-500 border-b border-slate-200 text-center w-32">פעולה (סמן שנאסף)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        <!-- Row 1: Collected -->
+                        <tr class="hover:bg-slate-50 transition group">
+                            <td class="py-3 px-6 text-center">
+                                <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-xs">יכ</div>
+                            </td>
+                            <td class="py-3 px-6">
+                                <div class="font-bold text-slate-800 text-sm">ישראל כהן</div>
+                                <div class="text-[11px] text-slate-500">ת.ז 031234567</div>
+                            </td>
+                            <td class="py-3 px-6 text-sm text-slate-600 font-medium">הנדסה ופיתוח</td>
+                            <td class="py-3 px-6">
+                                <div class="flex items-center gap-2">
+                                    <img src="assets/images/espresso_machine.png" onerror="this.style.display='none'" class="w-6 h-6 rounded object-cover bg-white border border-slate-100">
+                                    <span class="text-sm font-bold text-slate-700">מכונת אספרסו</span>
+                                </div>
+                            </td>
+                            <td class="py-3 px-6">
+                                <span class="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 font-bold text-xs px-2.5 py-1 rounded-md border border-emerald-100">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> נאסף
+                                </span>
+                                <div class="text-[9px] text-slate-400 mt-1">ע"י העובד 12.04</div>
+                            </td>
+                            <td class="py-3 px-6 text-center">
+                                <label class="cursor-pointer relative inline-block">
+                                    <input type="checkbox" class="sr-only animated-checkbox" checked disabled>
+                                    <div class="w-6 h-6 rounded border-2 border-slate-300 bg-white flex items-center justify-center transition-colors">
+                                        <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+                                    </div>
+                                </label>
+                            </td>
+                        </tr>
+
+                        <!-- Row 2: Pending (Waiting for pickup) -->
+                        <tr class="hover:bg-slate-50 transition group bg-amber-50/20">
+                            <td class="py-3 px-6 text-center">
+                                <div class="w-8 h-8 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center font-bold text-xs">רל</div>
+                            </td>
+                            <td class="py-3 px-6">
+                                <div class="font-bold text-slate-800 text-sm">רבקה לוי</div>
+                                <div class="text-[11px] text-slate-500">ת.ז 042345678</div>
+                            </td>
+                            <td class="py-3 px-6 text-sm text-slate-600 font-medium">כספים וחשבות</td>
+                            <td class="py-3 px-6">
+                                <div class="flex items-center gap-2">
+                                    <img src="assets/images/robot_vacuum.png" onerror="this.style.display='none'" class="w-6 h-6 rounded object-cover bg-white border border-slate-100">
+                                    <span class="text-sm font-bold text-slate-700">שואב רובוטי</span>
+                                </div>
+                            </td>
+                            <td class="py-3 px-6">
+                                <span class="inline-flex items-center gap-1.5 bg-amber-50 text-amber-700 font-bold text-xs px-2.5 py-1 rounded-md border border-amber-200">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span> ממתין לאיסוף
+                                </span>
+                            </td>
+                            <td class="py-3 px-6 text-center">
+                                <button onclick="markCollected(this)" class="w-full bg-white border border-slate-300 hover:border-emerald-500 hover:bg-emerald-50 text-slate-600 hover:text-emerald-600 font-bold py-1.5 rounded-lg text-xs shadow-sm transition">
+                                    סמן שנאסף
+                                </button>
+                            </td>
+                        </tr>
+                        
+                        <!-- Row 3: Pending -->
+                        <tr class="hover:bg-slate-50 transition group bg-amber-50/20">
+                            <td class="py-3 px-6 text-center">
+                                <div class="w-8 h-8 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center font-bold text-xs">מא</div>
+                            </td>
+                            <td class="py-3 px-6">
+                                <div class="font-bold text-slate-800 text-sm">מיכאל אהרונוב</div>
+                                <div class="text-[11px] text-slate-500">ת.ז 201345889</div>
+                            </td>
+                            <td class="py-3 px-6 text-sm text-slate-600 font-medium">לוגיסטיקה</td>
+                            <td class="py-3 px-6">
+                                <div class="flex items-center gap-2">
+                                    <img src="assets/images/camping_tent.png" onerror="this.style.display='none'" class="w-6 h-6 rounded object-cover bg-white border border-slate-100">
+                                    <span class="text-sm font-bold text-slate-700">אוהל משפחתי</span>
+                                </div>
+                            </td>
+                            <td class="py-3 px-6">
+                                <span class="inline-flex items-center gap-1.5 bg-amber-50 text-amber-700 font-bold text-xs px-2.5 py-1 rounded-md border border-amber-200">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span> ממתין לאיסוף
+                                </span>
+                            </td>
+                            <td class="py-3 px-6 text-center">
+                                <button onclick="markCollected(this)" class="w-full bg-white border border-slate-300 hover:border-emerald-500 hover:bg-emerald-50 text-slate-600 hover:text-emerald-600 font-bold py-1.5 rounded-lg text-xs shadow-sm transition">
+                                    סמן שנאסף
+                                </button>
+                            </td>
+                        </tr>
+
+                        <!-- Row 4: Not chosen -->
+                        <tr class="hover:bg-slate-50 transition group opacity-60 hover:opacity-100">
+                            <td class="py-3 px-6 text-center">
+                                <div class="w-8 h-8 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center font-bold text-xs">שמ</div>
+                            </td>
+                            <td class="py-3 px-6">
+                                <div class="font-bold text-slate-800 text-sm">שירי מזרחי</div>
+                                <div class="text-[11px] text-slate-500">ת.ז 053456789</div>
+                            </td>
+                            <td class="py-3 px-6 text-sm text-slate-600 font-medium">משאבי אנוש</td>
+                            <td class="py-3 px-6">
+                                <span class="text-xs text-slate-400 font-medium italic">טרם בוצעה בחירה</span>
+                            </td>
+                            <td class="py-3 px-6">
+                                <span class="inline-flex items-center gap-1.5 bg-slate-100 text-slate-500 font-bold text-xs px-2.5 py-1 rounded-md border border-slate-200">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> אין מתנה
+                                </span>
+                            </td>
+                            <td class="py-3 px-6 text-center">
+                                <button onclick="alert('נשלח SMS תזכורת לעובד')" class="text-xs text-indigo-500 hover:text-indigo-700 font-bold flex items-center justify-center gap-1 w-full">
+                                    <span>שלח תזכורת</span> <span>✉️</span>
+                                </button>
+                            </td>
+                        </tr>
+                        
+                        <!-- Row 5: Collected -->
+                        <tr class="hover:bg-slate-50 transition group">
+                            <td class="py-3 px-6 text-center">
+                                <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-xs">אג</div>
+                            </td>
+                            <td class="py-3 px-6">
+                                <div class="font-bold text-slate-800 text-sm">אלירן גבאי</div>
+                                <div class="text-[11px] text-slate-500">ת.ז 304567890</div>
+                            </td>
+                            <td class="py-3 px-6 text-sm text-slate-600 font-medium">מערכות מידע</td>
+                            <td class="py-3 px-6">
+                                <div class="flex items-center gap-2">
+                                    <img src="assets/images/gaming_chair.png" onerror="this.style.display='none'" class="w-6 h-6 rounded object-cover bg-white border border-slate-100">
+                                    <span class="text-sm font-bold text-slate-700">כיסא גיימינג</span>
+                                </div>
+                            </td>
+                            <td class="py-3 px-6">
+                                <span class="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 font-bold text-xs px-2.5 py-1 rounded-md border border-emerald-100">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> נאסף
+                                </span>
+                                <div class="text-[9px] text-slate-400 mt-1">ע"י הוועד 11.04</div>
+                            </td>
+                            <td class="py-3 px-6 text-center">
+                                <label class="cursor-pointer relative inline-block">
+                                    <input type="checkbox" class="sr-only animated-checkbox" checked disabled>
+                                    <div class="w-6 h-6 rounded border-2 border-slate-300 bg-white flex items-center justify-center transition-colors">
+                                        <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+                                    </div>
+                                </label>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="p-4 border-t border-slate-100 bg-slate-50/50 flex justify-between items-center text-sm font-medium text-slate-500 shrink-0">
+                <span>מציג 5 מתוך 540 עובדים</span>
+                <div class="flex gap-1">
+                    <button class="w-8 h-8 rounded bg-white border border-slate-200 hover:bg-slate-100 flex items-center justify-center disabled:opacity-50">&lt;</button>
+                    <button class="w-8 h-8 rounded bg-indigo-600 text-white font-bold flex items-center justify-center">1</button>
+                    <button class="w-8 h-8 rounded bg-white border border-slate-200 hover:bg-slate-100 font-bold flex items-center justify-center">2</button>
+                    <button class="w-8 h-8 rounded bg-white border border-slate-200 hover:bg-slate-100 flex items-center justify-center">&gt;</button>
+                </div>
+            </div>
+        </section>
+
+    </div>
+</div>
+
+<script>
+    // Interaction logic for marking as collected
+    function markCollected(btnElement) {
+        const row = btnElement.closest('tr');
+        
+        // Remove amber backgrounds
+        row.classList.remove('bg-amber-50/20');
+        
+        // Change status badge
+        const statusTd = row.querySelectorAll('td')[4];
+        statusTd.innerHTML = `
+            <span class="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 font-bold text-xs px-2.5 py-1 rounded-md border border-emerald-100 fade-in">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> נאסף
+            </span>
+            <div class="text-[9px] text-slate-400 mt-1 fade-in">ע"י הוועד (עכשיו)</div>
+        `;
+
+        // Replace button with checked box
+        const actionTd = row.querySelectorAll('td')[5];
+        actionTd.innerHTML = `
+            <label class="cursor-pointer relative inline-block fade-in">
+                <input type="checkbox" class="sr-only animated-checkbox" checked disabled>
+                <div class="w-6 h-6 rounded border-2 border-emerald-500 bg-emerald-500 flex items-center justify-center transition-colors">
+                    <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+                </div>
+            </label>
+        `;
+
+        // Optional: Update KPI visually (for demo purposes)
+        const pickedUpValEl = document.querySelector('.bg-emerald-50').nextElementSibling.querySelector('h3');
+        pickedUpValEl.textContent = parseInt(pickedUpValEl.textContent) + 1;
+        pickedUpValEl.classList.add('text-emerald-600');
+        setTimeout(() => pickedUpValEl.classList.remove('text-emerald-600'), 500);
+    }
+</script>
+
+</body>
+</html>
